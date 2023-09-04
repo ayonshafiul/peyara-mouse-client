@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function QrCode() {
   return (
     <View style={styles.container}>
-      <Text>QrCode</Text>
+      <Text>Index</Text>
       <StatusBar style="auto" />
     </View>
   );
