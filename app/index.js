@@ -1,17 +1,42 @@
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useRef } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useRef, useState } from "react";
+import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  TextInput,
+} from "react-native-gesture-handler";
 import Animated, { runOnJS } from "react-native-reanimated";
 import { io } from "socket.io-client";
 
-const socket = io.connect("http://192.168.0.101:1313", {
-  transports: ["websocket"],
-});
+let socket = null;
 
 export default function Home() {
-  const doubleTapRef = useRef();
+  const [address, setAddress] = useState("http://192.168.0.102:1313");
+  const [err, setErr] = useState("");
+  const connectSocket = () => {
+    if (socket) {
+      socket.disconnect();
+    }
+    console.log(address);
+    socket = io.connect(address, {
+      transports: ["websocket"],
+    });
+    socket.on("connect", () => {
+      setErr(socket.id); // true
+    });
+
+    socket.on("connect_error", (error) => {
+      let err = JSON.stringify(error);
+      Alert.alert(err);
+      setErr(err);
+    });
+
+    socket.on("disconnect", () => {
+      console.log(socket.connected); // false
+    });
+  };
   const sendCoordinates = (coordinates) => {
     socket.emit("coordinates", coordinates);
   };
@@ -107,8 +132,17 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Link href="/home">Home</Link>
+      <TextInput
+        style={styles.input}
+        onChangeText={setAddress}
+        value={address}
+        placeholder="address"
+      />
+      <Button onPress={connectSocket} title="Connect " />
       <GestureDetector gesture={composed}>
-        <Animated.View style={styles.touchpad}></Animated.View>
+        <Animated.View style={styles.touchpad}>
+          <Text style={{ color: "red" }}>error: {err}</Text>
+        </Animated.View>
       </GestureDetector>
 
       {/* <View style={styles.buttonContainer}>
@@ -138,7 +172,6 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 8,
     backgroundColor: "white",
-    opacity: 0.1,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -148,5 +181,9 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     backgroundColor: "blue",
+  },
+  input: {
+    width: "100%",
+    backgroundColor: "white",
   },
 });
