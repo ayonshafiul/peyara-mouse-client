@@ -69,5 +69,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 4,
+    fontFamily: "Inter_400Regular",
+    fontSize: 12,
   },
 });

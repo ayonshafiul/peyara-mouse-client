@@ -5,7 +5,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS } from "react-native-reanimated";
 import { io } from "socket.io-client";
-const socket = io.connect("http://192.168.0.101:1313");
+
+const socket = io.connect("http://192.168.0.101:1313", {
+  transports: ["websocket"],
+});
 
 export default function Touchpad() {
   const doubleTapRef = useRef();
