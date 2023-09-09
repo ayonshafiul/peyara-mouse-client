@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import { Dimensions } from "react-native";
+
+import QrCodeButtonIcon from "../../assets/svg/qr-code-button.svg";
+import QrCodeRectangleIcon from "../../assets/svg/qr-code-rectangle.svg";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import colors from "../../assets/constants/colors";
 
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -30,12 +36,22 @@ export default function QrCode() {
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.barcodeContainer}
-      />
+      <View style={styles.innerContainer}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={styles.barcodeContainer}
+          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        />
+        <QrCodeRectangleIcon style={styles.qrCode} />
+      </View>
       {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+        <TouchableOpacity
+          style={styles.scanAgainButton}
+          onPress={() => setScanned(false)}
+        >
+          <QrCodeButtonIcon />
+          <Text style={styles.scanAgainButtonText}>Scan Again</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -44,15 +60,44 @@ export default function QrCode() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1f1f1f",
+    backgroundColor: colors.PRIM_BG,
     justifyContent: "center",
     alignItems: "center",
   },
+  innerContainer: {
+    position: "relative",
+    width: 400,
+    height: 400,
+
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  qrCode: {
+    position: "absolute",
+    top: 15,
+    left: 25,
+    zIndex: -1,
+  },
   barcodeContainer: {
-    width: 250,
-    height: 250,
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 16,
+    width: 300,
+    height: 300,
+  },
+
+  scanAgainButton: {
+    width: 200,
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: colors.PRIM_ACCENT,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+
+  scanAgainButtonText: {
+    color: colors.WHITE,
+    fontFamily: "Inter_400Regular",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

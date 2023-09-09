@@ -3,6 +3,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Tabs } from "expo-router";
+import colors from "../../assets/constants/colors";
 
 export default function TabsLayout() {
   return (
@@ -14,7 +15,7 @@ export default function TabsLayout() {
           backgroundColor: "#1f1f1f",
           borderTopWidth: 0,
         },
-        tabBarActiveTintColor: "white",
+        tabBarActiveTintColor: colors.PRIM_ACCENT,
       }}
     >
       <Tabs.Screen
