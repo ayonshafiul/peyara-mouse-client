@@ -23,7 +23,8 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
     "socket.io-client": "^4.7.2",
-    "expo-build-properties": "~0.8.3"
+    "expo-build-properties": "~0.8.3",
+    "expo-barcode-scanner": "~12.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

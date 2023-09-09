@@ -132,6 +132,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Link href="/home">Home</Link>
+      <Link href="/qrcode">QrCode</Link>
       <TextInput
         style={styles.input}
         onChangeText={setAddress}
