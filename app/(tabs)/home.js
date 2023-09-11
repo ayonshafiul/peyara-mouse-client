@@ -16,7 +16,8 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import colors from "../../assets/constants/colors";
-import { getServers } from "../../utils/servers";
+import { getServers, setServers } from "../../utils/servers";
+import { Link } from "expo-router";
 
 const OVERSWIPE_DIST = 20;
 const NUM_ITEMS = 20;
@@ -45,7 +46,13 @@ export default function Home() {
     const onPressDelete = () => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
       setData((prev) => {
-        return prev.filter((item) => item.key !== params.item.key);
+        let filteredData = prev.filter((item) => item.key !== params.item.key);
+        setServers(
+          filteredData.map((d) => {
+            return d.urlData;
+          })
+        );
+        return filteredData;
       });
     };
 
@@ -62,8 +69,8 @@ export default function Home() {
         let url = seperatedArray[0];
         let host = seperatedArray[1];
         return {
-          text: `${index}`,
           key: `key-${index + 1}`,
+          urlData: s,
           url,
           host,
         };
@@ -80,6 +87,13 @@ export default function Home() {
         renderItem={renderItem}
         onDragEnd={({ data }) => setData(data)}
         activationDistance={20}
+        ListHeaderComponent={() => (
+          <View style={styles.row}>
+            <Link href="qrcode" asChild>
+              <Text style={styles.text}>+ Add Server</Text>
+            </Link>
+          </View>
+        )}
       />
     </View>
   );
@@ -113,6 +127,7 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
       <TouchableOpacity
         activeOpacity={1}
         onLongPress={drag}
+        onPress={() => itemRefs.current.get(item.key).open("right")}
         style={[styles.row]}
       >
         <View>
@@ -149,7 +164,7 @@ function UnderlayRight() {
   return (
     <Animated.View style={[styles.row, styles.underlayRight]}>
       <TouchableOpacity onPressOut={() => close()}>
-        <Text style={styles.text}>CLOSE</Text>
+        <Text style={[styles.text, styles.textDark]}>Connect</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -176,8 +191,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
+  textDark: {
+    color: colors.PRIM_BG,
+  },
   underlayRight: {
-    backgroundColor: "teal",
+    backgroundColor: colors.PRIM_ACCENT,
     justifyContent: "flex-start",
   },
   underlayLeft: {
