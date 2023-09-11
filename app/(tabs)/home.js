@@ -1,8 +1,16 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
+import { getServers } from "../../utils/servers";
 
 export default function Home() {
+  const [serverList, setServerList] = useState([]);
+
+  useEffect(() => {
+    getServers().then((res) => {
+      setServerList(res);
+    });
+  }, []);
   return (
     <View>
       <Link href="qrcode">

@@ -7,10 +7,13 @@ import QrCodeButtonIcon from "../../assets/svg/qr-code-button.svg";
 import QrCodeRectangleIcon from "../../assets/svg/qr-code-rectangle.svg";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import colors from "../../assets/constants/colors";
+import { addServer } from "../../utils/servers";
+import { useRouter } from "expo-router";
 
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -22,9 +25,11 @@ export default function QrCode() {
     getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    await addServer(data);
+    console.log(data);
+    router.back();
   };
 
   if (hasPermission === null) {
