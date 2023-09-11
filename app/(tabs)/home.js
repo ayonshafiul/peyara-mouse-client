@@ -9,6 +9,7 @@ export default function Home() {
   useEffect(() => {
     getServers().then((res) => {
       setServerList(res);
+      console.log(res);
     });
   }, []);
   return (

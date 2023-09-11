@@ -25,7 +25,7 @@ export async function addServer(qrCodeValue) {
   let servers = await getValueFor(SERVER_KEY);
   if (servers) {
     let serversArray = JSON.parse(servers);
-    servers.push(qrCodeValue);
+    serversArray.push(qrCodeValue);
     await setValueFor(SERVER_KEY, JSON.stringify(serversArray));
   } else {
     // initialize store with server value
