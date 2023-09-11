@@ -1,35 +1,68 @@
-import { Link } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useRef } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  useFocusEffect,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+} from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
 import { io } from "socket.io-client";
+import colors from "../../assets/constants/colors";
 
-const socket = io.connect("http://192.168.0.101:1313", {
-  transports: ["websocket"],
-});
+let socket = null;
 
 export default function Touchpad() {
-  const doubleTapRef = useRef();
+  const params = useGlobalSearchParams();
+  const [status, setStatus] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log(params);
+      const connectSocket = () => {
+        if (socket) {
+          socket.disconnect();
+        }
+        if (params?.url) {
+          socket = io.connect(params?.url, {
+            transports: ["websocket"],
+          });
+          socket.on("connect", () => {
+            setStatus("Connected");
+          });
+
+          socket.on("connect_error", (error) => {
+            setStatus("Connection Error");
+            // socket.disconnect();
+          });
+
+          socket.on("disconnect", () => {
+            setStatus("Disconnected");
+          });
+        }
+      };
+      connectSocket();
+    }, [])
+  );
   const sendCoordinates = (coordinates) => {
-    socket.emit("coordinates", coordinates);
+    socket?.emit("coordinates", coordinates);
   };
   const sendScroll = (coordinates) => {
-    socket.emit("scroll", coordinates);
+    socket?.emit("scroll", coordinates);
   };
   const sendClicks = (state) => {
-    socket.emit("clicks", state);
+    socket?.emit("clicks", state);
   };
 
   const sendWindowDragStart = (coordinates) => {
-    socket.emit("windowdragstart", coordinates);
+    socket?.emit("windowdragstart", coordinates);
   };
   const sendWindowDragUpdate = (coordinates) => {
-    socket.emit("windowdragupdate", coordinates);
+    socket?.emit("windowdragupdate", coordinates);
   };
   const sendWindowDragEnd = (coordinates) => {
-    socket.emit("windowdragend", coordinates);
+    socket?.emit("windowdragend", coordinates);
   };
 
   const dragGesture = Gesture.Pan()
@@ -106,20 +139,41 @@ export default function Touchpad() {
   );
   return (
     <View style={styles.container}>
+      <MultiWordHighlighter
+        searchWords={[
+          {
+            word: "Connected",
+            textStyle: {
+              backgroundColor: colors.PRIM_ACCENT,
+              color: colors.PRIM_BG,
+              padding: 16,
+              borderRadius: 8,
+            },
+          },
+          {
+            word: "Disconnected",
+            textStyle: {
+              backgroundColor: colors.RED,
+              color: colors.WHITE,
+              padding: 16,
+              borderRadius: 8,
+            },
+          },
+          {
+            word: "Connection Error",
+            textStyle: {
+              backgroundColor: colors.RED,
+              color: colors.WHITE,
+              padding: 16,
+              borderRadius: 8,
+            },
+          },
+        ]}
+        textToHighlight={status}
+      />
       <GestureDetector gesture={composed}>
         <Animated.View style={styles.touchpad}></Animated.View>
       </GestureDetector>
-
-      {/* <View style={styles.buttonContainer}>
-        <TapGestureHandler
-          onHandlerStateChange={handleSingleMouseTap}
-          waitFor={doubleTapRef}
-        >
-          <TapGestureHandler ref={doubleTapRef} numberOfTaps={2}>
-            <View style={styles.button}></View>
-          </TapGestureHandler>
-        </TapGestureHandler>
-      </View> */}
     </View>
   );
 }

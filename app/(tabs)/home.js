@@ -11,36 +11,18 @@ import SwipeableItem, {
   useSwipeableItemParams,
   OpenDirection,
 } from "react-native-swipeable-item";
-import DraggableFlatList, {
-  RenderItemParams,
-  ScaleDecorator,
-} from "react-native-draggable-flatlist";
+import DraggableFlatList from "react-native-draggable-flatlist";
 import colors from "../../assets/constants/colors";
 import { getServers, setServers } from "../../utils/servers";
-import { Link } from "expo-router";
+import { Link, router, useRouter } from "expo-router";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const OVERSWIPE_DIST = 20;
-const NUM_ITEMS = 20;
-
-function getColor(i) {
-  const multiplier = 255 / (NUM_ITEMS - 1);
-  const colorVal = i * multiplier;
-  return `rgb(${colorVal}, ${Math.abs(128 - colorVal)}, ${255 - colorVal})`;
-}
-
-const initialData = [...Array(NUM_ITEMS)].fill(0).map((d, index) => {
-  const backgroundColor = getColor(index);
-  return {
-    text: `${index}`,
-    key: `key-${index + 1}`,
-    backgroundColor,
-    height: 100,
-  };
-});
 
 export default function Home() {
   const [data, setData] = useState([]);
   const itemRefs = useRef(new Map());
+  const router = useRouter();
 
   const renderItem = useCallback((params) => {
     const onPressDelete = () => {
@@ -63,7 +45,6 @@ export default function Home() {
 
   useEffect(() => {
     getServers().then((res) => {
-      console.log(res, "Initials Servers");
       let servers = res.map((s, index) => {
         let seperatedArray = s.split("<peyara>");
         let url = seperatedArray[0];
@@ -120,7 +101,7 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
       renderUnderlayLeft={() => (
         <UnderlayLeft drag={drag} onPressDelete={onPressDelete} />
       )}
-      renderUnderlayRight={() => <UnderlayRight />}
+      renderUnderlayRight={() => <UnderlayRight item={item} />}
       snapPointsLeft={[100]}
       snapPointsRight={[100]}
     >
@@ -159,14 +140,21 @@ const UnderlayLeft = ({ drag, onPressDelete }) => {
   );
 };
 
-function UnderlayRight() {
+function UnderlayRight({ item }) {
   const { close } = useSwipeableItemParams();
   return (
-    <Animated.View style={[styles.row, styles.underlayRight]}>
-      <TouchableOpacity onPressOut={() => close()}>
-        <Text style={[styles.text, styles.textDark]}>Connect</Text>
-      </TouchableOpacity>
-    </Animated.View>
+    <TouchableOpacity
+      style={[styles.row, styles.underlayRight]}
+      onPress={() => {
+        router.push({
+          pathname: "/touchpad",
+          params: { url: item?.url },
+        });
+        close();
+      }}
+    >
+      <Text style={styles.textDark}>Connect</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -192,6 +180,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textDark: {
+    fontWeight: "bold",
+    fontSize: 16,
     color: colors.PRIM_BG,
   },
   underlayRight: {
