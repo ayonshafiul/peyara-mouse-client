@@ -187,9 +187,11 @@ export default function Touchpad() {
           Go to home, select a server and connect.
         </Text>
       )}
-      <GestureDetector gesture={composed}>
-        <Animated.View style={styles.touchpad}></Animated.View>
-      </GestureDetector>
+      {status == "Connected" && (
+        <GestureDetector gesture={composed}>
+          <Animated.View style={styles.touchpad}></Animated.View>
+        </GestureDetector>
+      )}
     </View>
   );
 }
