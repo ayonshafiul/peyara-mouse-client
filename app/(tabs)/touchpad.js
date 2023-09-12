@@ -14,16 +14,13 @@ import colors from "../../assets/constants/colors";
 let socket = null;
 
 export default function Touchpad() {
-  const params = useGlobalSearchParams();
+  const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
 
   useFocusEffect(
     useCallback(() => {
-      console.log(params);
       const connectSocket = () => {
-        if (socket) {
-          socket.disconnect();
-        }
+        console.log(params);
         if (params?.url) {
           socket = io.connect(params?.url, {
             transports: ["websocket"],
@@ -43,7 +40,12 @@ export default function Touchpad() {
         }
       };
       connectSocket();
-    }, [])
+      return () => {
+        if (socket) {
+          socket.disconnect();
+        }
+      };
+    }, [params])
   );
   const sendCoordinates = (coordinates) => {
     socket?.emit("coordinates", coordinates);

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   LayoutAnimation,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import SwipeableItem, {
@@ -15,7 +16,7 @@ import DraggableFlatList from "react-native-draggable-flatlist";
 import colors from "../../assets/constants/colors";
 import { getServers, setServers } from "../../utils/servers";
 import { Link, router, useRouter } from "expo-router";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import AppIcon from "../../assets/icon.png";
 
 const OVERSWIPE_DIST = 20;
 
@@ -62,20 +63,37 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
+      <Image source={AppIcon} style={styles.icon} />
       <DraggableFlatList
         keyExtractor={(item) => item.key}
         data={data}
         renderItem={renderItem}
         onDragEnd={({ data }) => setData(data)}
         activationDistance={20}
-        ListHeaderComponent={() => (
-          <View style={styles.row}>
-            <Link href="qrcode" asChild>
-              <Text style={styles.text}>+ Add Server</Text>
-            </Link>
-          </View>
-        )}
+        ListHeaderComponent={() => {
+          return (
+            <View>
+              {data.length > 0 && (
+                <Text style={styles.listTitleText}>Servers List</Text>
+              )}
+            </View>
+          );
+        }}
       />
+
+      {data.length == 0 && (
+        <Text style={[styles.text, styles.helperText]}>
+          Tap the + button to get started.
+        </Text>
+      )}
+      <TouchableOpacity
+        style={styles.plusButton}
+        onPress={() => {
+          router.push("/qrcode");
+        }}
+      >
+        <Text style={styles.plusButtonText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -176,13 +194,22 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    color: "white",
+    color: colors.WHITE,
     fontSize: 16,
+    fontFamily: "Inter_400Regular",
+  },
+  listTitleText: {
+    fontWeight: "bold",
+    color: colors.WHITE,
+    fontSize: 16,
+    fontFamily: "Inter_400Regular",
+    marginTop: 16,
   },
   textDark: {
     fontWeight: "bold",
     fontSize: 16,
     color: colors.PRIM_BG,
+    fontFamily: "Inter_400Regular",
   },
   underlayRight: {
     backgroundColor: colors.PRIM_ACCENT,
@@ -191,5 +218,28 @@ const styles = StyleSheet.create({
   underlayLeft: {
     backgroundColor: colors.RED,
     justifyContent: "flex-end",
+  },
+  icon: {
+    width: 152,
+    height: 152,
+    alignSelf: "center",
+  },
+  helperText: { textAlign: "center", marginTop: 200 },
+  plusButton: {
+    width: 64,
+    height: 64,
+    backgroundColor: colors.PRIM_ACCENT,
+    borderRadius: 42,
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  plusButtonText: {
+    fontWeight: "bold",
+    color: colors.PRIM_BG,
+    fontSize: 32,
+    fontFamily: "Inter_400Regular",
   },
 });
