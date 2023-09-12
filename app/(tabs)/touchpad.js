@@ -16,14 +16,13 @@ let socket = null;
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       const connectSocket = () => {
         console.log(params);
 
-        setLoading(true);
         if (params?.url) {
           socket = io.connect(params?.url, {
             transports: ["websocket"],
