@@ -4,7 +4,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
@@ -16,26 +16,33 @@ let socket = null;
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const connectSocket = () => {
         console.log(params);
+
+        setLoading(true);
         if (params?.url) {
           socket = io.connect(params?.url, {
             transports: ["websocket"],
           });
           socket.on("connect", () => {
             setStatus("Connected");
+            if (loading) setLoading(false);
           });
 
           socket.on("connect_error", (error) => {
-            setStatus("Connection Error");
-            // socket.disconnect();
+            console.log(error);
+            setStatus("Error");
+            socket.disconnect();
+            if (loading) setLoading(false);
           });
 
           socket.on("disconnect", () => {
             setStatus("Disconnected");
+            if (loading) setLoading(false);
           });
         }
       };
@@ -141,38 +148,41 @@ export default function Touchpad() {
   );
   return (
     <View style={styles.container}>
-      <MultiWordHighlighter
-        searchWords={[
-          {
-            word: "Connected",
-            textStyle: {
-              backgroundColor: colors.PRIM_ACCENT,
-              color: colors.PRIM_BG,
-              padding: 16,
-              borderRadius: 8,
+      {!loading && (
+        <MultiWordHighlighter
+          searchWords={[
+            {
+              word: "Connected",
+              textStyle: {
+                backgroundColor: colors.PRIM_ACCENT,
+                color: colors.PRIM_BG,
+                padding: 16,
+                borderRadius: 8,
+              },
             },
-          },
-          {
-            word: "Disconnected",
-            textStyle: {
-              backgroundColor: colors.RED,
-              color: colors.WHITE,
-              padding: 16,
-              borderRadius: 8,
+            {
+              word: "Disconnected",
+              textStyle: {
+                backgroundColor: colors.RED,
+                color: colors.WHITE,
+                padding: 16,
+                borderRadius: 8,
+              },
             },
-          },
-          {
-            word: "Connection Error",
-            textStyle: {
-              backgroundColor: colors.RED,
-              color: colors.WHITE,
-              padding: 16,
-              borderRadius: 8,
+            {
+              word: "Error",
+              textStyle: {
+                backgroundColor: colors.RED,
+                color: colors.WHITE,
+                padding: 16,
+                borderRadius: 8,
+              },
             },
-          },
-        ]}
-        textToHighlight={status}
-      />
+          ]}
+          textToHighlight={status}
+        />
+      )}
+      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
       <GestureDetector gesture={composed}>
         <Animated.View style={styles.touchpad}></Animated.View>
       </GestureDetector>
