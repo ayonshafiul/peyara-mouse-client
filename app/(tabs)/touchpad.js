@@ -4,7 +4,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
@@ -182,6 +182,11 @@ export default function Touchpad() {
         />
       )}
       {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
+      {status == "Disconnected" && (
+        <Text style={styles.text}>
+          Go to home, select a server and connect.
+        </Text>
+      )}
       <GestureDetector gesture={composed}>
         <Animated.View style={styles.touchpad}></Animated.View>
       </GestureDetector>
@@ -212,5 +217,9 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     backgroundColor: "blue",
+  },
+  text: {
+    color: colors.WHITE,
+    marginTop: 8,
   },
 });

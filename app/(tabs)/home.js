@@ -15,8 +15,10 @@ import SwipeableItem, {
 import DraggableFlatList from "react-native-draggable-flatlist";
 import colors from "../../assets/constants/colors";
 import { getServers, setServers } from "../../utils/servers";
-import { Link, router, useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
+
 import AppIcon from "../../assets/icon.png";
+import { Feather } from "@expo/vector-icons";
 
 const OVERSWIPE_DIST = 20;
 
@@ -130,8 +132,14 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
         style={[styles.row]}
       >
         <View>
-          <Text style={styles.text}>{`${item.url}`}</Text>
-          <Text style={styles.text}>{`${item.host}`}</Text>
+          <View style={styles.rowLeft}>
+            <Feather name="link-2" size={24} color={colors.WHITE} />
+            <Text style={styles.text}>{`${item.url}`}</Text>
+          </View>
+          <View style={styles.rowLeft}>
+            <Feather name="cpu" size={24} color={colors.WHITE} />
+            <Text style={styles.text}>{`${item.host}`}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     </SwipeableItem>
@@ -148,11 +156,9 @@ const UnderlayLeft = ({ drag, onPressDelete }) => {
   );
 
   return (
-    <Animated.View
-      style={[styles.row, styles.underlayLeft, animStyle]} // Fade in on open
-    >
+    <Animated.View style={[styles.row, styles.underlayLeft, animStyle]}>
       <TouchableOpacity onPress={onPressDelete}>
-        <Text style={styles.text}>{`Delete`}</Text>
+        <Text style={styles.textBold}>{`Delete`}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -186,15 +192,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
+    justifyContent: "flex-start",
+    padding: 8,
     marginVertical: 8,
     backgroundColor: colors.PRIM_FRONT,
     borderRadius: 8,
   },
+  rowLeft: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 8,
+  },
   text: {
-    fontWeight: "bold",
     color: colors.WHITE,
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+  },
+  textBold: {
+    color: colors.WHITE,
+    fontWeight: "bold",
     fontSize: 16,
     fontFamily: "Inter_400Regular",
   },
