@@ -6,6 +6,7 @@ import {
   LayoutAnimation,
   TouchableOpacity,
   Image,
+  SafeAreaView,
 } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import SwipeableItem, {
@@ -14,6 +15,7 @@ import SwipeableItem, {
 } from "react-native-swipeable-item";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import colors from "../../assets/constants/colors";
+import global from "../../assets/styles/global";
 import { getServers, setServers } from "../../utils/servers";
 import { router, useRouter } from "expo-router";
 
@@ -64,7 +66,7 @@ export default function Home() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={global.container}>
       <Image source={AppIcon} style={styles.icon} />
       <DraggableFlatList
         keyExtractor={(item) => item.key}
@@ -96,7 +98,7 @@ export default function Home() {
       >
         <Text style={styles.plusButtonText}>+</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -183,11 +185,6 @@ function UnderlayRight({ item }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: colors.PRIM_BG,
-  },
   row: {
     flexDirection: "row",
     flex: 1,

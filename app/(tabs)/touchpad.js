@@ -29,20 +29,23 @@ export default function Touchpad() {
           });
           socket.on("connect", () => {
             setStatus("Connected");
-            if (loading) setLoading(false);
+            setLoading(false);
           });
 
           socket.on("connect_error", (error) => {
             console.log(error);
             setStatus("Error");
             socket.disconnect();
-            if (loading) setLoading(false);
+            setLoading(false);
           });
 
           socket.on("disconnect", () => {
             setStatus("Disconnected");
-            if (loading) setLoading(false);
+            setLoading(false);
           });
+        } else {
+          setLoading(false);
+          setStatus("Disconnected");
         }
       };
       connectSocket();
