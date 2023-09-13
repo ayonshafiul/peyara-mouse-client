@@ -1,14 +1,5 @@
-import * as SecureStore from "expo-secure-store";
 import { SERVER_KEY } from "../assets/constants/constants";
-
-async function setValueFor(key, value) {
-  await SecureStore.setItemAsync(key, value);
-}
-
-async function getValueFor(key) {
-  let result = await SecureStore.getItemAsync(key);
-  return result;
-}
+import { getValueFor, setValueFor } from "./secure-store";
 
 export async function getServers() {
   let servers = await getValueFor(SERVER_KEY);

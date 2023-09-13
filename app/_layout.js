@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useFonts, Inter_400Regular } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { initializeDefaultSettings } from "../utils/settings";
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   let [fontsLoaded, fontError] = useFonts({
@@ -13,6 +14,7 @@ export default function RootLayout() {
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
+      await initializeDefaultSettings();
       await SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
@@ -20,7 +22,10 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1 }}
+      onLayoutRootView={onLayoutRootView}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <Slot />
       </SafeAreaView>
