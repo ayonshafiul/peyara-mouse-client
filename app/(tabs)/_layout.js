@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     marginTop: 14,
     backgroundColor: "transparent",
     minWidth: 80,
-    backgroundColor: "red",
   },
   label: {
     marginBottom: 4,
