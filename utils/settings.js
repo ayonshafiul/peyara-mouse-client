@@ -3,13 +3,13 @@ import {
   SETTINGS_INVERTED_SCROLL_KEY,
   SETTINGS_KEEP_AWAKE_KEY,
 } from "../assets/constants/constants";
-import { setValueFor, getValueFor } from "./servers";
+import { setBooleanValueFor, getBooleanValueFor } from "./secure-store";
 
 export async function initializeDefaultSettings() {
-  let settingsInitialized = await getValueFor(SETTINGS_INITIALIZED);
+  let settingsInitialized = await getBooleanValueFor(SETTINGS_INITIALIZED);
   if (!settingsInitialized) {
-    await setValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
-    await setValueFor(SETTINGS_KEEP_AWAKE_KEY, false);
-    await setValueFor(SETTINGS_INITIALIZED, true);
+    await setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
+    await setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, false);
+    await setBooleanValueFor(SETTINGS_INITIALIZED, true);
   }
 }
