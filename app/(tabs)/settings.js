@@ -54,10 +54,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     borderColor: colors.WHITE,
-    // borderWidth: 1,
-
-    // borderRadius: 8,
-    // marginVertical: 8,
   },
   switchCardText: {
     fontFamily: "Inter_400Regular",
