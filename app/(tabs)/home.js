@@ -149,16 +149,8 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
 }
 
 const UnderlayLeft = ({ drag, onPressDelete }) => {
-  const { item, percentOpen } = useSwipeableItemParams();
-  const animStyle = useAnimatedStyle(
-    () => ({
-      opacity: percentOpen.value,
-    }),
-    [percentOpen]
-  );
-
   return (
-    <Animated.View style={[styles.row, styles.underlayLeft, animStyle]}>
+    <Animated.View style={[styles.row, styles.underlayLeft]}>
       <TouchableOpacity onPress={onPressDelete}>
         <Text style={styles.textBold}>{`Delete`}</Text>
       </TouchableOpacity>
@@ -232,11 +224,13 @@ const styles = StyleSheet.create({
   underlayLeft: {
     backgroundColor: colors.RED,
     justifyContent: "flex-end",
+    paddingRight: 8,
   },
   icon: {
     width: 152,
     height: 152,
     alignSelf: "center",
+    marginTop: 24,
   },
   helperText: { textAlign: "center", marginTop: 200 },
   plusButton: {
