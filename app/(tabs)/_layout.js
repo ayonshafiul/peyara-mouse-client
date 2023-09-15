@@ -63,10 +63,11 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    flexDirection: "column",
     alignItems: "center",
     marginTop: 14,
     backgroundColor: "transparent",
+    minWidth: 80,
+    backgroundColor: "red",
   },
   label: {
     marginBottom: 4,
