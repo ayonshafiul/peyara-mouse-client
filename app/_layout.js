@@ -6,6 +6,7 @@ import { useFonts, Inter_400Regular } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 import { initializeDefaultSettings } from "../utils/settings";
+import { Platform } from "react-native";
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   let [fontsLoaded, fontError] = useFonts({
@@ -29,7 +30,10 @@ export default function RootLayout() {
       <SafeAreaView style={{ flex: 1 }}>
         <Slot />
       </SafeAreaView>
-      <StatusBar style="light" backgroundColor="#1f1f1f" />
+      <StatusBar
+        style={Platform.OS == "ios" ? "dark" : "light"}
+        backgroundColor="#1f1f1f"
+      />
     </GestureHandlerRootView>
   );
 }
