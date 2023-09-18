@@ -1,9 +1,6 @@
-import {
-  useFocusEffect,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-} from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
@@ -14,6 +11,7 @@ import {
   getInvertedScrollSettings,
   getKeepAwakeSettings,
 } from "../../utils/settings";
+import { SETTINGS_KEEP_AWAKE_KEY } from "../../assets/constants/constants";
 
 let socket = null;
 
@@ -39,9 +37,14 @@ export default function Touchpad() {
             async function getSettings() {
               const invertedScroll = await getInvertedScrollSettings();
               const keepAwake = await getKeepAwakeSettings();
+              if (keepAwake) {
+                activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
+              } else if (keepAwake == false) {
+                // do not do anything if it is null
+                deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
+              }
               setSettingsData({
                 invertedScroll: invertedScroll,
-                keepAwake: keepAwake,
               });
             }
             getSettings();
