@@ -17,7 +17,6 @@ export async function getBooleanValueFor(key) {
   let result = await SecureStore.getItemAsync(key);
   if (result) {
     let parsedValue = JSON.parse(result);
-    console.log(parsedValue);
     return parsedValue.value;
   } else {
     return null;

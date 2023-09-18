@@ -3,13 +3,17 @@ import {
   useGlobalSearchParams,
   useLocalSearchParams,
 } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
-import { io } from "socket.io-client";
 import colors from "../../assets/constants/colors";
+import { io } from "socket.io-client";
+import {
+  getInvertedScrollSettings,
+  getKeepAwakeSettings,
+} from "../../utils/settings";
 
 let socket = null;
 
@@ -17,12 +21,13 @@ export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+  const [settingsData, setSettingsData] = useState({});
 
   useFocusEffect(
     useCallback(() => {
+      // socket connection handler
       const connectSocket = () => {
         console.log(params);
-
         if (params?.url) {
           socket = io.connect(params?.url, {
             transports: ["websocket"],
@@ -30,6 +35,16 @@ export default function Touchpad() {
           socket.on("connect", () => {
             setStatus("Connected");
             setLoading(false);
+            // after successfull connection get the settings data also
+            async function getSettings() {
+              const invertedScroll = await getInvertedScrollSettings();
+              const keepAwake = await getKeepAwakeSettings();
+              setSettingsData({
+                invertedScroll: invertedScroll,
+                keepAwake: keepAwake,
+              });
+            }
+            getSettings();
           });
 
           socket.on("connect_error", (error) => {
@@ -49,6 +64,7 @@ export default function Touchpad() {
         }
       };
       connectSocket();
+
       return () => {
         if (socket) {
           socket.disconnect();
@@ -56,6 +72,7 @@ export default function Touchpad() {
       };
     }, [params])
   );
+
   const sendCoordinates = (coordinates) => {
     socket?.emit("coordinates", coordinates);
   };
@@ -76,6 +93,7 @@ export default function Touchpad() {
     socket?.emit("windowdragend", coordinates);
   };
 
+  // mouse movement gesture handler
   const dragGesture = Gesture.Pan()
     .onStart((_e) => {})
     .onUpdate((e) => {
@@ -86,17 +104,21 @@ export default function Touchpad() {
       runOnJS(sendCoordinates)(coordinates);
     })
     .onEnd(() => {});
+
+  // two finger scroll gesture handler
   const dragGestureScroll = Gesture.Pan()
     .minPointers(2)
     .onStart((_e) => {})
     .onUpdate((e) => {
       let coordinates = {
         x: e.translationX,
-        y: e.translationY,
+        y: settingsData?.invertedScroll ? e.translationY * -1 : e.translationY,
       };
       runOnJS(sendScroll)(coordinates);
     })
     .onEnd(() => {});
+
+  // three finger window drag gesture handler
   const dragGestureWindowDrag = Gesture.Pan()
     .minPointers(3)
     .onStart((e) => {
@@ -115,7 +137,7 @@ export default function Touchpad() {
   const twoFingerTap = Gesture.Tap()
     .maxDuration(200)
     .minPointers(2)
-    .onStart((_event, success) => {
+    .onStart((_event) => {
       let state = {
         finger: "right",
         doubleTap: false,

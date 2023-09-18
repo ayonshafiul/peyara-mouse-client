@@ -13,3 +13,11 @@ export async function initializeDefaultSettings() {
     await setBooleanValueFor(SETTINGS_INITIALIZED, true);
   }
 }
+
+export async function getInvertedScrollSettings() {
+  return await getBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY);
+}
+
+export async function getKeepAwakeSettings() {
+  return await getBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY);
+}
