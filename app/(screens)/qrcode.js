@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import { Text, View, StyleSheet, Button, Alert } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Dimensions } from "react-native";
 
@@ -26,10 +26,16 @@ export default function QrCode() {
   }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
-    setScanned(true);
-    await addServer(data);
-    console.log(data);
-    router.back();
+    let qrCodeAdded = await addServer(data);
+    if (!qrCodeAdded) {
+      Alert.alert(
+        "Invalid QR code.",
+        "Please scan the QR code shown on Peyara desktop client."
+      );
+      setScanned(true);
+    } else {
+      router.back();
+    }
   };
 
   if (hasPermission === null) {
@@ -42,12 +48,16 @@ export default function QrCode() {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={styles.barcodeContainer}
-          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        />
-        <QrCodeRectangleIcon style={styles.qrCode} />
+        {!scanned && (
+          <>
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+              style={styles.barcodeContainer}
+              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+            />
+            <QrCodeRectangleIcon style={styles.qrCode} />
+          </>
+        )}
       </View>
       {scanned && (
         <TouchableOpacity
@@ -100,7 +110,7 @@ const styles = StyleSheet.create({
   },
 
   scanAgainButtonText: {
-    color: colors.WHITE,
+    color: colors.PRIM_BG,
     fontFamily: "Inter_400Regular",
     fontSize: 18,
     fontWeight: "bold",

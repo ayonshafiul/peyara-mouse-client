@@ -14,14 +14,16 @@ export async function getServers() {
 
 export async function addServer(qrCodeValue) {
   let servers = await getValueFor(SERVER_KEY);
+  if (!qrCodeValue.includes("<peyara>")) return false;
   if (servers) {
     let serversArray = JSON.parse(servers);
-    serversArray.push(qrCodeValue);
+    serversArray.unshift(qrCodeValue);
     await setValueFor(SERVER_KEY, JSON.stringify(serversArray));
   } else {
     // initialize store with server value
     await setValueFor(SERVER_KEY, JSON.stringify([qrCodeValue]));
   }
+  return true;
 }
 
 export async function setServers(serversArray) {
