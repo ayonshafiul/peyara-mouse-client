@@ -80,16 +80,21 @@ export default function Home() {
               {data.length > 0 && (
                 <Text style={styles.listTitleText}>Servers List</Text>
               )}
+              {data.length == 0 && (
+                <Text style={[styles.text, styles.helperText]}>
+                  Tap the + button to scan for a server.
+                </Text>
+              )}
             </View>
           );
         }}
+        containerStyle={{
+          flex: 1,
+          flexGrow: 1,
+          paddingVertical: 16,
+        }}
       />
 
-      {data.length == 0 && (
-        <Text style={[styles.text, styles.helperText]}>
-          Tap the + button to get started.
-        </Text>
-      )}
       <TouchableOpacity
         style={styles.plusButton}
         onPress={() => {
