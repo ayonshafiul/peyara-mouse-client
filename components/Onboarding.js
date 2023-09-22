@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import global from "../assets/styles/global";
 import Animated from "react-native-reanimated";
+import colors from "../assets/constants/colors";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
@@ -55,6 +56,7 @@ function TapOnce() {
 export default function Onboarding() {
   const flatListRef = useRef();
   const goToNextStep = (index) => {
+    console.log(index);
     if (index < steps.length) {
       flatListRef.current.scrollToIndex({
         index: index,
@@ -79,7 +81,7 @@ export default function Onboarding() {
   );
 
   return (
-    <SafeAreaView style={global.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         ref={flatListRef}
         data={steps}
@@ -94,8 +96,12 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.PRIM_BG,
+  },
   stepContainer: {
-    width: WIDTH - 32,
+    width: WIDTH,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
