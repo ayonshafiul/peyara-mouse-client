@@ -1,5 +1,7 @@
 import { useRootNavigationState, Redirect } from "expo-router";
-import Onboarding from "../components/Onboarding";
+
+import MyComponent from "../components/OnBoarding";
+import OnBoarding from "../components/OnBoarding";
 
 export default function App() {
   const rootNavigationState = useRootNavigationState();
@@ -9,7 +11,7 @@ export default function App() {
 
   return (
     <>
-      <Onboarding />
+      <OnBoarding />
       {/* <Redirect href={"/home"} /> */}
     </>
   );
