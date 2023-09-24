@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Image,
+  Alert,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -15,6 +17,8 @@ import Animated, {
   Easing,
   withRepeat,
 } from "react-native-reanimated";
+import * as Linking from "expo-linking";
+import * as Clipboard from "expo-clipboard";
 import colors from "../assets/constants/colors";
 import NextIcon from "../assets/svg/arrow-next.svg";
 import FingerIcon from "../assets/svg/finger.svg";
@@ -29,6 +33,33 @@ import { SETTINGS_ONBOARDING_SHOW_FIRST_TIME } from "../assets/constants/constan
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
+
+function DownloadServer() {
+  const openLink = () => {
+    Linking.openURL("https://peyara-remote-mouse.vercel.app");
+  };
+  const copyLink = async () => {
+    await Clipboard.setStringAsync("https://peyara-remote-mouse.vercel.app");
+    Alert.alert("Link Copied");
+  };
+  return (
+    <View style={styles.downloadContainer}>
+      <Text style={styles.whiteText}>
+        Download the server client on your desktop from
+      </Text>
+
+      <TouchableOpacity onPress={openLink}>
+        <Text style={styles.linkText}>
+          https://peyara-remote-mouse.vercel.app
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={copyLink}>
+        <Text style={styles.linkText}>Copy Link</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 function MoveCursor() {
   const tX = useSharedValue(50);
@@ -154,6 +185,10 @@ function ThreeFingerWindowDrag() {
 }
 
 const steps = [
+  {
+    label: "Download Server",
+    component: <DownloadServer />,
+  },
   {
     label: "Move around",
     component: <MoveCursor />,
@@ -324,5 +359,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     textTransform: "uppercase",
+  },
+  downloadContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 10,
+    marginVertical: 16,
+  },
+  whiteText: {
+    fontFamily: "Inter_400Regular",
+    color: colors.WHITE,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  linkText: {
+    fontFamily: "Inter_400Regular",
+    color: colors.WHITE,
+    fontWeight: "bold",
+    fontSize: 18,
+    textDecorationLine: "underline",
   },
 });
