@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -16,6 +16,7 @@ import Animated, {
   withRepeat,
 } from "react-native-reanimated";
 import FingerIcon from "../assets/svg/finger.svg";
+import CursorIcon from "../assets/svg/cursor.svg";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
@@ -42,7 +43,7 @@ const steps = [
 ];
 
 function MoveCursor() {
-  const tX = useSharedValue(100);
+  const tX = useSharedValue(50);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: tX.value }],
@@ -58,12 +59,18 @@ function MoveCursor() {
     );
   }, []);
   return (
-    // <View style={animStyles}>
-    <View style={styles.touchpad}>
-      <Animated.View style={animStyle}>
-        <FingerIcon />
-      </Animated.View>
-    </View>
+    <>
+      <Window>
+        <Animated.View style={animStyle}>
+          <CursorIcon />
+        </Animated.View>
+      </Window>
+      <View style={styles.touchpad}>
+        <Animated.View style={animStyle}>
+          <FingerIcon />
+        </Animated.View>
+      </View>
+    </>
   );
 }
 
@@ -71,6 +78,19 @@ function TapOnce() {
   return (
     <View>
       <Text>Tap Once</Text>
+    </View>
+  );
+}
+
+function Window({ children }) {
+  return (
+    <View style={styles.touchpad}>
+      <View style={styles.dotContainer}>
+        <View style={[styles.dot, styles.dotRed]}></View>
+        <View style={[styles.dot, styles.dotYellow]}></View>
+        <View style={[styles.dot, styles.dotGreen]}></View>
+      </View>
+      {children}
     </View>
   );
 }
@@ -87,7 +107,7 @@ export default function MyComponent() {
     }
   };
 
-  const StepsCard = ({ item, index }) => {
+  const StepsCard = useCallback(({ item, index }) => {
     return (
       <View style={styles.stepContainer}>
         <Text style={styles.label}>{item.label}</Text>
@@ -100,14 +120,14 @@ export default function MyComponent() {
         </TouchableOpacity>
       </View>
     );
-  };
+  }, []);
 
   return (
     <SafeAreaView style={styles.containerSafe}>
       <FlatList
         ref={flatListRef}
         data={steps}
-        renderItem={(props) => <StepsCard {...props} />}
+        renderItem={StepsCard}
         keyExtractor={(item, index) => index}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -132,13 +152,36 @@ const styles = StyleSheet.create({
     // backgroundColor: "blue",
   },
   touchpad: {
-    width: "100%",
-    height: 400,
+    width: 200,
+    height: 200,
     margin: 16,
     borderRadius: 8,
     backgroundColor: "#272829",
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
+  },
+  dotContainer: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    gap: 4,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  dotRed: {
+    backgroundColor: "red",
+  },
+  dotGreen: {
+    backgroundColor: "green",
+  },
+  dotYellow: {
+    backgroundColor: "yellow",
   },
   label: {
     fontFamily: "Inter_400Regular",
