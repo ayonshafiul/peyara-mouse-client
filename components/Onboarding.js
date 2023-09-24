@@ -17,6 +17,8 @@ import Animated, {
 } from "react-native-reanimated";
 import FingerIcon from "../assets/svg/finger.svg";
 import CursorIcon from "../assets/svg/cursor.svg";
+import SingleTapIcon from "../assets/svg/single-tap.svg";
+import DoubleTapIcon from "../assets/svg/double-tap.svg";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
@@ -32,8 +34,8 @@ const steps = [
     component: <TapOnce />,
   },
   {
-    label: "Move around",
-    component: <MoveCursor />,
+    label: "Tap twice for double click!",
+    component: <TapTwice />,
   },
 
   {
@@ -76,9 +78,27 @@ function MoveCursor() {
 
 function TapOnce() {
   return (
-    <View>
-      <Text>Tap Once</Text>
-    </View>
+    <>
+      <Window>
+        <CursorIcon />
+      </Window>
+      <View style={styles.touchpad}>
+        <SingleTapIcon />
+      </View>
+    </>
+  );
+}
+
+function TapTwice() {
+  return (
+    <>
+      <Window>
+        <CursorIcon />
+      </Window>
+      <View style={styles.touchpad}>
+        <DoubleTapIcon />
+      </View>
+    </>
   );
 }
 
@@ -95,7 +115,7 @@ function Window({ children }) {
   );
 }
 
-export default function MyComponent() {
+export default function OnBoarding() {
   const flatListRef = useRef();
   const goToNextStep = (index) => {
     console.log(index);

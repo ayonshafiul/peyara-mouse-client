@@ -1,6 +1,5 @@
 import { useRootNavigationState, Redirect } from "expo-router";
 
-import MyComponent from "../components/OnBoarding";
 import OnBoarding from "../components/OnBoarding";
 
 export default function App() {
