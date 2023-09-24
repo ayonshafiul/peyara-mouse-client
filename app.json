@@ -3,7 +3,7 @@
     "name": "Peyara Remote Mouse",
     "slug": "peraya-remote-mouse-client",
     "scheme": "peyara-mouse",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -26,7 +26,7 @@
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "io.github.ayonshafiul.peyara",
-      "versionCode": 8
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png"
