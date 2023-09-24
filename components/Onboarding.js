@@ -21,6 +21,8 @@ import CursorIcon from "../assets/svg/cursor.svg";
 import SingleTapIcon from "../assets/svg/single-tap.svg";
 import DoubleTapIcon from "../assets/svg/double-tap.svg";
 import TwoFingerScrollIcon from "../assets/svg/two-finger-scroll.svg";
+import ThreeFingerWindowDragIcon from "../assets/svg/three-finger-window-drag.svg";
+import { Redirect, router, useRouter } from "expo-router";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
@@ -116,6 +118,38 @@ function TwoFingerScroll() {
   );
 }
 
+function ThreeFingerWindowDrag() {
+  const t = useSharedValue(50);
+
+  const moveHorizontally = useAnimatedStyle(() => ({
+    transform: [{ translateX: t.value }],
+  }));
+
+  React.useEffect(() => {
+    t.value = withRepeat(
+      withTiming(-t.value, {
+        duration,
+      }),
+      -1,
+      true
+    );
+  }, []);
+  return (
+    <>
+      <Window style={moveHorizontally}>
+        <View style={styles.placeTop}>
+          <CursorIcon />
+        </View>
+      </Window>
+      <View style={styles.touchpad}>
+        <Animated.View style={moveHorizontally}>
+          <ThreeFingerWindowDragIcon />
+        </Animated.View>
+      </View>
+    </>
+  );
+}
+
 const steps = [
   {
     label: "Move around",
@@ -135,30 +169,37 @@ const steps = [
     label: "Two Finger Drag to scroll",
     component: <TwoFingerScroll />,
   },
+
+  {
+    label: "Three Finger Drag to click and drag",
+    component: <ThreeFingerWindowDrag />,
+  },
 ];
 
-function Window({ children }) {
+function Window({ children, style }) {
   return (
-    <View style={styles.touchpad}>
+    <Animated.View style={[styles.touchpad, style]}>
       <View style={styles.dotContainer}>
         <View style={[styles.dot, styles.dotRed]}></View>
         <View style={[styles.dot, styles.dotYellow]}></View>
         <View style={[styles.dot, styles.dotGreen]}></View>
       </View>
       {children}
-    </View>
+    </Animated.View>
   );
 }
 
 export default function OnBoarding() {
   const flatListRef = useRef();
+  const router = useRouter();
   const goToNextStep = (index) => {
-    console.log(index);
     if (index < steps.length) {
       flatListRef.current.scrollToIndex({
         index: index,
         animated: true,
       });
+    } else {
+      router.replace("home");
     }
   };
 
@@ -211,10 +252,17 @@ const styles = StyleSheet.create({
     height: 200,
     margin: 16,
     borderRadius: 8,
-    backgroundColor: "#272829",
+    backgroundColor: colors.TOUCHPAD,
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
+  },
+  placeTop: {
+    position: "absolute",
+    top: 10,
+    left: 90,
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollbar: {
     width: 5,
@@ -253,6 +301,7 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
     fontWeight: "bold",
     fontSize: 24,
+    textAlign: "center",
   },
   nextButton: {
     width: 200,

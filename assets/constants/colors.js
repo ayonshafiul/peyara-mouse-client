@@ -4,4 +4,5 @@ export default colors = {
   WHITE: "#FFFFFF",
   PRIM_FRONT: "#2196F3",
   RED: "#F44336",
+  TOUCHPAD: "#272829",
 };
