@@ -15,34 +15,15 @@ import Animated, {
   Easing,
   withRepeat,
 } from "react-native-reanimated";
+import colors from "../assets/constants/colors";
 import FingerIcon from "../assets/svg/finger.svg";
 import CursorIcon from "../assets/svg/cursor.svg";
 import SingleTapIcon from "../assets/svg/single-tap.svg";
 import DoubleTapIcon from "../assets/svg/double-tap.svg";
+import TwoFingerScrollIcon from "../assets/svg/two-finger-scroll.svg";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
-
-const steps = [
-  {
-    label: "Move around",
-    component: <MoveCursor />,
-  },
-
-  {
-    label: "Tap once for click!",
-    component: <TapOnce />,
-  },
-  {
-    label: "Tap twice for double click!",
-    component: <TapTwice />,
-  },
-
-  {
-    label: "Tap once for click!",
-    component: <TapOnce />,
-  },
-];
 
 function MoveCursor() {
   const tX = useSharedValue(50);
@@ -101,6 +82,60 @@ function TapTwice() {
     </>
   );
 }
+
+function TwoFingerScroll() {
+  const t = useSharedValue(50);
+
+  const moveVertically = useAnimatedStyle(() => ({
+    transform: [{ translateY: t.value }],
+  }));
+
+  React.useEffect(() => {
+    t.value = withRepeat(
+      withTiming(-t.value, {
+        duration,
+      }),
+      -1,
+      true
+    );
+  }, []);
+  return (
+    <>
+      <Window>
+        <Animated.View
+          style={[styles.scrollbar, moveVertically]}
+        ></Animated.View>
+        <CursorIcon />
+      </Window>
+      <View style={styles.touchpad}>
+        <Animated.View style={moveVertically}>
+          <TwoFingerScrollIcon />
+        </Animated.View>
+      </View>
+    </>
+  );
+}
+
+const steps = [
+  {
+    label: "Move around",
+    component: <MoveCursor />,
+  },
+
+  {
+    label: "Tap once for click",
+    component: <TapOnce />,
+  },
+  {
+    label: "Tap twice for double click",
+    component: <TapTwice />,
+  },
+
+  {
+    label: "Two Finger Drag to scroll",
+    component: <TwoFingerScroll />,
+  },
+];
 
 function Window({ children }) {
   return (
@@ -180,6 +215,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
+  },
+  scrollbar: {
+    width: 5,
+    height: 40,
+    borderRadius: 5,
+    backgroundColor: colors.WHITE,
+    position: "absolute",
+    right: 4,
+    justifyContent: "center",
+    alignContent: "center",
   },
   dotContainer: {
     position: "absolute",
