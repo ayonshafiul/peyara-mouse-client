@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -23,6 +23,8 @@ import DoubleTapIcon from "../assets/svg/double-tap.svg";
 import TwoFingerScrollIcon from "../assets/svg/two-finger-scroll.svg";
 import ThreeFingerWindowDragIcon from "../assets/svg/three-finger-window-drag.svg";
 import { Redirect, router, useRouter } from "expo-router";
+import { setBooleanValueFor } from "../utils/secure-store";
+import { SETTINGS_ONBOARDING_SHOW_FIRST_TIME } from "../assets/constants/constants";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
@@ -192,13 +194,15 @@ function Window({ children, style }) {
 export default function OnBoarding() {
   const flatListRef = useRef();
   const router = useRouter();
-  const goToNextStep = (index) => {
+  const goToNextStep = async (index) => {
     if (index < steps.length) {
       flatListRef.current.scrollToIndex({
         index: index,
         animated: true,
       });
     } else {
+      // don't show this screen next time
+      await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, false);
       router.replace("home");
     }
   };
