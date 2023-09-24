@@ -16,6 +16,7 @@ import Animated, {
   withRepeat,
 } from "react-native-reanimated";
 import colors from "../assets/constants/colors";
+import NextIcon from "../assets/svg/arrow-next.svg";
 import FingerIcon from "../assets/svg/finger.svg";
 import CursorIcon from "../assets/svg/cursor.svg";
 import SingleTapIcon from "../assets/svg/single-tap.svg";
@@ -216,7 +217,7 @@ export default function OnBoarding() {
           onPress={() => goToNextStep(index + 1)}
           style={styles.nextButton}
         >
-          <Text style={styles.nextButtonText}>Next</Text>
+          <NextIcon />
         </TouchableOpacity>
       </View>
     );
@@ -308,9 +309,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   nextButton: {
-    width: 200,
-    padding: 16,
-    borderRadius: 8,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     overflow: "hidden",
     backgroundColor: colors.PRIM_ACCENT,
     flexDirection: "row",
