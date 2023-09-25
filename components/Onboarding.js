@@ -20,6 +20,7 @@ import Animated, {
 import * as Linking from "expo-linking";
 import * as Clipboard from "expo-clipboard";
 import colors from "../assets/constants/colors";
+import { MaterialIcons } from "@expo/vector-icons";
 import NextIcon from "../assets/svg/arrow-next.svg";
 import FingerIcon from "../assets/svg/finger.svg";
 import CursorIcon from "../assets/svg/cursor.svg";
@@ -201,6 +202,10 @@ function ThreeFingerWindowDrag() {
   );
 }
 
+function ShowKeyboard() {
+  return <MaterialIcons name="keyboard-hide" size={48} color={colors.WHITE} />;
+}
+
 const steps = [
   {
     label: "Download Server",
@@ -232,6 +237,10 @@ const steps = [
   {
     label: "Three Finger Drag to click and drag",
     component: <ThreeFingerWindowDrag />,
+  },
+  {
+    label: "Press to show keyboard",
+    component: <ShowKeyboard />,
   },
 ];
 
@@ -271,9 +280,15 @@ export default function Onboarding() {
         {item.component}
         <TouchableOpacity
           onPress={() => goToNextStep(index + 1)}
-          style={styles.nextButton}
+          style={[
+            styles.nextButton,
+            index == steps.length - 1 && { width: 200 },
+          ]}
         >
           <NextIcon />
+          {index == steps.length - 1 && (
+            <Text style={styles.nextButtonText}>Let's start</Text>
+          )}
         </TouchableOpacity>
       </View>
     );
