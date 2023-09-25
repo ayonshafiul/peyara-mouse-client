@@ -1,7 +1,15 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
@@ -11,10 +19,11 @@ import {
   getInvertedScrollSettings,
   getKeepAwakeSettings,
 } from "../../utils/settings";
+import { MaterialIcons } from "@expo/vector-icons";
 import { SETTINGS_KEEP_AWAKE_KEY } from "../../assets/constants/constants";
 
 let socket = null;
-
+let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
@@ -95,6 +104,9 @@ export default function Touchpad() {
   const sendWindowDragEnd = (coordinates) => {
     socket?.emit("windowdragend", coordinates);
   };
+  const sendKey = (key) => {
+    socket?.emit("key", key);
+  };
 
   // mouse movement gesture handler
   const dragGesture = Gesture.Pan()
@@ -173,6 +185,30 @@ export default function Touchpad() {
     dragGesture,
     Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
   );
+  const textInputRef = useRef();
+  const timeoutRef = useRef();
+  const lastKeyEventTimestamp = useRef(0);
+  const handleKeyPress = (event) => {
+    let key = event.nativeEvent.key;
+    sendKey(key);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(clearInput, 500);
+  };
+
+  const clearInput = () => {
+    if (Platform.OS != "ios") {
+      textInputRef.current?.clear();
+    }
+  };
+  const focusToggle = () => {
+    if (textInputRef.current?.isFocused()) {
+      textInputRef.current?.blur();
+    } else {
+      textInputRef.current?.focus();
+    }
+  };
   return (
     <View style={styles.container}>
       {!loading && (
@@ -210,15 +246,37 @@ export default function Touchpad() {
         />
       )}
       {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
+
       {status == "Disconnected" && (
         <Text style={styles.text}>
           Go to home, select a server and connect.
         </Text>
       )}
+
       {status == "Connected" && (
-        <GestureDetector gesture={composed}>
-          <Animated.View style={styles.touchpad}></Animated.View>
-        </GestureDetector>
+        <>
+          <TextInput
+            ref={textInputRef}
+            onKeyPress={handleKeyPress}
+            style={styles.input}
+            multiline
+            autoCapitalize={false}
+            autoComplete={"off"}
+            autoCorrect={false}
+            spellCheck={false}
+            {...textInputValueProps}
+          />
+          <TouchableOpacity onPress={focusToggle}>
+            <MaterialIcons
+              name="keyboard-hide"
+              size={48}
+              color={colors.WHITE}
+            />
+          </TouchableOpacity>
+          <GestureDetector gesture={composed}>
+            <Animated.View style={styles.touchpad}></Animated.View>
+          </GestureDetector>
+        </>
       )}
     </View>
   );
@@ -251,5 +309,16 @@ const styles = StyleSheet.create({
   text: {
     color: colors.WHITE,
     marginTop: 8,
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    // opacity: 0,
+    display: "none",
+    color: colors.PRIM_BG,
+    backgroundColor: "white",
   },
 });

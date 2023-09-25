@@ -27,13 +27,14 @@ import SingleTapIcon from "../assets/svg/single-tap.svg";
 import DoubleTapIcon from "../assets/svg/double-tap.svg";
 import TwoFingerScrollIcon from "../assets/svg/two-finger-scroll.svg";
 import ThreeFingerWindowDragIcon from "../assets/svg/three-finger-window-drag.svg";
-import { Redirect, router, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { setBooleanValueFor } from "../utils/secure-store";
 import { SETTINGS_ONBOARDING_SHOW_FIRST_TIME } from "../assets/constants/constants";
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
 const SERVER_LINK = "https://peyara-remote-mouse.vercel.app";
+
 function DownloadServer() {
   const openLink = () => {
     Linking.openURL(SERVER_LINK);
