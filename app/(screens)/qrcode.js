@@ -68,6 +68,12 @@ export default function QrCode() {
           <Text style={styles.scanAgainButtonText}>Scan Again</Text>
         </TouchableOpacity>
       )}
+      <TouchableOpacity
+        style={styles.scanAgainButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.scanAgainButtonText}>Go Back</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -107,6 +113,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 16,
+    marginVertical: 8,
   },
 
   scanAgainButtonText: {

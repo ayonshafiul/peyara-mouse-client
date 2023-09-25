@@ -1,6 +1,6 @@
 import { useRootNavigationState, Redirect, useRouter } from "expo-router";
 
-import OnBoarding from "../components/OnBoarding";
+import Onboarding from "../components/Onboarding";
 import { useEffect, useState } from "react";
 import {
   getShowOnBoardingSettingsEverytime,
@@ -35,5 +35,5 @@ export default function App() {
   // wait for the root navigator to load correctly
   if (!rootNavigationState?.key) return null;
 
-  return <>{showOnBoarding && <OnBoarding />}</>;
+  return <>{showOnBoarding && <Onboarding />}</>;
 }

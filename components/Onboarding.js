@@ -247,7 +247,7 @@ function Window({ children, style }) {
   );
 }
 
-export default function OnBoarding() {
+export default function Onboarding() {
   const flatListRef = useRef();
   const router = useRouter();
   const goToNextStep = async (index) => {
