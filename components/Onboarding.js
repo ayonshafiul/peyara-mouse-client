@@ -33,13 +33,13 @@ import { SETTINGS_ONBOARDING_SHOW_FIRST_TIME } from "../assets/constants/constan
 
 const duration = 2000;
 const WIDTH = Dimensions.get("window").width;
-
+const SERVER_LINK = "https://peyara-remote-mouse.vercel.app";
 function DownloadServer() {
   const openLink = () => {
-    Linking.openURL("https://peyara-remote-mouse.vercel.app");
+    Linking.openURL(SERVER_LINK);
   };
   const copyLink = async () => {
-    await Clipboard.setStringAsync("https://peyara-remote-mouse.vercel.app");
+    await Clipboard.setStringAsync(SERVER_LINK);
     Alert.alert("Link Copied");
   };
   return (
@@ -49,14 +49,30 @@ function DownloadServer() {
       </Text>
 
       <TouchableOpacity onPress={openLink}>
-        <Text style={styles.linkText}>
-          https://peyara-remote-mouse.vercel.app
-        </Text>
+        <Text style={styles.linkText}>{SERVER_LINK} </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={copyLink}>
         <Text style={styles.linkText}>Copy Link</Text>
       </TouchableOpacity>
+    </View>
+  );
+}
+
+function StartServer() {
+  return (
+    <View style={[styles.downloadContainer, { alignItems: "flex-start" }]}>
+      <Text style={styles.whiteText}>1. Install the desktop client</Text>
+
+      <Text style={styles.whiteText}>2. Start the desktop server </Text>
+
+      <Text style={styles.whiteText}>
+        3. Click on the plus button on the mobile app and scan the qr code
+      </Text>
+
+      <Text style={styles.whiteText}>
+        4. From the server list select the server and connect
+      </Text>
     </View>
   );
 }
@@ -190,7 +206,11 @@ const steps = [
     component: <DownloadServer />,
   },
   {
-    label: "Move around",
+    label: "Install and Start Server",
+    component: <StartServer />,
+  },
+  {
+    label: "Move the desktop cursor",
     component: <MoveCursor />,
   },
 
@@ -362,10 +382,11 @@ const styles = StyleSheet.create({
   },
   downloadContainer: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
+    justifyContent: "space-around",
+    alignItems: "flex-start",
     gap: 10,
     marginVertical: 16,
+    padding: 24,
   },
   whiteText: {
     fontFamily: "Inter_400Regular",
