@@ -260,7 +260,7 @@ export default function Touchpad() {
             onKeyPress={handleKeyPress}
             style={styles.input}
             multiline
-            autoCapitalize={false}
+            autoCapitalize="none"
             autoComplete={"off"}
             autoCorrect={false}
             spellCheck={false}

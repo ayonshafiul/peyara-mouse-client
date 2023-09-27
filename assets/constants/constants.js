@@ -1,6 +1,10 @@
 // server related constants
 export const SERVER_KEY = "servers";
 
+export const QRCODE_SECRET = "<peyara>";
+
+export const SERVER_REST_RESPONSE = "peyara";
+
 // settings constants
 
 export const SETTINGS_INITIALIZED = "settingsinitialized";

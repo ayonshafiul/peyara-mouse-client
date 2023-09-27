@@ -21,6 +21,7 @@ import { router, useRouter } from "expo-router";
 
 import AppIcon from "../../assets/icon.png";
 import { Feather } from "@expo/vector-icons";
+import { QRCODE_SECRET } from "../../assets/constants/constants";
 
 const OVERSWIPE_DIST = 20;
 
@@ -51,14 +52,14 @@ export default function Home() {
   useEffect(() => {
     getServers().then((res) => {
       let servers = res.map((s, index) => {
-        let seperatedArray = s.split("<peyara>");
+        let seperatedArray = s?.split(QRCODE_SECRET);
         let url = seperatedArray[0];
         let host = seperatedArray[1];
         return {
           key: `key-${index + 1}`,
           urlData: s,
-          url,
-          host,
+          url: url,
+          host: host,
         };
       });
       setData(servers);
@@ -140,12 +141,12 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
       >
         <View>
           <View style={styles.rowLeft}>
-            <Feather name="link-2" size={24} color={colors.WHITE} />
-            <Text style={styles.text}>{`${item.url}`}</Text>
-          </View>
-          <View style={styles.rowLeft}>
             <Feather name="cpu" size={24} color={colors.WHITE} />
             <Text style={styles.text}>{`${item.host}`}</Text>
+          </View>
+          <View style={styles.rowLeft}>
+            <Feather name="link-2" size={24} color={colors.WHITE} />
+            <Text style={styles.text}>{`${item.url}`}</Text>
           </View>
         </View>
       </TouchableOpacity>

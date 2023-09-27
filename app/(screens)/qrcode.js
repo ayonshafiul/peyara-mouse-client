@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button, Alert } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Dimensions } from "react-native";
 
@@ -13,6 +20,7 @@ import { useRouter } from "expo-router";
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,7 +34,9 @@ export default function QrCode() {
   }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
+    setLoading(true);
     let qrCodeAdded = await addServer(data);
+    setLoading(false);
     if (!qrCodeAdded) {
       Alert.alert(
         "Invalid QR code.",
@@ -48,7 +58,7 @@ export default function QrCode() {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        {!scanned && (
+        {!scanned && !loading && (
           <>
             <BarCodeScanner
               onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -57,6 +67,9 @@ export default function QrCode() {
             />
             <QrCodeRectangleIcon style={styles.qrCode} />
           </>
+        )}
+        {loading && (
+          <ActivityIndicator size={"large"} color={colors.PRIM_ACCENT} />
         )}
       </View>
       {scanned && (
