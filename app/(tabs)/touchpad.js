@@ -3,8 +3,10 @@ import { useCallback, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import {
   ActivityIndicator,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -25,7 +27,10 @@ import {
   getKeepAwakeSettings,
 } from "../../utils/settings";
 import { MaterialIcons } from "@expo/vector-icons";
-import { SETTINGS_KEEP_AWAKE_KEY } from "../../assets/constants/constants";
+import {
+  SETTINGS_KEEP_AWAKE_KEY,
+  mediaKeysData,
+} from "../../assets/constants/constants";
 
 let socket = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
@@ -111,6 +116,9 @@ export default function Touchpad() {
   };
   const sendKey = (key) => {
     socket?.emit("key", key);
+  };
+  const sendMediaKey = (key) => {
+    socket?.emit("media-key", key);
   };
 
   // mouse movement gesture handler
@@ -228,11 +236,19 @@ export default function Touchpad() {
       textInputRef.current?.focus();
     }
   };
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.rowKey}
+        onPress={() => sendMediaKey(item.key)}
+      >
+        <MaterialIcons name={item.icon} size={24} color={colors.WHITE} />
+      </TouchableOpacity>
+    );
+  };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+    <SafeAreaView style={styles.container}>
+      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
       {!loading && (
         <MultiWordHighlighter
           searchWords={[
@@ -243,6 +259,8 @@ export default function Touchpad() {
                 color: colors.PRIM_BG,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
             {
@@ -252,6 +270,8 @@ export default function Touchpad() {
                 color: colors.WHITE,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
             {
@@ -261,14 +281,14 @@ export default function Touchpad() {
                 color: colors.WHITE,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
           ]}
           textToHighlight={status}
         />
       )}
-      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
-
       {status == "Disconnected" && (
         <Text style={styles.text}>
           Go to home, select a server and connect.
@@ -277,6 +297,22 @@ export default function Touchpad() {
 
       {status == "Connected" && (
         <>
+          <View style={styles.keysConatiner}>
+            <TouchableOpacity onPress={focusToggle}>
+              <MaterialIcons
+                name="keyboard-hide"
+                size={24}
+                color={colors.WHITE}
+              />
+            </TouchableOpacity>
+            <FlatList
+              data={mediaKeysData}
+              keyExtractor={(item, index) => index}
+              renderItem={renderItem}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
           <TextInput
             ref={textInputRef}
             onKeyPress={handleKeyPress}
@@ -288,28 +324,37 @@ export default function Touchpad() {
             spellCheck={false}
             {...textInputValueProps}
           />
-          <TouchableOpacity onPress={focusToggle}>
-            <MaterialIcons
-              name="keyboard-hide"
-              size={48}
-              color={colors.WHITE}
-            />
-          </TouchableOpacity>
+
           <GestureDetector gesture={composed}>
             <Animated.View style={styles.touchpad}></Animated.View>
           </GestureDetector>
         </>
       )}
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.PRIM_BG,
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    backgroundColor: colors.PRIM_BG,
+  },
+  keysConatiner: {
+    flex: 1,
+    flexDirection: "row",
+    width: "100%",
+    maxHeight: 40,
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: 16,
+    paddingHorizontal: 16,
+  },
+  rowKey: {
+    marginHorizontal: 4,
+    paddingHorizontal: 8,
   },
   touchpad: {
     width: "100%",
@@ -317,6 +362,8 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 8,
     backgroundColor: colors.TOUCHPAD,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonContainer: {
     flexDirection: "row",

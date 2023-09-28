@@ -32,3 +32,46 @@ export const settingsData = [
     key: SETTINGS_ONBOARDING_SHOW_EVERYTIME,
   },
 ];
+
+export const mediaKeysData = [
+  {
+    icon: "volume-off",
+    key: "audio_mute",
+    label: "Mute the volume",
+  },
+  {
+    icon: "volume-down",
+    key: "audio_vol_down",
+    label: "Lower the volume",
+  },
+  {
+    icon: "volume-up",
+    key: "audio_vol_up",
+    label: "Increase the volume",
+  },
+  {
+    icon: "play-arrow",
+    key: "audio_play",
+    label: "Play",
+  },
+  {
+    icon: "pause",
+    key: "audio_pause",
+    label: "Pause",
+  },
+  {
+    icon: "stop",
+    key: "audio_stop",
+    label: "Stop",
+  },
+  {
+    icon: "skip-previous",
+    key: "audio_prev",
+    label: "Previous Track",
+  },
+  {
+    icon: "skip-next",
+    key: "audio_next",
+    label: "Next Track",
+  },
+];
