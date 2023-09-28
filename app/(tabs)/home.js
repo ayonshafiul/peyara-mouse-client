@@ -72,6 +72,7 @@ export default function Home() {
       <DraggableFlatList
         keyExtractor={(item) => item.key}
         data={data}
+        bounces={false}
         renderItem={renderItem}
         onDragEnd={({ data }) => setData(data)}
         activationDistance={20}
@@ -156,11 +157,14 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
 
 const UnderlayLeft = ({ onPressDelete }) => {
   return (
-    <Animated.View style={[styles.row, styles.underlayLeft]}>
-      <TouchableOpacity onPress={onPressDelete}>
-        <Text style={styles.textBold}>{`Delete`}</Text>
-      </TouchableOpacity>
-    </Animated.View>
+    <TouchableOpacity
+      style={[styles.row, styles.underlayLeft]}
+      onPress={onPressDelete}
+    >
+      {/* <TouchableOpacity onPress={onPressDelete}> */}
+      <Text style={styles.textBold}>{`Delete`}</Text>
+      {/* </TouchableOpacity> */}
+    </TouchableOpacity>
   );
 };
 
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 8,
     marginVertical: 8,
-    backgroundColor: colors.PRIM_FRONT,
+    backgroundColor: colors.TOUCHPAD,
     borderRadius: 8,
   },
   rowLeft: {

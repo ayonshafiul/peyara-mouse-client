@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
@@ -10,7 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
 import colors from "../../assets/constants/colors";
@@ -112,6 +117,7 @@ export default function Touchpad() {
   const dragGesture = Gesture.Pan()
     .onStart((_e) => {})
     .onUpdate((e) => {
+      // console.log("Drag");
       let coordinates = {
         x: e.translationX,
         y: e.translationY,
@@ -125,6 +131,7 @@ export default function Touchpad() {
     .minPointers(2)
     .onStart((_e) => {})
     .onUpdate((e) => {
+      // console.log("Scroll");
       let coordinates = {
         x: e.translationX,
         y: settingsData?.invertedScroll ? e.translationY * -1 : e.translationY,
@@ -137,9 +144,11 @@ export default function Touchpad() {
   const dragGestureWindowDrag = Gesture.Pan()
     .minPointers(3)
     .onStart((e) => {
+      // console.log("window start");
       runOnJS(sendWindowDragStart)();
     })
     .onUpdate((e) => {
+      // console.log("window update");
       let coordinates = {
         x: e.translationX,
         y: e.translationY,
@@ -147,12 +156,14 @@ export default function Touchpad() {
       runOnJS(sendWindowDragUpdate)(coordinates);
     })
     .onEnd((e) => {
+      // console.log("window end");
       runOnJS(sendWindowDragEnd)();
     });
   const twoFingerTap = Gesture.Tap()
     .maxDuration(200)
     .minPointers(2)
     .onStart((_event) => {
+      // console.log("Two finger");
       let state = {
         finger: "right",
         doubleTap: false,
@@ -162,6 +173,7 @@ export default function Touchpad() {
   const oneFingerTap = Gesture.Tap()
     .maxDuration(200)
     .onStart((_event, success) => {
+      // console.log("Tap");
       let state = {
         finger: "left",
         doubleTap: false,
@@ -172,6 +184,7 @@ export default function Touchpad() {
     .maxDuration(200)
     .numberOfTaps(2)
     .onStart((_event, success) => {
+      // console.log("Double Tap");
       let state = {
         finger: "left",
         doubleTap: true,
@@ -179,12 +192,18 @@ export default function Touchpad() {
       runOnJS(sendClicks)(state);
     });
 
-  const composed = Gesture.Race(
-    dragGestureWindowDrag,
-    dragGestureScroll,
-    dragGesture,
-    Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
-  );
+  const composed =
+    Platform.OS == "ios"
+      ? Gesture.Race(
+          Gesture.Race(dragGesture, dragGestureScroll, dragGestureWindowDrag),
+          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
+        )
+      : Gesture.Race(
+          dragGestureWindowDrag,
+          dragGestureScroll,
+          dragGesture,
+          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
+        );
   const textInputRef = useRef();
   const timeoutRef = useRef();
   const lastKeyEventTimestamp = useRef(0);
@@ -210,7 +229,10 @@ export default function Touchpad() {
     }
   };
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       {!loading && (
         <MultiWordHighlighter
           searchWords={[
@@ -278,14 +300,14 @@ export default function Touchpad() {
           </GestureDetector>
         </>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1f1f1f",
+    backgroundColor: colors.PRIM_BG,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -294,8 +316,7 @@ const styles = StyleSheet.create({
     height: 400,
     margin: 16,
     borderRadius: 8,
-    backgroundColor: "white",
-    opacity: 0.1,
+    backgroundColor: colors.TOUCHPAD,
   },
   buttonContainer: {
     flexDirection: "row",
