@@ -20,7 +20,7 @@ import { getServers, setServers } from "../../utils/servers";
 import { router, useRouter } from "expo-router";
 
 import AppIcon from "../../assets/icon.png";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { QRCODE_SECRET } from "../../assets/constants/constants";
 
 const OVERSWIPE_DIST = 20;
@@ -32,7 +32,7 @@ export default function Home() {
 
   const renderItem = useCallback((params) => {
     const onPressDelete = () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
       setData((prev) => {
         let filteredData = prev.filter((item) => item.key !== params.item.key);
         setServers(
@@ -126,16 +126,13 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
         }
       }}
       overSwipe={OVERSWIPE_DIST}
-      renderUnderlayLeft={() => (
-        <UnderlayLeft drag={drag} onPressDelete={onPressDelete} />
-      )}
+      renderUnderlayLeft={() => <UnderlayLeft onPressDelete={onPressDelete} />}
       renderUnderlayRight={() => <UnderlayRight item={item} />}
       snapPointsLeft={[100]}
       snapPointsRight={[100]}
     >
       <TouchableOpacity
         activeOpacity={1}
-        onLongPress={drag}
         onPress={() => itemRefs.current.get(item.key).open("right")}
         style={[styles.row]}
       >
@@ -149,12 +146,15 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
             <Text style={styles.text}>{`${item.url}`}</Text>
           </View>
         </View>
+        <TouchableOpacity onPressIn={drag}>
+          <MaterialIcons name="drag-handle" size={24} color={colors.WHITE} />
+        </TouchableOpacity>
       </TouchableOpacity>
     </SwipeableItem>
   );
 }
 
-const UnderlayLeft = ({ drag, onPressDelete }) => {
+const UnderlayLeft = ({ onPressDelete }) => {
   return (
     <Animated.View style={[styles.row, styles.underlayLeft]}>
       <TouchableOpacity onPress={onPressDelete}>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     padding: 8,
     marginVertical: 8,
     backgroundColor: colors.PRIM_FRONT,
