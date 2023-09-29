@@ -38,8 +38,6 @@ Follow the initial onboarding steps to get started!
 - Control Media volume
 - Control Audio play, pause, stop, previous, next track
 
-<p align="center">
 <img src="./demo/home.jpg" width="400">
 <img src="./demo/qrcode.png" width="400">
 <img src="./demo/touchpad.jpg" width="400">
-</p>
