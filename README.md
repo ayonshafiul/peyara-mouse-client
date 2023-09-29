@@ -5,9 +5,17 @@
 </p>
 An open source cross platform mobile client providing touchpad, keyboard and media controls for wirelessly controlling desktop.
 
-Just download Peyara Remote Desktop Client on windows /mac OS/ linux from
+<p align="center">
+<a href="https://play.google.com/store/apps/details?id=io.github.ayonshafiul.peyara"><img alt="Mobile Client Logo" src="./demo/google-play.png"></a>
+</p>
 
-[Official Website](https://peyara-remote-mouse.vercel.app/)
+---
+
+### Getting Started
+
+Download Peyara Remote Desktop Client on windows /mac OS/ linux
+
+[From the Official Website](https://peyara-remote-mouse.vercel.app/)
 
 Install the desktop client and start the server.
 
