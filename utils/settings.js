@@ -13,7 +13,7 @@ export async function initializeDefaultSettings() {
     await setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
   let keepAwakeSettings = await getKeepAwakeSettings();
   if (keepAwakeSettings == null)
-    await setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, false);
+    await setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, true);
   let onboardingEveryTimeSettings = await getShowOnBoardingSettingsEverytime();
   if (onboardingEveryTimeSettings == null)
     await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME, false);
