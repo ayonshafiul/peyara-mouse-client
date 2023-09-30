@@ -84,7 +84,7 @@ export default function Home() {
               )}
               {data.length == 0 && (
                 <Text style={[styles.text, styles.helperText]}>
-                  Tap the + button to scan for a server.
+                  Tap the + button to scan for QRCode.
                 </Text>
               )}
             </View>
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 24,
   },
-  helperText: { textAlign: "center", marginTop: 200 },
+  helperText: { textAlign: "center", marginTop: 200, fontSize: 18 },
   plusButton: {
     width: 64,
     height: 64,

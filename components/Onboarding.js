@@ -22,6 +22,11 @@ import * as Clipboard from "expo-clipboard";
 import colors from "../assets/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import NextIcon from "../assets/svg/arrow-next.svg";
+import ServerIcon from "../assets/img/server.png";
+import StartServerIcon from "../assets/img/server-start.png";
+import ServerConnectIcon from "../assets/img/server-connect.jpg";
+import QRCodeIcon from "../assets/img/qrcode.jpg";
+import TouchpadIcon from "../assets/img/touchpad-short.jpg";
 import FingerIcon from "../assets/svg/finger.svg";
 import CursorIcon from "../assets/svg/cursor.svg";
 import SingleTapIcon from "../assets/svg/single-tap.svg";
@@ -45,10 +50,12 @@ function DownloadServer() {
     Alert.alert("Link Copied");
   };
   return (
-    <View style={styles.downloadContainer}>
-      <Text style={styles.whiteText}>
-        Download the server client on your desktop from
-      </Text>
+    <TouchableOpacity style={styles.downloadContainer} onPress={openLink}>
+      <Image source={ServerIcon} style={styles.image} />
+
+      <Text style={styles.whiteText}>Download for Windows, MacOS or Linux</Text>
+
+      <Text style={styles.whiteText}>Click to visit website</Text>
 
       <TouchableOpacity onPress={openLink}>
         <Text style={styles.linkText}>{SERVER_LINK} </Text>
@@ -57,24 +64,38 @@ function DownloadServer() {
       <TouchableOpacity onPress={copyLink}>
         <Text style={styles.linkText}>Copy Link</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 function StartServer() {
   return (
-    <View style={[styles.downloadContainer, { alignItems: "flex-start" }]}>
-      <Text style={styles.whiteText}>1. Install the desktop client</Text>
+    <View style={[styles.downloadContainer]}>
+      <Image source={StartServerIcon} style={{ width: 280, height: 300 }} />
+    </View>
+  );
+}
 
-      <Text style={styles.whiteText}>2. Start the desktop server </Text>
+function ScanQRCode() {
+  return (
+    <View style={[styles.downloadContainer]}>
+      <Image source={QRCodeIcon} style={{ width: 280, height: 300 }} />
+    </View>
+  );
+}
 
-      <Text style={styles.whiteText}>
-        3. Click on the plus button on the mobile app and scan the qr code
-      </Text>
+function ConnectServer() {
+  return (
+    <View style={[styles.downloadContainer]}>
+      <Image source={ServerConnectIcon} style={{ width: 280, height: 320 }} />
+    </View>
+  );
+}
 
-      <Text style={styles.whiteText}>
-        4. From the server list select the server and connect
-      </Text>
+function TouchpadControls() {
+  return (
+    <View style={[styles.downloadContainer]}>
+      <Image source={TouchpadIcon} style={{ width: 280, height: 440 }} />
     </View>
   );
 }
@@ -208,34 +229,47 @@ function ShowKeyboard() {
 
 const steps = [
   {
-    label: "Download Server",
+    label: "Step 1: Download Server Client on your desktop",
     component: <DownloadServer />,
   },
   {
-    label: "Install and Start Server",
+    label: "Step 2: Install Server Client and start Server on your desktop",
     component: <StartServer />,
   },
   {
-    label: "Move the desktop cursor",
+    label: "Step 3: Scan QRCode from  the mobile app",
+    component: <ScanQRCode />,
+  },
+  {
+    label: "Step 4: Select a Server and click to connect",
+    component: <ConnectServer />,
+  },
+  {
+    label: "Now lets learn about touchpad controls!",
+    component: <TouchpadControls />,
+  },
+
+  {
+    label: "Tutorial: Move the desktop cursor",
     component: <MoveCursor />,
   },
 
   {
-    label: "Tap once for click",
+    label: "Tutorial: Tap once for click",
     component: <TapOnce />,
   },
   {
-    label: "Tap twice for double click",
+    label: "Tutorial: Tap twice for double click",
     component: <TapTwice />,
   },
 
   {
-    label: "Two Finger Drag to scroll",
+    label: "Tutorial: Two Finger Drag to scroll",
     component: <TwoFingerScroll />,
   },
 
   {
-    label: "Three Finger Drag to click and drag",
+    label: "Tutorial: Three Finger Drag to move/resize windows",
     component: <ThreeFingerWindowDrag />,
   },
   {
@@ -280,15 +314,17 @@ export default function Onboarding() {
         {item.component}
         <TouchableOpacity
           onPress={() => goToNextStep(index + 1)}
-          style={[
-            styles.nextButton,
-            index == steps.length - 1 && { width: 200 },
-          ]}
+          style={[styles.nextButton]}
         >
           <NextIcon />
-          {index == steps.length - 1 && (
-            <Text style={styles.nextButtonText}>Let's start</Text>
-          )}
+
+          <Text style={styles.nextButtonText}>
+            {index == 0
+              ? "Done"
+              : index == steps.length - 1
+              ? "Let's start"
+              : "Next"}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -322,6 +358,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 48,
     // backgroundColor: "blue",
+  },
+  image: {
+    width: 152,
+    height: 152,
   },
   touchpad: {
     width: 200,
@@ -380,7 +420,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   nextButton: {
-    width: 50,
+    width: 200,
     height: 50,
     borderRadius: 25,
     overflow: "hidden",
@@ -399,22 +439,18 @@ const styles = StyleSheet.create({
   downloadContainer: {
     flex: 1,
     justifyContent: "space-around",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 10,
     marginVertical: 16,
-    padding: 24,
   },
   whiteText: {
     fontFamily: "Inter_400Regular",
     color: colors.WHITE,
-    fontWeight: "bold",
     fontSize: 16,
   },
   linkText: {
     fontFamily: "Inter_400Regular",
-    color: colors.WHITE,
-    fontWeight: "bold",
-    fontSize: 18,
+    color: colors.PRIM_FRONT,
     textDecorationLine: "underline",
   },
 });
