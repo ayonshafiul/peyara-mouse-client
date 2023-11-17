@@ -39,8 +39,8 @@ export default function QrCode() {
     setLoading(false);
     if (!qrCodeAdded) {
       Alert.alert(
-        "Invalid QR code.",
-        "Please scan the QR code shown on Peyara desktop client."
+        "Invalid QR code or different wifi network.",
+        "Make sure your desktop and mobile are connected to the same wifi network. Only scan the QR code shown on Peyara desktop client. "
       );
       setScanned(true);
     } else {
