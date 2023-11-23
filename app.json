@@ -12,12 +12,19 @@
       "resizeMode": "contain",
       "backgroundColor": "#1f1f1f"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      },
+      "bundleIdentifier": "io.github.ayonshafiul.peyara"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +33,10 @@
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "io.github.ayonshafiul.peyara",
-      "versionCode": 8
+      "versionCode": 8,
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
