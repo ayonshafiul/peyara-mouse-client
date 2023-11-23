@@ -3,18 +3,16 @@
     "name": "Peyara Remote Mouse",
     "slug": "peraya-remote-mouse-client",
     "scheme": "peyara-mouse",
-    "version": "1.0.8",
+    "version": "1.0.14",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1f1f1f"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "config": {
@@ -28,15 +26,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/android-icon.png",
         "backgroundColor": "#ffffff"
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "io.github.ayonshafiul.peyara",
-      "versionCode": 8,
-      "permissions": [
-        "android.permission.CAMERA"
-      ]
+      "versionCode": 13
     },
     "web": {
       "favicon": "./assets/favicon.png"

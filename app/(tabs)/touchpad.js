@@ -1,8 +1,23 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
 import colors from "../../assets/constants/colors";
@@ -11,10 +26,14 @@ import {
   getInvertedScrollSettings,
   getKeepAwakeSettings,
 } from "../../utils/settings";
-import { SETTINGS_KEEP_AWAKE_KEY } from "../../assets/constants/constants";
+import { MaterialIcons } from "@expo/vector-icons";
+import {
+  SETTINGS_KEEP_AWAKE_KEY,
+  mediaKeysData,
+} from "../../assets/constants/constants";
 
 let socket = null;
-
+let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
@@ -95,11 +114,18 @@ export default function Touchpad() {
   const sendWindowDragEnd = (coordinates) => {
     socket?.emit("windowdragend", coordinates);
   };
+  const sendKey = (key) => {
+    socket?.emit("key", key);
+  };
+  const sendMediaKey = (key) => {
+    socket?.emit("media-key", key);
+  };
 
   // mouse movement gesture handler
   const dragGesture = Gesture.Pan()
     .onStart((_e) => {})
     .onUpdate((e) => {
+      // console.log("Drag");
       let coordinates = {
         x: e.translationX,
         y: e.translationY,
@@ -113,6 +139,7 @@ export default function Touchpad() {
     .minPointers(2)
     .onStart((_e) => {})
     .onUpdate((e) => {
+      // console.log("Scroll");
       let coordinates = {
         x: e.translationX,
         y: settingsData?.invertedScroll ? e.translationY * -1 : e.translationY,
@@ -125,9 +152,11 @@ export default function Touchpad() {
   const dragGestureWindowDrag = Gesture.Pan()
     .minPointers(3)
     .onStart((e) => {
+      // console.log("window start");
       runOnJS(sendWindowDragStart)();
     })
     .onUpdate((e) => {
+      // console.log("window update");
       let coordinates = {
         x: e.translationX,
         y: e.translationY,
@@ -135,12 +164,14 @@ export default function Touchpad() {
       runOnJS(sendWindowDragUpdate)(coordinates);
     })
     .onEnd((e) => {
+      // console.log("window end");
       runOnJS(sendWindowDragEnd)();
     });
   const twoFingerTap = Gesture.Tap()
     .maxDuration(200)
     .minPointers(2)
     .onStart((_event) => {
+      // console.log("Two finger");
       let state = {
         finger: "right",
         doubleTap: false,
@@ -150,6 +181,7 @@ export default function Touchpad() {
   const oneFingerTap = Gesture.Tap()
     .maxDuration(200)
     .onStart((_event, success) => {
+      // console.log("Tap");
       let state = {
         finger: "left",
         doubleTap: false,
@@ -160,6 +192,7 @@ export default function Touchpad() {
     .maxDuration(200)
     .numberOfTaps(2)
     .onStart((_event, success) => {
+      // console.log("Double Tap");
       let state = {
         finger: "left",
         doubleTap: true,
@@ -167,14 +200,55 @@ export default function Touchpad() {
       runOnJS(sendClicks)(state);
     });
 
-  const composed = Gesture.Race(
-    dragGestureWindowDrag,
-    dragGestureScroll,
-    dragGesture,
-    Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
-  );
+  const composed =
+    Platform.OS == "ios"
+      ? Gesture.Race(
+          Gesture.Race(dragGesture, dragGestureScroll, dragGestureWindowDrag),
+          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
+        )
+      : Gesture.Race(
+          dragGestureWindowDrag,
+          dragGestureScroll,
+          dragGesture,
+          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap)
+        );
+  const textInputRef = useRef();
+  const timeoutRef = useRef();
+  const lastKeyEventTimestamp = useRef(0);
+  const handleKeyPress = (event) => {
+    let key = event.nativeEvent.key;
+    sendKey(key);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(clearInput, 500);
+  };
+
+  const clearInput = () => {
+    if (Platform.OS != "ios") {
+      textInputRef.current?.clear();
+    }
+  };
+  const focusToggle = () => {
+    if (textInputRef.current?.isFocused()) {
+      textInputRef.current?.blur();
+    } else {
+      textInputRef.current?.focus();
+    }
+  };
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.rowKey}
+        onPress={() => sendMediaKey(item.key)}
+      >
+        <MaterialIcons name={item.icon} size={24} color={colors.WHITE} />
+      </TouchableOpacity>
+    );
+  };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
       {!loading && (
         <MultiWordHighlighter
           searchWords={[
@@ -185,6 +259,8 @@ export default function Touchpad() {
                 color: colors.PRIM_BG,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
             {
@@ -194,6 +270,8 @@ export default function Touchpad() {
                 color: colors.WHITE,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
             {
@@ -203,41 +281,89 @@ export default function Touchpad() {
                 color: colors.WHITE,
                 padding: 16,
                 borderRadius: 8,
+                overflow: "hidden",
+                marginVertical: 8,
               },
             },
           ]}
           textToHighlight={status}
         />
       )}
-      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
       {status == "Disconnected" && (
         <Text style={styles.text}>
           Go to home, select a server and connect.
         </Text>
       )}
+
       {status == "Connected" && (
-        <GestureDetector gesture={composed}>
-          <Animated.View style={styles.touchpad}></Animated.View>
-        </GestureDetector>
+        <>
+          <View style={styles.keysConatiner}>
+            <TouchableOpacity onPress={focusToggle}>
+              <MaterialIcons
+                name="keyboard-hide"
+                size={24}
+                color={colors.WHITE}
+              />
+            </TouchableOpacity>
+            <FlatList
+              data={mediaKeysData}
+              keyExtractor={(item, index) => index}
+              renderItem={renderItem}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <TextInput
+            ref={textInputRef}
+            onKeyPress={handleKeyPress}
+            style={styles.input}
+            multiline
+            autoCapitalize="none"
+            autoComplete={"off"}
+            autoCorrect={false}
+            spellCheck={false}
+            {...textInputValueProps}
+          />
+
+          <GestureDetector gesture={composed}>
+            <Animated.View style={styles.touchpad}></Animated.View>
+          </GestureDetector>
+        </>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1f1f1f",
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    backgroundColor: colors.PRIM_BG,
+  },
+  keysConatiner: {
+    flex: 1,
+    flexDirection: "row",
+    width: "100%",
+    maxHeight: 40,
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: 16,
+    paddingHorizontal: 16,
+  },
+  rowKey: {
+    marginHorizontal: 4,
+    paddingHorizontal: 8,
   },
   touchpad: {
     width: "100%",
     height: 400,
     margin: 16,
     borderRadius: 8,
-    backgroundColor: "white",
-    opacity: 0.1,
+    backgroundColor: colors.TOUCHPAD,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -251,5 +377,16 @@ const styles = StyleSheet.create({
   text: {
     color: colors.WHITE,
     marginTop: 8,
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    // opacity: 0,
+    display: "none",
+    color: colors.PRIM_BG,
+    backgroundColor: "white",
   },
 });

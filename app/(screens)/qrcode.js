@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button, Alert } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Dimensions } from "react-native";
 
@@ -13,6 +20,7 @@ import { useRouter } from "expo-router";
 export default function QrCode() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,11 +34,13 @@ export default function QrCode() {
   }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
+    setLoading(true);
     let qrCodeAdded = await addServer(data);
+    setLoading(false);
     if (!qrCodeAdded) {
       Alert.alert(
-        "Invalid QR code.",
-        "Please scan the QR code shown on Peyara desktop client."
+        "Invalid QR code or different wifi network.",
+        "Make sure your desktop and mobile are connected to the same wifi network. Only scan the QR code shown on Peyara desktop client. "
       );
       setScanned(true);
     } else {
@@ -48,7 +58,7 @@ export default function QrCode() {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        {!scanned && (
+        {!scanned && !loading && (
           <>
             <BarCodeScanner
               onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -57,6 +67,9 @@ export default function QrCode() {
             />
             <QrCodeRectangleIcon style={styles.qrCode} />
           </>
+        )}
+        {loading && (
+          <ActivityIndicator size={"large"} color={colors.PRIM_ACCENT} />
         )}
       </View>
       {scanned && (
@@ -68,6 +81,12 @@ export default function QrCode() {
           <Text style={styles.scanAgainButtonText}>Scan Again</Text>
         </TouchableOpacity>
       )}
+      <TouchableOpacity
+        style={styles.scanAgainButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.scanAgainButtonText}>Go Back</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -107,6 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 16,
+    marginVertical: 8,
   },
 
   scanAgainButtonText: {

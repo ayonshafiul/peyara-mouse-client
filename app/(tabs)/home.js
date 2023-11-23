@@ -20,7 +20,8 @@ import { getServers, setServers } from "../../utils/servers";
 import { router, useRouter } from "expo-router";
 
 import AppIcon from "../../assets/icon.png";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { QRCODE_SECRET } from "../../assets/constants/constants";
 
 const OVERSWIPE_DIST = 20;
 
@@ -31,7 +32,7 @@ export default function Home() {
 
   const renderItem = useCallback((params) => {
     const onPressDelete = () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
       setData((prev) => {
         let filteredData = prev.filter((item) => item.key !== params.item.key);
         setServers(
@@ -51,14 +52,14 @@ export default function Home() {
   useEffect(() => {
     getServers().then((res) => {
       let servers = res.map((s, index) => {
-        let seperatedArray = s.split("<peyara>");
+        let seperatedArray = s?.split(QRCODE_SECRET);
         let url = seperatedArray[0];
         let host = seperatedArray[1];
         return {
           key: `key-${index + 1}`,
           urlData: s,
-          url,
-          host,
+          url: url,
+          host: host,
         };
       });
       setData(servers);
@@ -71,6 +72,7 @@ export default function Home() {
       <DraggableFlatList
         keyExtractor={(item) => item.key}
         data={data}
+        bounces={false}
         renderItem={renderItem}
         onDragEnd={({ data }) => setData(data)}
         activationDistance={20}
@@ -82,7 +84,7 @@ export default function Home() {
               )}
               {data.length == 0 && (
                 <Text style={[styles.text, styles.helperText]}>
-                  Tap the + button to scan for a server.
+                  Tap the + button to scan for QRCode.
                 </Text>
               )}
             </View>
@@ -125,41 +127,44 @@ function RowItem({ item, itemRefs, drag, onPressDelete }) {
         }
       }}
       overSwipe={OVERSWIPE_DIST}
-      renderUnderlayLeft={() => (
-        <UnderlayLeft drag={drag} onPressDelete={onPressDelete} />
-      )}
+      renderUnderlayLeft={() => <UnderlayLeft onPressDelete={onPressDelete} />}
       renderUnderlayRight={() => <UnderlayRight item={item} />}
       snapPointsLeft={[100]}
       snapPointsRight={[100]}
     >
       <TouchableOpacity
         activeOpacity={1}
-        onLongPress={drag}
         onPress={() => itemRefs.current.get(item.key).open("right")}
         style={[styles.row]}
       >
         <View>
           <View style={styles.rowLeft}>
-            <Feather name="link-2" size={24} color={colors.WHITE} />
-            <Text style={styles.text}>{`${item.url}`}</Text>
-          </View>
-          <View style={styles.rowLeft}>
             <Feather name="cpu" size={24} color={colors.WHITE} />
             <Text style={styles.text}>{`${item.host}`}</Text>
           </View>
+          <View style={styles.rowLeft}>
+            <Feather name="link-2" size={24} color={colors.WHITE} />
+            <Text style={styles.text}>{`${item.url}`}</Text>
+          </View>
         </View>
+        <TouchableOpacity onPressIn={drag}>
+          <MaterialIcons name="drag-handle" size={24} color={colors.WHITE} />
+        </TouchableOpacity>
       </TouchableOpacity>
     </SwipeableItem>
   );
 }
 
-const UnderlayLeft = ({ drag, onPressDelete }) => {
+const UnderlayLeft = ({ onPressDelete }) => {
   return (
-    <Animated.View style={[styles.row, styles.underlayLeft]}>
-      <TouchableOpacity onPress={onPressDelete}>
-        <Text style={styles.textBold}>{`Delete`}</Text>
-      </TouchableOpacity>
-    </Animated.View>
+    <TouchableOpacity
+      style={[styles.row, styles.underlayLeft]}
+      onPress={onPressDelete}
+    >
+      {/* <TouchableOpacity onPress={onPressDelete}> */}
+      <Text style={styles.textBold}>{`Delete`}</Text>
+      {/* </TouchableOpacity> */}
+    </TouchableOpacity>
   );
 };
 
@@ -186,10 +191,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     padding: 8,
     marginVertical: 8,
-    backgroundColor: colors.PRIM_FRONT,
+    backgroundColor: colors.TOUCHPAD,
     borderRadius: 8,
   },
   rowLeft: {
@@ -237,7 +242,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 24,
   },
-  helperText: { textAlign: "center", marginTop: 200 },
+  helperText: { textAlign: "center", marginTop: 200, fontSize: 18 },
   plusButton: {
     width: 64,
     height: 64,
