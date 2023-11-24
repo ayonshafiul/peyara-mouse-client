@@ -17,6 +17,7 @@ import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  ScrollView,
 } from "react-native-gesture-handler";
 import { MultiWordHighlighter } from "react-native-multi-word-highlight";
 import Animated, { runOnJS } from "react-native-reanimated";
@@ -31,14 +32,31 @@ import {
   SETTINGS_KEEP_AWAKE_KEY,
   mediaKeysData,
 } from "../../assets/constants/constants";
+import {
+  ScreenCapturePickerView,
+  RTCPeerConnection,
+  RTCIceCandidate,
+  RTCSessionDescription,
+  RTCView,
+  MediaStream,
+  MediaStreamTrack,
+  mediaDevices,
+  registerGlobals,
+} from "react-native-webrtc";
 
 let socket = null;
+let peerConnection = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
+
+let answerClient = null;
+
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [localStream, setLocalStream] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -51,6 +69,7 @@ export default function Touchpad() {
           });
           socket.on("connect", () => {
             setStatus("Connected");
+
             setLoading(false);
             // after successfull connection get the settings data also
             async function getSettings() {
@@ -80,6 +99,62 @@ export default function Touchpad() {
             setStatus("Disconnected");
             setLoading(false);
           });
+
+          socket.on("offer", async (offer) => {
+            console.log("Offer recieved", offer);
+
+            peerConnection = new RTCPeerConnection(offer);
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(offer)
+            );
+            const stream = await mediaDevices.getUserMedia({
+              video: true,
+            });
+            setLocalStream(stream);
+            console.log(stream);
+            for (let track of stream.getTracks()) {
+              await peerConnection.addTrack(track, stream);
+            }
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            answerClient = answer;
+
+            peerConnection.onaddstream = (event) => {
+              // Access the received stream
+              console.log("On add stream", event);
+              const remoteStream = event.stream;
+
+              // Update your component state to trigger a re-render with the new stream
+              // For example, if you're using React Hooks:
+              setRemoteStream(remoteStream);
+            };
+
+            peerConnection.addEventListener("icecandidate", (event) => {
+              console.log("ice on phone", event.candidate);
+              socket.emit("answer-ice-candidate", event.candidate);
+            });
+            peerConnection.ontrack = async (event) => {
+              // event.streams contains a MediaStream with the received track
+              // const [stream] = event.streams;
+
+              // // Assuming you have a video element in your component
+              // cameraElement.srcObject = stream;
+              console.log("Received tracks:", JSON.stringify(event));
+            };
+
+            socket.emit("answer", answer);
+          });
+          socket.on(
+            "recieve-offer-ice-candidate",
+            async function (iceCandidate) {
+              console.log("Offer ice candidate on phone", iceCandidate);
+              if (iceCandidate) {
+                await peerConnection.addIceCandidate(
+                  new RTCIceCandidate(iceCandidate)
+                );
+              }
+            }
+          );
         } else {
           setLoading(false);
           setStatus("Disconnected");
@@ -247,7 +322,7 @@ export default function Touchpad() {
     );
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
       {!loading && (
         <MultiWordHighlighter
@@ -328,18 +403,27 @@ export default function Touchpad() {
           <GestureDetector gesture={composed}>
             <Animated.View style={styles.touchpad}></Animated.View>
           </GestureDetector>
+
+          <RTCView
+            style={{ width: 300, height: 200 }}
+            streamURL={remoteStream ? remoteStream.toURL() : null}
+          />
+          <RTCView
+            streamURL={localStream ? localStream.toURL() : null}
+            style={{ width: 300, height: 300 }}
+          />
         </>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    // flexDirection: "column",
+    // alignItems: "center",
+    // justifyContent: "flex-start",
     backgroundColor: colors.PRIM_BG,
   },
   keysConatiner: {
