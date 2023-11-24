@@ -103,7 +103,16 @@ export default function Touchpad() {
           socket.on("offer", async (offer) => {
             console.log("Offer recieved", offer);
 
-            peerConnection = new RTCPeerConnection(offer);
+            peerConnection = new RTCPeerConnection({
+              offerToReceiveAudio: true,
+              offerToReceiveVideo: true,
+            });
+            peerConnection.ontrack = async (event) => {
+              // event.streams contains a MediaStream with the received track
+              const [stream] = event.streams;
+              console.log("Received Stream", stream);
+              setRemoteStream(stream);
+            };
             await peerConnection.setRemoteDescription(
               new RTCSessionDescription(offer)
             );
@@ -133,14 +142,6 @@ export default function Touchpad() {
               console.log("ice on phone", event.candidate);
               socket.emit("answer-ice-candidate", event.candidate);
             });
-            peerConnection.ontrack = async (event) => {
-              // event.streams contains a MediaStream with the received track
-              // const [stream] = event.streams;
-
-              // // Assuming you have a video element in your component
-              // cameraElement.srcObject = stream;
-              console.log("Received tracks:", JSON.stringify(event));
-            };
 
             socket.emit("answer", answer);
           });
@@ -406,7 +407,7 @@ export default function Touchpad() {
 
           <RTCView
             style={{ width: 300, height: 200 }}
-            streamURL={remoteStream ? remoteStream.toURL() : null}
+            streamURL={remoteStream ? remoteStream?.toURL() : null}
           />
           <RTCView
             streamURL={localStream ? localStream.toURL() : null}
