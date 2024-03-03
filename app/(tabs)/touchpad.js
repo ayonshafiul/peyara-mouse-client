@@ -1,5 +1,5 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import {
   ActivityIndicator,
@@ -31,14 +31,19 @@ import {
   SETTINGS_KEEP_AWAKE_KEY,
   mediaKeysData,
 } from "../../assets/constants/constants";
+import useInterval from "../../hooks/useInterval";
 
 let socket = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
+let coord = { x: 0, y: 0 };
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
+  const coordCache = useRef({ x: 0, y: 0 });
+  const cX = useRef(0);
+  const cY = useRef(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -96,8 +101,46 @@ export default function Touchpad() {
   );
 
   const sendCoordinates = (coordinates) => {
-    socket?.emit("coordinates", coordinates);
+    // socket?.emit("coordinates", coordinates);
+    console.log(
+      "sending",
+      coord,
+      "cache",
+      coordCache.current,
+      "coords",
+      coordinates
+    );
+    socket?.emit("coordinates", coord);
   };
+
+  const setCoordinates = (coordinates) => {
+    coordCache.current = { x: coordinates.x, y: coordinates.y };
+    console.log(coordinates);
+    cX.current = coordinates.x;
+    cY.current = coordinates.y;
+  };
+
+  useInterval(() => {
+    let speed = 0.7;
+    if (cX.current != 0 || cY.current != 0) {
+      socket?.emit("coordinates", {
+        x: cX.current * speed,
+        y: cY.current * speed,
+      });
+      console.log("sending", cX.current, cY.current);
+    }
+
+    cX.current = 0;
+    cY.current = 0;
+  }, 32);
+
+  // useEffect(() => {
+  //   let intervalTimer = setInterval(sendCoordinates, 1000, coordCache.current);
+  //   return () => {
+  //     clearInterval(intervalTimer);
+  //   };
+  // }, []);
+
   const sendScroll = (coordinates) => {
     socket?.emit("scroll", coordinates);
   };
@@ -130,9 +173,24 @@ export default function Touchpad() {
         x: e.translationX,
         y: e.translationY,
       };
-      runOnJS(sendCoordinates)(coordinates);
+      console.log(coordinates, "coordiates");
+      runOnJS(setCoordinates)(coordinates);
+      coord = {
+        x: e.translationX,
+        y: e.translationY,
+      };
+      // coordCache.current = {
+      //   x: e.translationX,
+      //   y: e.translationY,
+      // };
+      console.log(coordCache.current, "updated");
     })
-    .onEnd(() => {});
+    .onEnd(() => {
+      // coord = {
+      //   x: 0,
+      //   y: 0,
+      // };
+    });
 
   // two finger scroll gesture handler
   const dragGestureScroll = Gesture.Pan()
