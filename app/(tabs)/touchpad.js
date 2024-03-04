@@ -1,10 +1,13 @@
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -13,12 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { MultiWordHighlighter } from "react-native-multi-word-highlight";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS } from "react-native-reanimated";
 import colors from "../../assets/constants/colors";
 import { io } from "socket.io-client";
@@ -28,121 +26,208 @@ import {
 } from "../../utils/settings";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
+  SERVER_URL_KEY,
   SETTINGS_KEEP_AWAKE_KEY,
+  SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
+  SETTINGS_TOUCHPAD_SENSITIVITY,
   mediaKeysData,
 } from "../../assets/constants/constants";
 import useInterval from "../../hooks/useInterval";
+import * as Notifications from "expo-notifications";
+import { getValueFor, setValueFor } from "../../utils/secure-store";
 
 let socket = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
-let coord = { x: 0, y: 0 };
+
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowAction: true,
+    };
+  },
+});
+
+Notifications.setNotificationCategoryAsync("controls", [
+  {
+    buttonTitle: `Play/Pause`,
+    identifier: "play",
+    options: {
+      opensAppToForeground: false,
+    },
+  },
+  {
+    buttonTitle: "V+",
+    identifier: "vup",
+    options: {
+      opensAppToForeground: false,
+    },
+  },
+  {
+    buttonTitle: "V-",
+    identifier: "vdown",
+    options: {
+      opensAppToForeground: false,
+    },
+  },
+])
+  .then((_category) => {})
+  .catch((error) =>
+    console.warn("Could not have set notification category", error)
+  );
+
 export default function Touchpad() {
   const params = useLocalSearchParams();
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
-  const coordCache = useRef({ x: 0, y: 0 });
-  const cX = useRef(0);
-  const cY = useRef(0);
+
+  const tX = useRef(0);
+  const tY = useRef(0);
+  const sX = useRef(0);
+  const sY = useRef(0);
+  const tS = useRef(0);
+  const sS = useRef(0);
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      ({ actionIdentifier }) => {
+        switch (actionIdentifier) {
+          case "vup":
+            socket?.emit("media-key", "audio_vol_up");
+            break;
+          case "vdown":
+            socket?.emit("media-key", "audio_vol_down");
+            break;
+          case "play":
+            socket?.emit("media-key", "audio_play");
+            break;
+          default:
+            console.log(`Unhandled action identifier: ${actionIdentifier}`);
+        }
+      }
+    );
+    return () => subscription.remove();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      // socket connection handler
-      const connectSocket = () => {
-        console.log(params);
-        if (params?.url) {
-          socket = io.connect(params?.url, {
-            transports: ["websocket"],
-          });
-          socket.on("connect", () => {
-            setStatus("Connected");
-            setLoading(false);
-            // after successfull connection get the settings data also
-            async function getSettings() {
-              const invertedScroll = await getInvertedScrollSettings();
-              const keepAwake = await getKeepAwakeSettings();
-              if (keepAwake) {
-                activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
-              } else if (keepAwake == false) {
-                // do not do anything if it is null
-                deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
-              }
-              setSettingsData({
-                invertedScroll: invertedScroll,
-              });
-            }
-            getSettings();
-          });
-
-          socket.on("connect_error", (error) => {
-            console.log(error);
-            setStatus("Error");
-            socket.disconnect();
-            setLoading(false);
-          });
-
-          socket.on("disconnect", () => {
-            setStatus("Disconnected");
-            setLoading(false);
-          });
-        } else {
-          setLoading(false);
-          setStatus("Disconnected");
+      (async function setSensitivities() {
+        if (navigation.isFocused) {
+          tS.current = Number(await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY));
+          sS.current = Number(
+            await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)
+          );
+          console.log(tS.current, sS.current, "setOnFocused");
         }
-      };
-      connectSocket();
-
-      return () => {
-        if (socket) {
-          socket.disconnect();
-        }
-      };
-    }, [params])
+      })();
+    }, [])
   );
 
-  const sendCoordinates = (coordinates) => {
-    // socket?.emit("coordinates", coordinates);
-    console.log(
-      "sending",
-      coord,
-      "cache",
-      coordCache.current,
-      "coords",
-      coordinates
-    );
-    socket?.emit("coordinates", coord);
+  // socket connection handler
+  const connectSocket = async () => {
+    const serverUrl = await getValueFor(SERVER_URL_KEY);
+    if (socket) {
+      socket?.disconnect();
+    }
+    if (serverUrl) {
+      socket = io.connect(serverUrl, {
+        transports: ["websocket"],
+      });
+      socket.on("connect", () => {
+        (async function scheduleNotificationWithAction() {
+          await Notifications.dismissAllNotificationsAsync();
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Peyara Remote Mouse",
+              subtitle: "Connected",
+              autoDismiss: false,
+              sticky: false,
+              categoryIdentifier: "controls",
+              priority: Notifications.AndroidImportance.MAX,
+            },
+            trigger: { seconds: 1 },
+          });
+        })();
+
+        setStatus("Connected");
+        setLoading(false);
+        // after successfull connection get the settings data also
+        async function getSettings() {
+          const invertedScroll = await getInvertedScrollSettings();
+          const keepAwake = await getKeepAwakeSettings();
+          if (keepAwake) {
+            activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
+          } else if (keepAwake == false) {
+            // do not do anything if it is null
+            deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
+          }
+          setSettingsData({
+            invertedScroll: invertedScroll,
+          });
+        }
+        getSettings();
+      });
+
+      socket.on("connect_error", (error) => {
+        console.log(error);
+        setStatus("Error");
+        socket.disconnect();
+        setLoading(false);
+      });
+
+      socket.on("disconnect", () => {
+        setStatus("Disconnected");
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+      setStatus("Disconnected");
+    }
   };
 
+  useEffect(() => {
+    connectSocket();
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
+
   const setCoordinates = (coordinates) => {
-    coordCache.current = { x: coordinates.x, y: coordinates.y };
-    console.log(coordinates);
-    cX.current = coordinates.x;
-    cY.current = coordinates.y;
+    tX.current = coordinates.x;
+    tY.current = coordinates.y;
   };
 
   useInterval(() => {
-    let speed = 0.7;
-    if (cX.current != 0 || cY.current != 0) {
+    if (tX.current != 0 || tY.current != 0) {
       socket?.emit("coordinates", {
-        x: cX.current * speed,
-        y: cY.current * speed,
+        x: tX.current * tS.current,
+        y: tY.current * tS.current,
       });
-      console.log("sending", cX.current, cY.current);
     }
 
-    cX.current = 0;
-    cY.current = 0;
+    if (sX.current != 0 || sY.current != 0) {
+      socket?.emit("scroll", {
+        x: sX.current * sS.current,
+        y: sY.current * sS.current,
+      });
+    }
+
+    tX.current = 0;
+    tY.current = 0;
+    sX.current = 0;
+    sY.current = 0;
   }, 32);
 
-  // useEffect(() => {
-  //   let intervalTimer = setInterval(sendCoordinates, 1000, coordCache.current);
-  //   return () => {
-  //     clearInterval(intervalTimer);
-  //   };
-  // }, []);
-
-  const sendScroll = (coordinates) => {
-    socket?.emit("scroll", coordinates);
+  const setScroll = (coordinates) => {
+    sX.current = coordinates.x;
+    sY.current = coordinates.y;
   };
   const sendClicks = (state) => {
     socket?.emit("clicks", state);
@@ -173,17 +258,7 @@ export default function Touchpad() {
         x: e.translationX,
         y: e.translationY,
       };
-      console.log(coordinates, "coordiates");
       runOnJS(setCoordinates)(coordinates);
-      coord = {
-        x: e.translationX,
-        y: e.translationY,
-      };
-      // coordCache.current = {
-      //   x: e.translationX,
-      //   y: e.translationY,
-      // };
-      console.log(coordCache.current, "updated");
     })
     .onEnd(() => {
       // coord = {
@@ -202,7 +277,7 @@ export default function Touchpad() {
         x: e.translationX,
         y: settingsData?.invertedScroll ? e.translationY * -1 : e.translationY,
       };
-      runOnJS(sendScroll)(coordinates);
+      runOnJS(setScroll)(coordinates);
     })
     .onEnd(() => {});
 
@@ -307,49 +382,13 @@ export default function Touchpad() {
   return (
     <SafeAreaView style={styles.container}>
       {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
-      {!loading && (
-        <MultiWordHighlighter
-          searchWords={[
-            {
-              word: "Connected",
-              textStyle: {
-                backgroundColor: colors.PRIM_ACCENT,
-                color: colors.PRIM_BG,
-                padding: 16,
-                borderRadius: 8,
-                overflow: "hidden",
-                marginVertical: 8,
-              },
-            },
-            {
-              word: "Disconnected",
-              textStyle: {
-                backgroundColor: colors.RED,
-                color: colors.WHITE,
-                padding: 16,
-                borderRadius: 8,
-                overflow: "hidden",
-                marginVertical: 8,
-              },
-            },
-            {
-              word: "Error",
-              textStyle: {
-                backgroundColor: colors.RED,
-                color: colors.WHITE,
-                padding: 16,
-                borderRadius: 8,
-                overflow: "hidden",
-                marginVertical: 8,
-              },
-            },
-          ]}
-          textToHighlight={status}
-        />
-      )}
+      {!loading && <Text style={styles.txtStatus}>{status}</Text>}
       {status == "Disconnected" && (
         <Text style={styles.text}>
-          Go to home, select a server and connect.
+          Go to home, select a server and connect again.
+          <TouchableOpacity onPress={connectSocket}>
+            <Text style={styles.txtRetry}>{"\n"} Reconnect</Text>
+          </TouchableOpacity>
         </Text>
       )}
 
@@ -435,6 +474,11 @@ const styles = StyleSheet.create({
   text: {
     color: colors.WHITE,
     marginTop: 8,
+    textAlign: "center",
+    fontSize: 16,
+  },
+  txtRetry: {
+    color: colors.PRIM_ACCENT,
   },
   input: {
     height: 40,
@@ -446,5 +490,9 @@ const styles = StyleSheet.create({
     display: "none",
     color: colors.PRIM_BG,
     backgroundColor: "white",
+  },
+  txtStatus: {
+    color: colors.WHITE,
+    marginTop: 16,
   },
 });

@@ -1,6 +1,8 @@
 // server related constants
 export const SERVER_KEY = "servers";
 
+export const SERVER_URL_KEY = "SERVER_URL";
+
 export const QRCODE_SECRET = "<peyara>";
 
 export const SERVER_REST_RESPONSE = "peyara";
@@ -12,6 +14,10 @@ export const SETTINGS_INITIALIZED = "settingsinitialized";
 export const SETTINGS_INVERTED_SCROLL_KEY = "invertedscroll";
 
 export const SETTINGS_KEEP_AWAKE_KEY = "keepawake";
+
+export const SETTINGS_TOUCHPAD_SENSITIVITY = "sensitivity";
+
+export const SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY = "scrollsensitivity";
 
 export const SETTINGS_ONBOARDING_SHOW_EVERYTIME =
   "settingsonboardingshoweverytime";

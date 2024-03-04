@@ -32,7 +32,9 @@
     "react-native-switch": "^1.5.1",
     "socket.io-client": "^4.7.2",
     "expo-keep-awake": "~12.3.0",
-    "expo-clipboard": "~4.3.1"
+    "expo-clipboard": "~4.3.1",
+    "expo-notifications": "~0.20.1",
+    "@react-native-community/slider": "4.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

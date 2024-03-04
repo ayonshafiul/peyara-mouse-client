@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Alert,
+  Platform,
 } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import SwipeableItem, {
@@ -21,7 +23,24 @@ import { router, useRouter } from "expo-router";
 
 import AppIcon from "../../assets/icon.png";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
-import { QRCODE_SECRET } from "../../assets/constants/constants";
+import {
+  QRCODE_SECRET,
+  SERVER_URL_KEY,
+} from "../../assets/constants/constants";
+
+import * as Notifications from "expo-notifications";
+import { setValueFor } from "../../utils/secure-store";
+
+(async function setupNotificationChannel() {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+})();
 
 const OVERSWIPE_DIST = 20;
 
@@ -50,6 +69,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    (async function getNotificationPermission() {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        Alert.alert(
+          "Please allow notification permission for quick access to media controls from notification centre."
+        );
+      }
+    })();
     getServers().then((res) => {
       let servers = res.map((s, index) => {
         let seperatedArray = s?.split(QRCODE_SECRET);
@@ -174,9 +207,9 @@ function UnderlayRight({ item }) {
     <TouchableOpacity
       style={[styles.row, styles.underlayRight]}
       onPress={() => {
+        setValueFor(SERVER_URL_KEY, item?.url);
         router.push({
           pathname: "/touchpad",
-          params: { url: item?.url },
         });
         close();
       }}
