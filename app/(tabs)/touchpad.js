@@ -117,9 +117,11 @@ export default function Touchpad() {
     useCallback(() => {
       (async function setSensitivities() {
         if (navigation.isFocused) {
-          tS.current = Number(await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY));
+          tS.current = Number(
+            (await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY)) ?? 1
+          );
           sS.current = Number(
-            await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)
+            (await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)) ?? 0.5
           );
           console.log(tS.current, sS.current, "setOnFocused");
         }
