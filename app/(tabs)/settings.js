@@ -47,6 +47,7 @@ function SwitchCard({ item }) {
         renderActiveText={false}
         renderInActiveText={false}
         circleSize={20}
+        backgroundActive={colors.PRIM_ACCENT}
       />
     </View>
   );
@@ -79,12 +80,14 @@ export default function Settings() {
             <Text style={styles.switchCardText}>Touchpad Sensitivity</Text>
             <View style={styles.sliderContainer}>
               <Slider
-                style={{ width: width - 16, height: 40 }}
+                style={{ width: width - 32, height: 40 }}
                 minimumValue={0}
                 maximumValue={5}
                 step={0.1}
                 value={touchSens}
                 maximumTrackTintColor={colors.PRIM_ACCENT}
+                minimumTrackTintColor={colors.PRIM_ACCENT}
+                thumbTintColor={colors.PRIM_ACCENT}
                 onSlidingComplete={async (value) => {
                   await setValueFor(
                     SETTINGS_TOUCHPAD_SENSITIVITY,
@@ -96,12 +99,14 @@ export default function Settings() {
             <Text style={styles.switchCardText}>Scroll Sensitivity</Text>
             <View style={styles.sliderContainer}>
               <Slider
-                style={{ width: width - 16, height: 40 }}
+                style={{ width: width - 32, height: 40 }}
                 minimumValue={0}
                 maximumValue={2}
                 step={0.05}
                 value={scrollSens}
                 maximumTrackTintColor={colors.PRIM_ACCENT}
+                minimumTrackTintColor={colors.PRIM_ACCENT}
+                thumbTintColor={colors.PRIM_ACCENT}
                 onSlidingComplete={async (value) => {
                   await setValueFor(
                     SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,

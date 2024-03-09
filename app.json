@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1f1f1f"
+      "backgroundColor": "#FFEB3B"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFEB3B"
       },
       "softwareKeyboardLayoutMode": "pan",
       "package": "io.github.ayonshafiul.peyara",
