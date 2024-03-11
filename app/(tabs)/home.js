@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Alert,
   Platform,
+  ImageBackground,
 } from "react-native";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import SwipeableItem, {
@@ -30,6 +31,8 @@ import {
 
 import * as Notifications from "expo-notifications";
 import { setValueFor } from "../../utils/secure-store";
+import { MoveCursor } from "../../components/Onboarding";
+import Background from "../../components/Background";
 
 (async function setupNotificationChannel() {
   if (Platform.OS === "android") {
@@ -100,45 +103,48 @@ export default function Home() {
   }, []);
 
   return (
-    <SafeAreaView style={global.container}>
-      <Image source={AppIcon} style={styles.icon} />
-      <DraggableFlatList
-        keyExtractor={(item) => item.key}
-        data={data}
-        bounces={false}
-        renderItem={renderItem}
-        onDragEnd={({ data }) => setData(data)}
-        activationDistance={20}
-        ListHeaderComponent={() => {
-          return (
-            <View>
-              {data.length > 0 && (
-                <Text style={styles.listTitleText}>Servers List</Text>
-              )}
-              {data.length == 0 && (
-                <Text style={[styles.text, styles.helperText]}>
-                  Tap the + button to scan for QRCode.
-                </Text>
-              )}
-            </View>
-          );
-        }}
-        containerStyle={{
-          flex: 1,
-          flexGrow: 1,
-          paddingVertical: 16,
-        }}
-      />
+    <Background>
+      <SafeAreaView style={global.container}>
+        <Image source={AppIcon} style={styles.icon} />
 
-      <TouchableOpacity
-        style={styles.plusButton}
-        onPress={() => {
-          router.push("/qrcode");
-        }}
-      >
-        <Text style={styles.plusButtonText}>+</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <DraggableFlatList
+          keyExtractor={(item) => item.key}
+          data={data}
+          bounces={false}
+          renderItem={renderItem}
+          onDragEnd={({ data }) => setData(data)}
+          activationDistance={20}
+          ListHeaderComponent={() => {
+            return (
+              <View>
+                {data.length > 0 && (
+                  <Text style={styles.listTitleText}>Servers List</Text>
+                )}
+                {data.length == 0 && (
+                  <Text style={[styles.text, styles.helperText]}>
+                    Tap the + button to scan for QRCode.
+                  </Text>
+                )}
+              </View>
+            );
+          }}
+          containerStyle={{
+            flex: 1,
+            flexGrow: 1,
+            paddingVertical: 16,
+          }}
+        />
+
+        <TouchableOpacity
+          style={styles.plusButton}
+          onPress={() => {
+            router.push("/qrcode");
+          }}
+        >
+          <Text style={styles.plusButtonText}>+</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </Background>
   );
 }
 
@@ -282,7 +288,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.PRIM_ACCENT,
     borderRadius: 42,
     position: "absolute",
-    bottom: 16,
+    bottom: 84,
     right: 16,
     justifyContent: "center",
     alignItems: "center",

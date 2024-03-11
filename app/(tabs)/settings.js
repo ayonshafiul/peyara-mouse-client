@@ -24,6 +24,7 @@ import {
   SETTINGS_TOUCHPAD_SENSITIVITY,
   settingsData,
 } from "../../assets/constants/constants";
+import Background from "../../components/Background";
 
 const width = Dimensions.get("window").width;
 
@@ -71,7 +72,7 @@ export default function Settings() {
   }, []);
 
   return (
-    <SafeAreaView style={global.container}>
+    <Background>
       <Text style={styles.settingsHeader}>Settings</Text>
       <FlatList
         data={settingsData}
@@ -119,7 +120,7 @@ export default function Settings() {
         }
         renderItem={(props) => <SwitchCard {...props} />}
       />
-    </SafeAreaView>
+    </Background>
   );
 }
 

@@ -4,6 +4,9 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Tabs } from "expo-router";
 import colors from "../../assets/constants/colors";
+import HomeIcon from "../../assets/icons/HomeIcon";
+import ControlsIcon from "../../assets/icons/ControlsIcon";
+import SettingsIcon from "../../assets/icons/SettingsIcon";
 
 export default function TabsLayout() {
   return (
@@ -12,8 +15,13 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#1f1f1f",
+          backgroundColor: "rgba(0,0,0, 0.2)",
           borderTopWidth: 0,
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          height: 60,
+          shadowColor: "transparent",
         },
         tabBarActiveTintColor: colors.PRIM_ACCENT,
       }}
@@ -25,8 +33,7 @@ export default function TabsLayout() {
           title: "",
           tabBarIcon: ({ color }) => (
             <View style={styles.iconContainer}>
-              <FontAwesome name="home" size={24} color={color} />
-              <Text style={[styles.label, { color: color }]}>Home</Text>
+              <HomeIcon color={color} />
             </View>
           ),
         }}
@@ -38,8 +45,7 @@ export default function TabsLayout() {
           title: "",
           tabBarIcon: ({ color }) => (
             <View style={styles.iconContainer}>
-              <MaterialIcons name="keyboard" size={24} color={color} />
-              <Text style={[styles.label, { color: color }]}>Controls</Text>
+              <ControlsIcon color={color} />
             </View>
           ),
         }}
@@ -51,8 +57,7 @@ export default function TabsLayout() {
           title: "",
           tabBarIcon: ({ color }) => (
             <View style={styles.iconContainer}>
-              <FontAwesome name="gear" size={24} color={color} />
-              <Text style={[styles.label, { color: color }]}>Settings</Text>
+              <SettingsIcon color={color} />
             </View>
           ),
         }}

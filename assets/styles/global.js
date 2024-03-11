@@ -3,7 +3,7 @@ import colors from "../../assets/constants/colors";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.PRIM_BG,
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
   },
 });

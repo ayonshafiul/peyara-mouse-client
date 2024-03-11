@@ -35,6 +35,7 @@ import {
 import useInterval from "../../hooks/useInterval";
 import * as Notifications from "expo-notifications";
 import { getValueFor, setValueFor } from "../../utils/secure-store";
+import Background from "../../components/Background";
 
 let socket = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
@@ -382,54 +383,58 @@ export default function Touchpad() {
     );
   };
   return (
-    <SafeAreaView style={styles.container}>
-      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
-      {!loading && <Text style={styles.txtStatus}>{status}</Text>}
-      {status == "Disconnected" && (
-        <Text style={styles.text}>
-          Go to home, select a server and connect again.
-          <TouchableOpacity onPress={connectSocket}>
-            <Text style={styles.txtRetry}>{"\n"} Reconnect</Text>
-          </TouchableOpacity>
-        </Text>
-      )}
-
-      {status == "Connected" && (
-        <>
-          <View style={styles.keysConatiner}>
-            <TouchableOpacity onPress={focusToggle}>
-              <MaterialIcons
-                name="keyboard-hide"
-                size={24}
-                color={colors.WHITE}
-              />
+    <Background>
+      <SafeAreaView style={styles.container}>
+        {loading && (
+          <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
+        )}
+        {!loading && <Text style={styles.txtStatus}>{status}</Text>}
+        {status == "Disconnected" && (
+          <Text style={styles.text}>
+            Go to home, select a server and connect again.
+            <TouchableOpacity onPress={connectSocket}>
+              <Text style={styles.txtRetry}>{"\n"} Reconnect</Text>
             </TouchableOpacity>
-            <FlatList
-              data={mediaKeysData}
-              keyExtractor={(item, index) => index}
-              renderItem={renderItem}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-          <TextInput
-            ref={textInputRef}
-            onKeyPress={handleKeyPress}
-            style={styles.input}
-            multiline
-            autoCapitalize="none"
-            autoComplete={"off"}
-            autoCorrect={false}
-            spellCheck={false}
-            {...textInputValueProps}
-          />
+          </Text>
+        )}
 
-          <GestureDetector gesture={composed}>
-            <Animated.View style={styles.touchpad}></Animated.View>
-          </GestureDetector>
-        </>
-      )}
-    </SafeAreaView>
+        {status == "Connected" && (
+          <>
+            <View style={styles.keysConatiner}>
+              <TouchableOpacity onPress={focusToggle}>
+                <MaterialIcons
+                  name="keyboard-hide"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </TouchableOpacity>
+              <FlatList
+                data={mediaKeysData}
+                keyExtractor={(item, index) => index}
+                renderItem={renderItem}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <TextInput
+              ref={textInputRef}
+              onKeyPress={handleKeyPress}
+              style={styles.input}
+              multiline
+              autoCapitalize="none"
+              autoComplete={"off"}
+              autoCorrect={false}
+              spellCheck={false}
+              {...textInputValueProps}
+            />
+
+            <GestureDetector gesture={composed}>
+              <Animated.View style={styles.touchpad}></Animated.View>
+            </GestureDetector>
+          </>
+        )}
+      </SafeAreaView>
+    </Background>
   );
 }
 
@@ -439,7 +444,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "flex-start",
-    backgroundColor: colors.PRIM_BG,
   },
   keysConatiner: {
     flex: 1,

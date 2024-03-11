@@ -100,7 +100,7 @@ function TouchpadControls() {
   );
 }
 
-function MoveCursor() {
+export function MoveCursor() {
   const tX = useSharedValue(50);
 
   const animStyle = useAnimatedStyle(() => ({
