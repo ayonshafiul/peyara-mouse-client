@@ -36,6 +36,8 @@ import useInterval from "../../hooks/useInterval";
 import * as Notifications from "expo-notifications";
 import { getValueFor, setValueFor } from "../../utils/secure-store";
 import Background from "../../components/Background";
+import KeyboardModal from "../../modals/KeyboardModal";
+import RoundKey from "../../components/RoundKey";
 
 let socket = null;
 let textInputValueProps = Platform.os == "ios" ? { value: "" } : {};
@@ -122,9 +124,19 @@ export default function Touchpad() {
             (await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY)) ?? 1
           );
           sS.current = Number(
-            (await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)) ?? 0.5
+            (await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)) ?? 0.2
           );
-          console.log(tS.current, sS.current, "setOnFocused");
+          const invertedScroll = await getInvertedScrollSettings();
+          const keepAwake = await getKeepAwakeSettings();
+          if (keepAwake) {
+            activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
+          } else if (keepAwake == false) {
+            // do not do anything if it is null
+            deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
+          }
+          setSettingsData({
+            invertedScroll: invertedScroll,
+          });
         }
       })();
     }, [])
@@ -133,9 +145,7 @@ export default function Touchpad() {
   // socket connection handler
   const connectSocket = async () => {
     const serverUrl = await getValueFor(SERVER_URL_KEY);
-    if (socket) {
-      socket?.disconnect();
-    }
+    disconnectSocket();
     if (serverUrl) {
       socket = io.connect(serverUrl, {
         transports: ["websocket"],
@@ -158,21 +168,6 @@ export default function Touchpad() {
 
         setStatus("Connected");
         setLoading(false);
-        // after successfull connection get the settings data also
-        async function getSettings() {
-          const invertedScroll = await getInvertedScrollSettings();
-          const keepAwake = await getKeepAwakeSettings();
-          if (keepAwake) {
-            activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
-          } else if (keepAwake == false) {
-            // do not do anything if it is null
-            deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
-          }
-          setSettingsData({
-            invertedScroll: invertedScroll,
-          });
-        }
-        getSettings();
       });
 
       socket.on("connect_error", (error) => {
@@ -189,6 +184,12 @@ export default function Touchpad() {
     } else {
       setLoading(false);
       setStatus("Disconnected");
+    }
+  };
+
+  const disconnectSocket = async () => {
+    if (socket) {
+      socket?.disconnect();
     }
   };
 
@@ -350,7 +351,8 @@ export default function Touchpad() {
         );
   const textInputRef = useRef();
   const timeoutRef = useRef();
-  const lastKeyEventTimestamp = useRef(0);
+  const keyboardModalRef = useRef();
+
   const handleKeyPress = (event) => {
     let key = event.nativeEvent.key;
     sendKey(key);
@@ -372,6 +374,12 @@ export default function Touchpad() {
       textInputRef.current?.focus();
     }
   };
+  const showControls = () => {
+    if (textInputRef.current?.isFocused()) {
+      textInputRef.current?.blur();
+    }
+    keyboardModalRef?.current?.present();
+  };
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
@@ -388,7 +396,7 @@ export default function Touchpad() {
         {loading && (
           <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
         )}
-        {!loading && <Text style={styles.txtStatus}>{status}</Text>}
+
         {status == "Disconnected" && (
           <Text style={styles.text}>
             Go to home, select a server and connect again.
@@ -401,20 +409,30 @@ export default function Touchpad() {
         {status == "Connected" && (
           <>
             <View style={styles.keysConatiner}>
-              <TouchableOpacity onPress={focusToggle}>
+              <RoundKey onPress={focusToggle}>
                 <MaterialIcons
                   name="keyboard-hide"
                   size={24}
                   color={colors.WHITE}
                 />
-              </TouchableOpacity>
-              <FlatList
+              </RoundKey>
+              <RoundKey onPress={showControls}>
+                <MaterialIcons
+                  name="control-camera"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
+              <RoundKey onPress={disconnectSocket}>
+                <MaterialIcons name="close" size={24} color={colors.WHITE} />
+              </RoundKey>
+              {/* <FlatList
                 data={mediaKeysData}
                 keyExtractor={(item, index) => index}
                 renderItem={renderItem}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-              />
+              /> */}
             </View>
             <TextInput
               ref={textInputRef}
@@ -433,6 +451,7 @@ export default function Touchpad() {
             </GestureDetector>
           </>
         )}
+        <KeyboardModal ref={keyboardModalRef} sendMediaKey={sendMediaKey} />
       </SafeAreaView>
     </Background>
   );
@@ -450,10 +469,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     maxHeight: 40,
-    justifyContent: "space-around",
+    justifyContent: "center",
     alignItems: "center",
     gap: 16,
     paddingHorizontal: 16,
+    marginTop: 16,
   },
   rowKey: {
     marginHorizontal: 4,

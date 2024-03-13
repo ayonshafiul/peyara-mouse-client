@@ -8,6 +8,9 @@ import { useCallback } from "react";
 import { initializeDefaultSettings } from "../utils/settings";
 import { Platform } from "react-native";
 SplashScreen.preventAutoHideAsync();
+
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+
 export default function RootLayout() {
   let [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -27,9 +30,11 @@ export default function RootLayout() {
       style={{ flex: 1 }}
       onLayoutRootView={onLayoutRootView}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Slot />
-      </SafeAreaView>
+      <BottomSheetModalProvider>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Slot />
+        </SafeAreaView>
+      </BottomSheetModalProvider>
       <StatusBar
         style={Platform.OS == "ios" ? "dark" : "light"}
         backgroundColor="#1f1f1f"

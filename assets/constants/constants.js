@@ -80,4 +80,24 @@ export const mediaKeysData = [
     key: "audio_next",
     label: "Next Track",
   },
+  {
+    icon: "keyboard-arrow-up",
+    key: "up",
+    label: "Arrow Up",
+  },
+  {
+    icon: "keyboard-arrow-down",
+    key: "down",
+    label: "Arrow Down",
+  },
+  {
+    icon: "keyboard-arrow-left",
+    key: "left",
+    label: "Arrow Left",
+  },
+  {
+    icon: "keyboard-arrow-right",
+    key: "right",
+    label: "Arrow Right",
+  },
 ];
