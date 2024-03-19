@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Linking,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -17,10 +18,9 @@ import Animated, {
   Easing,
   withRepeat,
 } from 'react-native-reanimated';
-import * as Linking from 'expo-linking';
-import * as Clipboard from 'expo-clipboard';
+
 import colors from '../assets/constants/colors';
-import {MaterialIcons} from '@expo/vector-icons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import NextIcon from '../assets/svg/arrow-next.svg';
 import ServerIcon from '../assets/img/server.png';
 import StartServerIcon from '../assets/img/server-start.png';
@@ -33,9 +33,10 @@ import SingleTapIcon from '../assets/svg/single-tap.svg';
 import DoubleTapIcon from '../assets/svg/double-tap.svg';
 import TwoFingerScrollIcon from '../assets/svg/two-finger-scroll.svg';
 import ThreeFingerWindowDragIcon from '../assets/svg/three-finger-window-drag.svg';
-import {useRouter} from 'expo-router';
+
 import {setBooleanValueFor} from '../utils/secure-store';
 import {SETTINGS_ONBOARDING_SHOW_FIRST_TIME} from '../assets/constants/constants';
+import {useNavigation} from '@react-navigation/native';
 
 const duration = 2000;
 const WIDTH = Dimensions.get('window').width;
@@ -46,7 +47,7 @@ function DownloadServer() {
     Linking.openURL(SERVER_LINK);
   };
   const copyLink = async () => {
-    await Clipboard.setStringAsync(SERVER_LINK);
+    // TODO add clipboard
     Alert.alert('Link Copied');
   };
   return (
@@ -292,8 +293,11 @@ function Window({children, style}) {
 
 export default function Onboarding() {
   const flatListRef = useRef();
-  const router = useRouter();
+  const navigation = useNavigation();
+
   const goToNextStep = async index => {
+    navigation.navigate('QRCode');
+    return;
     if (index < steps.length) {
       flatListRef.current.scrollToIndex({
         index: index,
@@ -302,7 +306,6 @@ export default function Onboarding() {
     } else {
       // don't show this screen next time
       await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, false);
-      router.replace('home');
     }
   };
 

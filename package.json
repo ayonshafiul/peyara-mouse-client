@@ -15,6 +15,7 @@
     "@react-native-community/slider": "^4.5.0",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
+    "@react-navigation/native-stack": "^6.9.26",
     "@sayem314/react-native-keep-awake": "^1.2.3",
     "react": "18.2.0",
     "react-native": "0.73.6",
@@ -27,6 +28,7 @@
     "react-native-svg": "^15.1.0",
     "react-native-swipeable-item": "^2.0.9",
     "react-native-switch": "^1.5.1",
+    "react-native-vector-icons": "^10.0.3",
     "react-native-vision-camera": "^3.9.1",
     "socket.io-client": "^4.7.5"
   },
