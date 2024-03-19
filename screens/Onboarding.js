@@ -302,7 +302,7 @@ export default function Onboarding({navigation}) {
       });
     } else {
       // don't show this screen next time
-      await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, false);
+      setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, false);
       navigation.navigate('Tabs');
     }
   };

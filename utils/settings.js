@@ -9,19 +9,19 @@ import {setBooleanValueFor, getBooleanValueFor} from './secure-store';
 
 export async function initializeDefaultSettings() {
   let invertedScrollSettings = getInvertedScrollSettings();
-  if (invertedScrollSettings == null) {
+  if (invertedScrollSettings == undefined) {
     setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
   }
   let keepAwakeSettings = getKeepAwakeSettings();
-  if (keepAwakeSettings == null) {
+  if (keepAwakeSettings == undefined) {
     setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, true);
   }
   let onboardingEveryTimeSettings = getShowOnBoardingSettingsEverytime();
-  if (onboardingEveryTimeSettings == null) {
+  if (onboardingEveryTimeSettings == undefined) {
     setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME, false);
   }
   let onboardingFirstTimeSettings = getShowOnBoardingSettingsFirstTime();
-  if (onboardingFirstTimeSettings == null) {
+  if (onboardingFirstTimeSettings == undefined) {
     setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, true);
   }
 }

@@ -6,10 +6,13 @@ import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {
   getShowOnBoardingSettingsEverytime,
   getShowOnBoardingSettingsFirstTime,
+  initializeDefaultSettings,
 } from './utils/settings';
 import SplashScreen from 'react-native-splash-screen';
 import {ActivityIndicator} from 'react-native';
 import colors from './assets/constants/colors';
+
+initializeDefaultSettings();
 
 export default function App() {
   const [initialRoute, setInitialRoute] = useState('');
