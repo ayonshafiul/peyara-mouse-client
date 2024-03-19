@@ -3,34 +3,63 @@ import {
   Text,
   View,
   StyleSheet,
-  Button,
   Alert,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
-// import {BarCodeScanner} from 'expo-barcode-scanner';
-import {Dimensions} from 'react-native';
 
 import QrCodeButtonIcon from '../assets/svg/qr-code-button.svg';
 import QrCodeRectangleIcon from '../assets/svg/qr-code-rectangle.svg';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors from '../assets/constants/colors';
 import {addServer} from '../utils/servers';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useCodeScanner,
+} from 'react-native-vision-camera';
 
-export default function QRCode() {
-  const [hasPermission, setHasPermission] = useState(null);
+export default function QRCode({navigation}) {
+  const {hasPermission, requestPermission} = useCameraPermission();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const device = useCameraDevice('back');
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: codes => {
+      if (codes.length > 0) {
+        try {
+          let codeValue = codes[0].value;
+          if (codeValue) {
+            setScanned(true);
+            handleBarCodeScanned(codeValue);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    },
+  });
+
   useEffect(() => {
-    // const getBarCodeScannerPermissions = async () => {
-    //   const {status} = await BarCodeScanner.requestPermissionsAsync();
-    //   console.log(status);
-    //   setHasPermission(status === 'granted');
-    // };
-    // getBarCodeScannerPermissions();
+    (async function initializePermission() {
+      if (!hasPermission) {
+        const grantedPermission = await requestPermission();
+        if (!grantedPermission) {
+          Alert.alert(
+            'Camera Permission Requried',
+            'Camera permission is required to grant access to the camera for qr code scanning.',
+            [{text: 'Open Settings', onPress: () => Linking.openSettings()}],
+            {cancelable: false},
+          );
+        }
+      }
+    })();
   }, []);
 
-  const handleBarCodeScanned = async ({type, data}) => {
+  const handleBarCodeScanned = async data => {
     setLoading(true);
     let qrCodeAdded = await addServer(data);
     setLoading(false);
@@ -41,27 +70,28 @@ export default function QRCode() {
       );
       setScanned(true);
     } else {
-      // router.back();
+      navigation.goBack();
     }
   };
 
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  if (device == null)
+    return (
+      <View>
+        <Text>No Camera Devices Found</Text>
+      </View>
+    );
 
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
-        {!scanned && !loading && (
+        {hasPermission && !scanned && !loading && (
           <>
-            {/* <BarCodeScanner
-              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            <Camera
               style={styles.barcodeContainer}
-              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-            /> */}
+              device={device}
+              isActive={true}
+              codeScanner={codeScanner}
+            />
             <QrCodeRectangleIcon style={styles.qrCode} />
           </>
         )}
@@ -77,7 +107,11 @@ export default function QRCode() {
           <Text style={styles.scanAgainButtonText}>Scan Again</Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity style={styles.scanAgainButton} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.scanAgainButton}
+        onPress={() => {
+          navigation.goBack();
+        }}>
         <Text style={styles.scanAgainButtonText}>Go Back</Text>
       </TouchableOpacity>
     </View>
@@ -106,8 +140,8 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   barcodeContainer: {
-    width: 300,
-    height: 300,
+    width: 280,
+    height: 290,
   },
 
   scanAgainButton: {

@@ -17,5 +17,5 @@ export async function setBooleanValueFor(key, value) {
 
 export async function getBooleanValueFor(key) {
   let result = await storage.getBoolean(key);
-  return result ? result : null;
+  return result;
 }

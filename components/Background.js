@@ -1,5 +1,6 @@
 import {ImageBackground, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import colors from '../assets/constants/colors';
 
 export default function Background({children}) {
   return (

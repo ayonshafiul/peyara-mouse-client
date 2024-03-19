@@ -291,13 +291,10 @@ function Window({children, style}) {
   );
 }
 
-export default function Onboarding() {
+export default function Onboarding({navigation}) {
   const flatListRef = useRef();
-  const navigation = useNavigation();
 
   const goToNextStep = async index => {
-    navigation.navigate('QRCode');
-    return;
     if (index < steps.length) {
       flatListRef.current.scrollToIndex({
         index: index,
@@ -306,6 +303,7 @@ export default function Onboarding() {
     } else {
       // don't show this screen next time
       await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, false);
+      navigation.navigate('Tabs');
     }
   };
 

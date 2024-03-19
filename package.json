@@ -25,6 +25,7 @@
     "react-native-reanimated": "^3.8.1",
     "react-native-safe-area-context": "^4.9.0",
     "react-native-screens": "^3.29.0",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^15.1.0",
     "react-native-swipeable-item": "^2.0.9",
     "react-native-switch": "^1.5.1",

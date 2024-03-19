@@ -29,7 +29,7 @@ export async function addServer(qrCodeValue) {
   if (!qrCodeValue.includes(QRCODE_SECRET)) return false;
 
   let qrCodeServers = qrCodeValue.split(',');
-  if (!qrCodeServers.length > 2) return false;
+  if (!(qrCodeServers.length > 2)) return false;
 
   let secret = qrCodeServers[0];
   if (secret !== QRCODE_SECRET) return false;
