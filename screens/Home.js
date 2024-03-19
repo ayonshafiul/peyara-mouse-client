@@ -21,7 +21,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AppIcon from '../assets/icon.png';
 import {QRCODE_SECRET, SERVER_URL_KEY} from '../assets/constants/constants';
 
-import {setValueFor} from '../utils/secure-store';
+import {setValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 

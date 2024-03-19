@@ -15,7 +15,7 @@ import {
   getValueFor,
   setBooleanValueFor,
   setValueFor,
-} from '../utils/secure-store';
+} from '../utils/storage';
 
 import Slider from '@react-native-community/slider';
 

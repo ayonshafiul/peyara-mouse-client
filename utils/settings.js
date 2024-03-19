@@ -5,7 +5,7 @@ import {
   SETTINGS_ONBOARDING_SHOW_EVERYTIME,
   SETTINGS_ONBOARDING_SHOW_FIRST_TIME,
 } from '../assets/constants/constants';
-import {setBooleanValueFor, getBooleanValueFor} from './secure-store';
+import {setBooleanValueFor, getBooleanValueFor} from './storage';
 
 export function initializeDefaultSettings() {
   let invertedScrollSettings = getInvertedScrollSettings();

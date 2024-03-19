@@ -34,7 +34,7 @@ import DoubleTapIcon from '../assets/svg/double-tap.svg';
 import TwoFingerScrollIcon from '../assets/svg/two-finger-scroll.svg';
 import ThreeFingerWindowDragIcon from '../assets/svg/three-finger-window-drag.svg';
 
-import {setBooleanValueFor} from '../utils/secure-store';
+import {setBooleanValueFor} from '../utils/storage';
 import {SETTINGS_ONBOARDING_SHOW_FIRST_TIME} from '../assets/constants/constants';
 import {useNavigation} from '@react-navigation/native';
 

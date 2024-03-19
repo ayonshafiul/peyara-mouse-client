@@ -4,7 +4,7 @@ import {
   SERVER_REST_RESPONSE,
   SERVER_KEY,
 } from '../assets/constants/constants';
-import {getValueFor, setValueFor} from './secure-store';
+import {getValueFor, setValueFor} from './storage';
 
 export function getServers() {
   let servers = getValueFor(SERVER_KEY);

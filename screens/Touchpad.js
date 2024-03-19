@@ -29,7 +29,7 @@ import {
 } from '../assets/constants/constants';
 import useInterval from '../hooks/useInterval';
 // import * as Notifications from 'expo-notifications';
-import {getValueFor, setValueFor} from '../utils/secure-store';
+import {getValueFor, setValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import KeyboardModal from '../modals/KeyboardModal';
 import RoundKey from '../components/RoundKey';
