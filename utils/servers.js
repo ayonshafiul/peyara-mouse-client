@@ -1,3 +1,4 @@
+import {Alert} from 'react-native';
 import {
   QRCODE_SECRET,
   SERVER_REST_RESPONSE,
@@ -5,13 +6,19 @@ import {
 } from '../assets/constants/constants';
 import {getValueFor, setValueFor} from './secure-store';
 
-export async function getServers() {
-  let servers = await getValueFor(SERVER_KEY);
+export function getServers() {
+  let servers = getValueFor(SERVER_KEY);
   if (servers) {
-    return JSON.parse(servers);
+    try {
+      let parsedServers = JSON.parse(servers);
+      return parsedServers;
+    } catch (e) {
+      setValueFor(SERVER_KEY, JSON.stringify([]));
+      return [];
+    }
   } else {
     // initialize store
-    await setValueFor(SERVER_KEY, JSON.stringify([]));
+    setValueFor(SERVER_KEY, JSON.stringify([]));
     return [];
   }
 }
@@ -25,23 +32,23 @@ function sleep(time) {
 }
 
 export async function addServer(qrCodeValue) {
+  let flag = true;
   if (!qrCodeValue) {
-    return false;
+    flag = false;
   }
-  let servers = await getValueFor(SERVER_KEY);
-  console.log('🚀 ~ addServer ~ servers:', servers);
+  let servers = getValueFor(SERVER_KEY);
   if (!qrCodeValue.includes(QRCODE_SECRET)) {
-    return false;
+    flag = false;
   }
 
   let qrCodeServers = qrCodeValue.split(',');
   if (!(qrCodeServers.length > 2)) {
-    return false;
+    flag = false;
   }
 
   let secret = qrCodeServers[0];
   if (secret !== QRCODE_SECRET) {
-    return false;
+    flag = false;
   }
 
   let hostName = qrCodeServers[1];
@@ -50,33 +57,44 @@ export async function addServer(qrCodeValue) {
 
   for (let i = 2; i < qrCodeServers.length; i++) {
     let url = qrCodeServers[i];
-    let result = await Promise.race([fetch(url), sleep(1000)]); // wait for 1 sec to see if the server works
-    if (!result) {
-      console.log(url, 'Did not work');
-      continue;
-    }
-    let resultJson = await result.json();
-    if (resultJson == SERVER_REST_RESPONSE) {
-      serverEntry = url + QRCODE_SECRET + hostName;
-      break;
+    // Alert.alert(url, 'url');
+    try {
+      let result = await Promise.race([fetch(url), sleep(1000)]); // wait for 1 sec to see if the server works
+
+      if (!result) {
+        console.log(url, 'Did not work');
+        continue;
+      }
+      let resultJson = await result.json();
+      console.log(resultJson);
+      if (resultJson == SERVER_REST_RESPONSE) {
+        serverEntry = url + QRCODE_SECRET + hostName;
+        break;
+      }
+    } catch (e) {
+      console.log(e, 'error');
     }
   }
-
   if (!serverEntry) {
-    return false;
+    flag = false;
   }
 
   if (servers) {
-    let serversArray = JSON.parse(servers);
-    serversArray.unshift(serverEntry);
-    await setValueFor(SERVER_KEY, JSON.stringify(serversArray));
+    try {
+      let serversArray = JSON.parse(servers);
+      serversArray.unshift(serverEntry);
+      setValueFor(SERVER_KEY, JSON.stringify(serversArray));
+    } catch (e) {
+      flag = false;
+      setValueFor(SERVER_KEY, JSON.stringify([]));
+    }
   } else {
     // initialize store with server value
-    await setValueFor(SERVER_KEY, JSON.stringify([serverEntry]));
+    setValueFor(SERVER_KEY, JSON.stringify([serverEntry]));
   }
-  return true;
+  return flag;
 }
 
-export async function setServers(serversArray) {
-  await setValueFor(SERVER_KEY, JSON.stringify(serversArray));
+export function setServers(serversArray) {
+  setValueFor(SERVER_KEY, JSON.stringify(serversArray));
 }

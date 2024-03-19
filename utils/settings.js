@@ -8,36 +8,36 @@ import {
 import {setBooleanValueFor, getBooleanValueFor} from './secure-store';
 
 export async function initializeDefaultSettings() {
-  let invertedScrollSettings = await getInvertedScrollSettings();
+  let invertedScrollSettings = getInvertedScrollSettings();
   if (invertedScrollSettings == null) {
-    await setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
+    setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
   }
-  let keepAwakeSettings = await getKeepAwakeSettings();
+  let keepAwakeSettings = getKeepAwakeSettings();
   if (keepAwakeSettings == null) {
-    await setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, true);
+    setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, true);
   }
-  let onboardingEveryTimeSettings = await getShowOnBoardingSettingsEverytime();
+  let onboardingEveryTimeSettings = getShowOnBoardingSettingsEverytime();
   if (onboardingEveryTimeSettings == null) {
-    await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME, false);
+    setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME, false);
   }
-  let onboardingFirstTimeSettings = await getShowOnBoardingSettingsFirstTime();
+  let onboardingFirstTimeSettings = getShowOnBoardingSettingsFirstTime();
   if (onboardingFirstTimeSettings == null) {
-    await setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, true);
+    setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, true);
   }
 }
 
 export async function getInvertedScrollSettings() {
-  return await getBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY);
+  return getBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY);
 }
 
 export async function getKeepAwakeSettings() {
-  return await getBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY);
+  return getBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY);
 }
 
 export async function getShowOnBoardingSettingsEverytime() {
-  return await getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME);
+  return getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME);
 }
 
 export async function getShowOnBoardingSettingsFirstTime() {
-  return await getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME);
+  return getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME);
 }

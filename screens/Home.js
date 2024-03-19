@@ -53,8 +53,9 @@ export default function Home({navigation}) {
 
   useEffect(() => {
     if (isFocused) {
-      getServers().then(res => {
-        let servers = res.map((s, index) => {
+      const res = getServers();
+      if (Array.isArray(res)) {
+        let servers = res?.map((s, index) => {
           let seperatedArray = s?.split(QRCODE_SECRET);
           let url = seperatedArray[0];
           let host = seperatedArray[1];
@@ -66,7 +67,7 @@ export default function Home({navigation}) {
           };
         });
         setData(servers);
-      });
+      }
     }
   }, [isFocused]);
 

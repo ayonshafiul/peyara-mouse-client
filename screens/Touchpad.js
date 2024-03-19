@@ -102,14 +102,12 @@ export default function Touchpad({navigation}) {
     useCallback(() => {
       (async function setSensitivities() {
         if (navigation.isFocused) {
-          tS.current = Number(
-            (await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY)) ?? 1,
-          );
+          tS.current = Number(getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY) ?? 1);
           sS.current = Number(
-            (await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY)) ?? 0.2,
+            getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY) ?? 0.2,
           );
-          const invertedScroll = await getInvertedScrollSettings();
-          const keepAwake = await getKeepAwakeSettings();
+          const invertedScroll = getInvertedScrollSettings();
+          const keepAwake = getKeepAwakeSettings();
           if (keepAwake) {
             // activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
           } else if (keepAwake == false) {
@@ -126,7 +124,7 @@ export default function Touchpad({navigation}) {
 
   // socket connection handler
   const connectSocket = async () => {
-    const serverUrl = await getValueFor(SERVER_URL_KEY);
+    const serverUrl = getValueFor(SERVER_URL_KEY);
     disconnectSocket();
     if (serverUrl) {
       socket = io.connect(serverUrl, {
@@ -134,8 +132,8 @@ export default function Touchpad({navigation}) {
       });
       socket.on('connect', () => {
         // (async function scheduleNotificationWithAction() {
-        //   await Notifications.dismissAllNotificationsAsync();
-        //   await Notifications.scheduleNotificationAsync({
+        //    Notifications.dismissAllNotificationsAsync();
+        //    Notifications.scheduleNotificationAsync({
         //     content: {
         //       title: 'Peyara Remote Mouse',
         //       subtitle: 'Connected',

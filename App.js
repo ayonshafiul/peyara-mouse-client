@@ -17,9 +17,9 @@ export default function App() {
   useEffect(() => {
     async function getFirstTimeSettings() {
       let showOnBoardingSettingsFirstTime =
-        await getShowOnBoardingSettingsFirstTime();
+        getShowOnBoardingSettingsFirstTime();
       let showOnBoardingSettingsEveryTime =
-        await getShowOnBoardingSettingsEverytime();
+        getShowOnBoardingSettingsEverytime();
       if (
         showOnBoardingSettingsEveryTime ||
         showOnBoardingSettingsFirstTime ||

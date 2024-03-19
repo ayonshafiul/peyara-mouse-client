@@ -34,6 +34,7 @@ export default function QRCode({navigation}) {
   const handleBarCodeScanned = async ({type, data}) => {
     setLoading(true);
     let qrCodeAdded = await addServer(data);
+
     setLoading(false);
     if (!qrCodeAdded) {
       Alert.alert(
@@ -80,7 +81,7 @@ export default function QRCode({navigation}) {
       )}
       <TouchableOpacity
         style={styles.scanAgainButton}
-        onPress={() => router.back()}>
+        onPress={() => navigation.goBack()}>
         <Text style={styles.scanAgainButtonText}>Go Back</Text>
       </TouchableOpacity>
     </View>

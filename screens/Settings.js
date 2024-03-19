@@ -32,7 +32,8 @@ function SwitchCard({item}) {
   const [isOn, setIsOn] = useState(false);
 
   useEffect(() => {
-    getBooleanValueFor(item?.key).then(res => setIsOn(res));
+    const res = getBooleanValueFor(item?.key);
+    setIsOn(res);
   }, []);
   const handleChange = isOn => {
     setIsOn(isOn);
@@ -60,8 +61,8 @@ export default function Settings() {
 
   useEffect(() => {
     (async function getSliderValues() {
-      let ts = await getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY);
-      let ss = await getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY);
+      let ts = getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY);
+      let ss = getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY);
       if (ts) {
         setTouchSens(Number(ts));
       }
@@ -90,10 +91,7 @@ export default function Settings() {
                 minimumTrackTintColor={colors.PRIM_ACCENT}
                 thumbTintColor={colors.PRIM_ACCENT}
                 onSlidingComplete={async value => {
-                  await setValueFor(
-                    SETTINGS_TOUCHPAD_SENSITIVITY,
-                    String(value),
-                  );
+                  setValueFor(SETTINGS_TOUCHPAD_SENSITIVITY, String(value));
                 }}
               />
             </View>
@@ -109,7 +107,7 @@ export default function Settings() {
                 minimumTrackTintColor={colors.PRIM_ACCENT}
                 thumbTintColor={colors.PRIM_ACCENT}
                 onSlidingComplete={async value => {
-                  await setValueFor(
+                  setValueFor(
                     SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
                     String(value),
                   );
