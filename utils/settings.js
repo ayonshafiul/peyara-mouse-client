@@ -7,37 +7,37 @@ import {
 } from '../assets/constants/constants';
 import {setBooleanValueFor, getBooleanValueFor} from './secure-store';
 
-export async function initializeDefaultSettings() {
+export function initializeDefaultSettings() {
   let invertedScrollSettings = getInvertedScrollSettings();
-  if (invertedScrollSettings == undefined) {
+  if (typeof invertedScrollSettings !== 'boolean') {
     setBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY, false);
   }
   let keepAwakeSettings = getKeepAwakeSettings();
-  if (keepAwakeSettings == undefined) {
+  if (typeof keepAwakeSettings !== 'boolean') {
     setBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY, true);
   }
   let onboardingEveryTimeSettings = getShowOnBoardingSettingsEverytime();
-  if (onboardingEveryTimeSettings == undefined) {
+  if (typeof onboardingEveryTimeSettings !== 'boolean') {
     setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME, false);
   }
   let onboardingFirstTimeSettings = getShowOnBoardingSettingsFirstTime();
-  if (onboardingFirstTimeSettings == undefined) {
+  if (typeof onboardingFirstTimeSettings !== 'boolean') {
     setBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME, true);
   }
 }
 
-export async function getInvertedScrollSettings() {
+export function getInvertedScrollSettings() {
   return getBooleanValueFor(SETTINGS_INVERTED_SCROLL_KEY);
 }
 
-export async function getKeepAwakeSettings() {
+export function getKeepAwakeSettings() {
   return getBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY);
 }
 
-export async function getShowOnBoardingSettingsEverytime() {
+export function getShowOnBoardingSettingsEverytime() {
   return getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_EVERYTIME);
 }
 
-export async function getShowOnBoardingSettingsFirstTime() {
+export function getShowOnBoardingSettingsFirstTime() {
   return getBooleanValueFor(SETTINGS_ONBOARDING_SHOW_FIRST_TIME);
 }
