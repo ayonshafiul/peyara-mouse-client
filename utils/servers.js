@@ -25,14 +25,24 @@ function sleep(time) {
 }
 
 export async function addServer(qrCodeValue) {
+  if (!qrCodeValue) {
+    return false;
+  }
   let servers = await getValueFor(SERVER_KEY);
-  if (!qrCodeValue.includes(QRCODE_SECRET)) return false;
+  console.log('🚀 ~ addServer ~ servers:', servers);
+  if (!qrCodeValue.includes(QRCODE_SECRET)) {
+    return false;
+  }
 
   let qrCodeServers = qrCodeValue.split(',');
-  if (!(qrCodeServers.length > 2)) return false;
+  if (!(qrCodeServers.length > 2)) {
+    return false;
+  }
 
   let secret = qrCodeServers[0];
-  if (secret !== QRCODE_SECRET) return false;
+  if (secret !== QRCODE_SECRET) {
+    return false;
+  }
 
   let hostName = qrCodeServers[1];
   let serverEntry = null;
@@ -52,7 +62,9 @@ export async function addServer(qrCodeValue) {
     }
   }
 
-  if (!serverEntry) return false;
+  if (!serverEntry) {
+    return false;
+  }
 
   if (servers) {
     let serversArray = JSON.parse(servers);
