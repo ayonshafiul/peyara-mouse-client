@@ -79,6 +79,10 @@ export async function addServer(qrCodeValue) {
     flag = false;
   }
 
+  if(!flag) {
+    return flag;
+  }
+
   if (servers) {
     try {
       let serversArray = JSON.parse(servers);
