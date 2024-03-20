@@ -91,6 +91,7 @@ export async function addServer(qrCodeValue) {
     } catch (e) {
       flag = false;
       setValueFor(SERVER_KEY, JSON.stringify([]));
+      return flag;
     }
   } else {
     // initialize store with server value
