@@ -34,37 +34,32 @@ import Background from '../components/Background';
 import KeyboardModal from '../modals/KeyboardModal';
 import RoundKey from '../components/RoundKey';
 import {useFocusEffect} from '@react-navigation/native';
+import notifee, {
+  AndroidColor,
+  AndroidFlags,
+  AuthorizationStatus,
+  EventType,
+} from '@notifee/react-native';
 
 let socket = null;
 let textInputValueProps = Platform.os == 'ios' ? {value: ''} : {};
 
-// Notifications.setNotificationCategoryAsync('controls', [
-//   {
-//     buttonTitle: `Play/Pause`,
-//     identifier: 'play',
-//     options: {
-//       opensAppToForeground: false,
-//     },
-//   },
-//   {
-//     buttonTitle: 'V+',
-//     identifier: 'vup',
-//     options: {
-//       opensAppToForeground: false,
-//     },
-//   },
-//   {
-//     buttonTitle: 'V-',
-//     identifier: 'vdown',
-//     options: {
-//       opensAppToForeground: false,
-//     },
-//   },
-// ])
-//   .then(_category => {})
-//   .catch(error =>
-//     console.warn('Could not have set notification category', error),
-//   );
+const eventHandler = async ({type, detail}) => {
+  if (type === EventType.ACTION_PRESS) {
+    switch (detail.pressAction.id) {
+      case 'play':
+        socket?.emit('media-key', 'audio_play');
+        break;
+      case 'vup':
+        socket?.emit('media-key', 'audio_vol_up');
+        break;
+      case 'vdown':
+        socket?.emit('media-key', 'audio_vol_down');
+        break;
+    }
+  }
+};
+notifee.onBackgroundEvent(eventHandler);
 
 export default function Touchpad({navigation}) {
   const [status, setStatus] = useState('');
@@ -96,6 +91,17 @@ export default function Touchpad({navigation}) {
     //   },
     // );
     // return () => subscription.remove();
+    (async function requestUserPermission() {
+      const settings = await notifee.requestPermission();
+
+      if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+        console.log('Permission settings:', settings);
+      } else {
+        console.log('User declined permissions');
+      }
+    })();
+
+    return notifee.onForegroundEvent(eventHandler);
   }, []);
 
   useFocusEffect(
@@ -131,20 +137,37 @@ export default function Touchpad({navigation}) {
         transports: ['websocket'],
       });
       socket.on('connect', () => {
-        // (async function scheduleNotificationWithAction() {
-        //    Notifications.dismissAllNotificationsAsync();
-        //    Notifications.scheduleNotificationAsync({
-        //     content: {
-        //       title: 'Peyara Remote Mouse',
-        //       subtitle: 'Connected',
-        //       autoDismiss: false,
-        //       sticky: false,
-        //       categoryIdentifier: 'controls',
-        //       priority: Notifications.AndroidImportance.MAX,
-        //     },
-        //     trigger: {seconds: 1},
-        //   });
-        // })();
+        notifee.displayNotification({
+          title: 'Peyara Remote Mosue',
+          body: 'Connected',
+          android: {
+            channelId: 'media',
+            actions: [
+              {
+                title: 'Play/Pause',
+                pressAction: {
+                  id: 'play',
+                  launchActivity: 'none',
+                },
+              },
+              {
+                title: 'V+',
+                pressAction: {
+                  id: 'vup',
+                },
+              },
+              {
+                title: 'V-',
+                pressAction: {
+                  id: 'vdown',
+                },
+              },
+            ],
+            color: AndroidColor.RED,
+            colorized: true,
+            autoCancel: false,
+          },
+        });
 
         setStatus('Connected');
         setLoading(false);
