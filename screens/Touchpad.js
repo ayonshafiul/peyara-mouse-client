@@ -50,11 +50,8 @@ const eventHandler = async ({type, detail}) => {
       case 'play':
         socket?.emit('media-key', 'audio_play');
         break;
-      case 'vup':
-        socket?.emit('media-key', 'audio_vol_up');
-        break;
-      case 'vdown':
-        socket?.emit('media-key', 'audio_vol_down');
+      case 'mute':
+        socket?.emit('media-key', 'audio_mute');
         break;
     }
   }
@@ -170,15 +167,9 @@ export default function Touchpad({navigation}) {
                 },
               },
               {
-                title: 'V+',
+                title: 'Mute',
                 pressAction: {
-                  id: 'vup',
-                },
-              },
-              {
-                title: 'V-',
-                pressAction: {
-                  id: 'vdown',
+                  id: 'mute',
                 },
               },
             ],
