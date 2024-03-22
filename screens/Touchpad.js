@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import Animated, {runOnJS} from 'react-native-reanimated';
+import Animated, {runOnJS, useSharedValue} from 'react-native-reanimated';
 import colors from '../assets/constants/colors';
 import {io} from 'socket.io-client';
 import {
@@ -61,17 +61,35 @@ const eventHandler = async ({type, detail}) => {
 };
 notifee.onBackgroundEvent(eventHandler);
 
+const DRAG_START_THRESHOLD_IN_MS = 200;
+
 export default function Touchpad({navigation}) {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
 
+  // touchpad coordinates
   const tX = useRef(0);
   const tY = useRef(0);
+
+  // scroll coordinates
   const sX = useRef(0);
   const sY = useRef(0);
+  // touchpad sensitivity
   const tS = useRef(0);
+  // scroll sensitivity
   const sS = useRef(0);
+
+  // click state
+  const clickStateFinger = useRef('');
+  const clickStateIsDoubleTap = useRef(false);
+
+  const lastTapped = useSharedValue(0);
+  const isDragging = useSharedValue(false);
+  const isDraggingRef = useRef(false);
+  const lastTappedInRef = useRef(0);
+  const pendingLeftClick = useRef(false);
+
   useEffect(() => {
     // const subscription = Notifications.addNotificationResponseReceivedListener(
     //   ({actionIdentifier}) => {
@@ -131,6 +149,7 @@ export default function Touchpad({navigation}) {
   // socket connection handler
   const connectSocket = async () => {
     const serverUrl = getValueFor(SERVER_URL_KEY);
+    // disconnect existing connections
     disconnectSocket();
     if (serverUrl) {
       socket = io.connect(serverUrl, {
@@ -210,14 +229,74 @@ export default function Touchpad({navigation}) {
     tX.current = coordinates.x;
     tY.current = coordinates.y;
   };
+  const setFingerState = state => {
+    clickStateFinger.current = state.finger;
+    clickStateIsDoubleTap.current = state.doubleTap;
+  };
+  const setLastTappedInRef = time => {
+    lastTappedInRef.current = time;
+  };
 
   useInterval(() => {
-    if (tX.current != 0 || tY.current != 0) {
+    if (Date.now() - lastTappedInRef.current > 130) {
+      if (pendingLeftClick.current) {
+        console.log('Sending click');
+        socket?.emit('clicks', {
+          finger: 'left',
+          doubleTap: false,
+        });
+        clickStateFinger.current = '';
+        clickStateIsDoubleTap.current = false;
+        pendingLeftClick.current = false;
+      }
+    }
+    if (isDraggingRef.current) {
+      const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
+      console.log(
+        '🚀 ~ useInterval ~ diffBetweenClickAndDrag:',
+        diffBetweenClickAndDrag,
+      );
+      if (diffBetweenClickAndDrag < 50) {
+        pendingLeftClick.current = false;
+      }
+      socket?.emit('windowdragupdate', {
+        x: tX.current * tS.current,
+        y: tY.current * tS.current,
+      });
+    } else if (tX.current != 0 || tY.current != 0) {
+      const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
+      if (diffBetweenClickAndDrag < 50) {
+        pendingLeftClick.current = false;
+      }
       socket?.emit('coordinates', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
       });
+    } else if (clickStateFinger.current) {
+      if (
+        clickStateFinger.current === 'left' &&
+        clickStateIsDoubleTap.current === false
+      ) {
+        const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
+        if (diffBetweenClickAndDrag > 150) {
+          pendingLeftClick.current = true;
+        }
+      } else {
+        socket?.emit('clicks', {
+          finger: clickStateFinger.current,
+          doubleTap: clickStateIsDoubleTap.current,
+        });
+        clickStateFinger.current = '';
+        clickStateIsDoubleTap.current = false;
+        pendingLeftClick.current = false;
+      }
     }
+
+    // if (pendingLeftClick.current) {
+    //   const diffSinceLeftClick = Date.now() - lastTappedInRef.current;
+    //   console.log('🚀 ~ useInterval ~ diffSinceLeftClick:', diffSinceLeftClick);
+    //   pendingLeftClick.current = false;
+    // }
 
     if (sX.current != 0 || sY.current != 0) {
       socket?.emit('scroll', {
@@ -230,7 +309,7 @@ export default function Touchpad({navigation}) {
     tY.current = 0;
     sX.current = 0;
     sY.current = 0;
-  }, 32);
+  }, 16);
 
   const setScroll = coordinates => {
     sX.current = coordinates.x;
@@ -241,12 +320,14 @@ export default function Touchpad({navigation}) {
   };
 
   const sendWindowDragStart = coordinates => {
+    isDraggingRef.current = true;
     socket?.emit('windowdragstart', coordinates);
   };
   const sendWindowDragUpdate = coordinates => {
     socket?.emit('windowdragupdate', coordinates);
   };
   const sendWindowDragEnd = coordinates => {
+    isDraggingRef.current = false;
     socket?.emit('windowdragend', coordinates);
   };
   const sendKey = key => {
@@ -258,20 +339,34 @@ export default function Touchpad({navigation}) {
 
   // mouse movement gesture handler
   const dragGesture = Gesture.Pan()
-    .onStart(_e => {})
+    .onStart(e => {
+      const timeSinceLastTapped = Date.now() - lastTapped.value;
+      if (timeSinceLastTapped < DRAG_START_THRESHOLD_IN_MS) {
+        isDragging.value = true;
+        runOnJS(sendWindowDragStart)();
+      }
+    })
     .onUpdate(e => {
-      // console.log("Drag");
       let coordinates = {
         x: e.translationX,
         y: e.translationY,
       };
+      // if (isDragging.value) {
+      // runOnJS(sendWindowDragUpdate)(coordinates);
+      // } else {
       runOnJS(setCoordinates)(coordinates);
+      // }
     })
     .onEnd(() => {
       // coord = {
       //   x: 0,
       //   y: 0,
       // };
+      if (isDragging.value) {
+        runOnJS(sendWindowDragEnd)();
+        isDragging.value = false;
+        isDraggingRef.current = false;
+      }
     });
 
   // two finger scroll gesture handler
@@ -316,28 +411,31 @@ export default function Touchpad({navigation}) {
         finger: 'right',
         doubleTap: false,
       };
-      runOnJS(sendClicks)(state);
+      runOnJS(setFingerState)(state);
     });
   const oneFingerTap = Gesture.Tap()
-    .maxDuration(200)
-    .onStart((_event, success) => {
-      // console.log("Tap");
+    .maxDuration(100)
+    .onStart((_event, success) => {})
+    .onEnd(e => {
+      lastTapped.value = Date.now();
       let state = {
         finger: 'left',
         doubleTap: false,
       };
-      runOnJS(sendClicks)(state);
+      console.log('Tap');
+      runOnJS(setFingerState)(state);
+      runOnJS(setLastTappedInRef)(Date.now());
     });
   const oneFingerDoubleTap = Gesture.Tap()
-    .maxDuration(200)
+    .maxDuration(150)
     .numberOfTaps(2)
-    .onStart((_event, success) => {
-      // console.log("Double Tap");
+    .onEnd((_event, success) => {
+      console.log('Double Tap');
       let state = {
         finger: 'left',
         doubleTap: true,
       };
-      runOnJS(sendClicks)(state);
+      runOnJS(setFingerState)(state);
     });
 
   const composed =
