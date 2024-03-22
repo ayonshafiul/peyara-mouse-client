@@ -240,7 +240,7 @@ export default function Touchpad({navigation}) {
   useInterval(() => {
     if (Date.now() - lastTappedInRef.current > 130) {
       if (pendingLeftClick.current) {
-        console.log('Sending click');
+        // console.log('Sending click');
         socket?.emit('clicks', {
           finger: 'left',
           doubleTap: false,
@@ -252,10 +252,6 @@ export default function Touchpad({navigation}) {
     }
     if (isDraggingRef.current) {
       const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
-      console.log(
-        '🚀 ~ useInterval ~ diffBetweenClickAndDrag:',
-        diffBetweenClickAndDrag,
-      );
       if (diffBetweenClickAndDrag < 50) {
         pendingLeftClick.current = false;
       }
@@ -277,10 +273,7 @@ export default function Touchpad({navigation}) {
         clickStateFinger.current === 'left' &&
         clickStateIsDoubleTap.current === false
       ) {
-        const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
-        if (diffBetweenClickAndDrag > 150) {
-          pendingLeftClick.current = true;
-        }
+        pendingLeftClick.current = true;
       } else {
         socket?.emit('clicks', {
           finger: clickStateFinger.current,
@@ -291,12 +284,6 @@ export default function Touchpad({navigation}) {
         pendingLeftClick.current = false;
       }
     }
-
-    // if (pendingLeftClick.current) {
-    //   const diffSinceLeftClick = Date.now() - lastTappedInRef.current;
-    //   console.log('🚀 ~ useInterval ~ diffSinceLeftClick:', diffSinceLeftClick);
-    //   pendingLeftClick.current = false;
-    // }
 
     if (sX.current != 0 || sY.current != 0) {
       socket?.emit('scroll', {
@@ -309,7 +296,7 @@ export default function Touchpad({navigation}) {
     tY.current = 0;
     sX.current = 0;
     sY.current = 0;
-  }, 16);
+  }, 32);
 
   const setScroll = coordinates => {
     sX.current = coordinates.x;
@@ -374,7 +361,6 @@ export default function Touchpad({navigation}) {
     .minPointers(2)
     .onStart(_e => {})
     .onUpdate(e => {
-      // console.log("Scroll");
       let coordinates = {
         x: e.translationX,
         y: settingsData?.invertedScroll ? e.translationY * -1 : e.translationY,
@@ -422,7 +408,7 @@ export default function Touchpad({navigation}) {
         finger: 'left',
         doubleTap: false,
       };
-      console.log('Tap');
+      // console.log('Tap');
       runOnJS(setFingerState)(state);
       runOnJS(setLastTappedInRef)(Date.now());
     });
@@ -430,7 +416,7 @@ export default function Touchpad({navigation}) {
     .maxDuration(150)
     .numberOfTaps(2)
     .onEnd((_event, success) => {
-      console.log('Double Tap');
+      // console.log('Double Tap');
       let state = {
         finger: 'left',
         doubleTap: true,

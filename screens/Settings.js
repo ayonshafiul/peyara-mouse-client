@@ -99,7 +99,7 @@ export default function Settings() {
             <View style={styles.sliderContainer}>
               <Slider
                 style={{width: width - 32, height: 40}}
-                minimumValue={0}
+                minimumValue={0.05}
                 maximumValue={2}
                 step={0.05}
                 value={scrollSens}
