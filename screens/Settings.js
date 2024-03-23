@@ -83,7 +83,7 @@ export default function Settings() {
             <View style={styles.sliderContainer}>
               <Slider
                 style={{width: width - 32, height: 40}}
-                minimumValue={0}
+                minimumValue={0.05}
                 maximumValue={5}
                 step={0.1}
                 value={touchSens}

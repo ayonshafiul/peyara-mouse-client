@@ -84,7 +84,6 @@ export default function Touchpad({navigation}) {
   const lastTapped = useSharedValue(0);
   const isDragging = useSharedValue(false);
   const isDraggingRef = useRef(false);
-  const lastTappedInRef = useRef(0);
   const pendingLeftClick = useRef(false);
 
   useEffect(() => {
@@ -140,6 +139,7 @@ export default function Touchpad({navigation}) {
           });
         }
       })();
+      keyboardModalRef?.current?.present();
     }, []),
   );
 
@@ -224,37 +224,14 @@ export default function Touchpad({navigation}) {
     clickStateFinger.current = state.finger;
     clickStateIsDoubleTap.current = state.doubleTap;
   };
-  const setLastTappedInRef = time => {
-    lastTappedInRef.current = time;
-  };
 
   useInterval(() => {
-    if (Date.now() - lastTappedInRef.current > 130) {
-      if (pendingLeftClick.current) {
-        // console.log('Sending click');
-        socket?.emit('clicks', {
-          finger: 'left',
-          doubleTap: false,
-        });
-        clickStateFinger.current = '';
-        clickStateIsDoubleTap.current = false;
-        pendingLeftClick.current = false;
-      }
-    }
     if (isDraggingRef.current) {
-      const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
-      if (diffBetweenClickAndDrag < 50) {
-        pendingLeftClick.current = false;
-      }
       socket?.emit('windowdragupdate', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
       });
     } else if (tX.current != 0 || tY.current != 0) {
-      const diffBetweenClickAndDrag = Date.now() - lastTappedInRef.current;
-      if (diffBetweenClickAndDrag < 50) {
-        pendingLeftClick.current = false;
-      }
       socket?.emit('coordinates', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
@@ -314,6 +291,19 @@ export default function Touchpad({navigation}) {
   const sendMediaKey = key => {
     socket?.emit('media-key', key);
   };
+  const sendLeftClick = () => {
+    socket?.emit('clicks', {
+      finger: 'left',
+      doubleTap: false,
+    });
+  };
+
+  const sendRightClick = () => {
+    socket?.emit('clicks', {
+      finger: 'right',
+      doubleTap: false,
+    });
+  };
 
   // mouse movement gesture handler
   const dragGesture = Gesture.Pan()
@@ -360,25 +350,6 @@ export default function Touchpad({navigation}) {
     })
     .onEnd(() => {});
 
-  // three finger window drag gesture handler
-  const dragGestureWindowDrag = Gesture.Pan()
-    .minPointers(3)
-    .onStart(e => {
-      // console.log("window start");
-      runOnJS(sendWindowDragStart)();
-    })
-    .onUpdate(e => {
-      // console.log("window update");
-      let coordinates = {
-        x: e.translationX,
-        y: e.translationY,
-      };
-      runOnJS(sendWindowDragUpdate)(coordinates);
-    })
-    .onEnd(e => {
-      // console.log("window end");
-      runOnJS(sendWindowDragEnd)();
-    });
   const twoFingerTap = Gesture.Tap()
     .maxDuration(200)
     .minPointers(2)
@@ -401,7 +372,6 @@ export default function Touchpad({navigation}) {
       };
       // console.log('Tap');
       runOnJS(setFingerState)(state);
-      runOnJS(setLastTappedInRef)(Date.now());
     });
   const oneFingerDoubleTap = Gesture.Tap()
     .maxDuration(150)
@@ -418,14 +388,13 @@ export default function Touchpad({navigation}) {
   const composed =
     Platform.OS == 'ios'
       ? Gesture.Race(
-          Gesture.Race(dragGesture, dragGestureScroll, dragGestureWindowDrag),
-          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap),
+          Gesture.Race(dragGesture, dragGestureScroll),
+          Gesture.Exclusive(oneFingerDoubleTap, oneFingerTap),
         )
       : Gesture.Race(
-          dragGestureWindowDrag,
           dragGestureScroll,
           dragGesture,
-          Gesture.Exclusive(twoFingerTap, oneFingerDoubleTap, oneFingerTap),
+          Gesture.Exclusive(oneFingerDoubleTap, oneFingerTap),
         );
   const textInputRef = useRef();
   const timeoutRef = useRef();
@@ -503,13 +472,6 @@ export default function Touchpad({navigation}) {
               <RoundKey onPress={disconnectSocket}>
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
-              {/* <FlatList
-                data={mediaKeysData}
-                keyExtractor={(item, index) => index}
-                renderItem={renderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              /> */}
             </View>
             <TextInput
               ref={textInputRef}
@@ -526,6 +488,14 @@ export default function Touchpad({navigation}) {
             <GestureDetector gesture={composed}>
               <Animated.View style={styles.touchpad}></Animated.View>
             </GestureDetector>
+            <View style={styles.clicksWrapper}>
+              <TouchableOpacity
+                style={styles.clickBtn}
+                onPress={sendLeftClick}></TouchableOpacity>
+              <TouchableOpacity
+                style={styles.clickBtn}
+                onPress={sendRightClick}></TouchableOpacity>
+            </View>
           </>
         )}
         <KeyboardModal ref={keyboardModalRef} sendMediaKey={sendMediaKey} />
@@ -558,8 +528,9 @@ const styles = StyleSheet.create({
   },
   touchpad: {
     width: '100%',
-    height: 400,
-    margin: 16,
+    minHeight: 400,
+    marginHorizontal: 16,
+    marginVertical: 8,
     borderRadius: 8,
     backgroundColor: colors.TOUCHPAD,
     justifyContent: 'center',
@@ -597,5 +568,17 @@ const styles = StyleSheet.create({
   txtStatus: {
     color: colors.WHITE,
     marginTop: 16,
+  },
+  clicksWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  clickBtn: {
+    width: '48%',
+    height: 60,
+    borderRadius: 4,
+    backgroundColor: colors.CLICK_BTN,
   },
 });
