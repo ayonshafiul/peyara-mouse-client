@@ -82,6 +82,7 @@ export default function Touchpad({navigation}) {
   const clickStateIsDoubleTap = useRef(false);
 
   const lastTapped = useSharedValue(0);
+  const lastTappedInRef = useRef(0);
   const isDragging = useSharedValue(false);
   const isDraggingRef = useRef(false);
   const pendingLeftClick = useRef(false);
@@ -225,32 +226,36 @@ export default function Touchpad({navigation}) {
     clickStateIsDoubleTap.current = state.doubleTap;
   };
 
+  const setLastTappedInRef = time => {
+    lastTappedInRef.current = time;
+  };
+  const setPendingLeftClick = value => {
+    pendingLeftClick.current = value;
+  };
+
   useInterval(() => {
+    if (Date.now() - lastTappedInRef.current > 130) {
+      if (pendingLeftClick.current) {
+        // console.log('Sending click');
+        socket?.emit('clicks', {
+          finger: 'left',
+          doubleTap: false,
+        });
+        pendingLeftClick.current = false;
+      }
+    }
+
     if (isDraggingRef.current) {
       socket?.emit('windowdragupdate', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
       });
     } else if (tX.current != 0 || tY.current != 0) {
+      pendingLeftClick.current = false;
       socket?.emit('coordinates', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
       });
-    } else if (clickStateFinger.current) {
-      if (
-        clickStateFinger.current === 'left' &&
-        clickStateIsDoubleTap.current === false
-      ) {
-        pendingLeftClick.current = true;
-      } else {
-        socket?.emit('clicks', {
-          finger: clickStateFinger.current,
-          doubleTap: clickStateIsDoubleTap.current,
-        });
-        clickStateFinger.current = '';
-        clickStateIsDoubleTap.current = false;
-        pendingLeftClick.current = false;
-      }
     }
 
     if (sX.current != 0 || sY.current != 0) {
@@ -353,25 +358,14 @@ export default function Touchpad({navigation}) {
   const twoFingerTap = Gesture.Tap()
     .maxDuration(200)
     .minPointers(2)
-    .onStart(_event => {
-      // console.log("Two finger");
-      let state = {
-        finger: 'right',
-        doubleTap: false,
-      };
-      runOnJS(setFingerState)(state);
-    });
+    .onStart(_event => {});
   const oneFingerTap = Gesture.Tap()
     .maxDuration(100)
     .onStart((_event, success) => {})
     .onEnd(e => {
       lastTapped.value = Date.now();
-      let state = {
-        finger: 'left',
-        doubleTap: false,
-      };
-      // console.log('Tap');
-      runOnJS(setFingerState)(state);
+      runOnJS(setLastTappedInRef)(Date.now());
+      runOnJS(setPendingLeftClick)(true);
     });
   const oneFingerDoubleTap = Gesture.Tap()
     .maxDuration(150)
