@@ -234,8 +234,8 @@ export default function Touchpad({navigation}) {
   };
 
   useInterval(() => {
-    if (Date.now() - lastTappedInRef.current > 130) {
-      if (pendingLeftClick.current) {
+    if (pendingLeftClick.current) {
+      if (Date.now() - lastTappedInRef.current > 130) {
         // console.log('Sending click');
         socket?.emit('clicks', {
           finger: 'left',
@@ -256,6 +256,13 @@ export default function Touchpad({navigation}) {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
       });
+    } else if (clickStateFinger.current) {
+      socket?.emit('clicks', {
+        finger: clickStateFinger.current,
+        doubleTap: clickStateIsDoubleTap.current,
+      });
+      clickStateFinger.current = '';
+      clickStateIsDoubleTap.current = false;
     }
 
     if (sX.current != 0 || sY.current != 0) {
@@ -355,10 +362,10 @@ export default function Touchpad({navigation}) {
     })
     .onEnd(() => {});
 
-  const twoFingerTap = Gesture.Tap()
-    .maxDuration(200)
-    .minPointers(2)
-    .onStart(_event => {});
+  // const twoFingerTap = Gesture.Tap()
+  //   .maxDuration(200)
+  //   .minPointers(2)
+  //   .onStart(_event => {});
   const oneFingerTap = Gesture.Tap()
     .maxDuration(100)
     .onStart((_event, success) => {})
@@ -371,7 +378,7 @@ export default function Touchpad({navigation}) {
     .maxDuration(150)
     .numberOfTaps(2)
     .onEnd((_event, success) => {
-      // console.log('Double Tap');
+      console.log('Double Tap');
       let state = {
         finger: 'left',
         doubleTap: true,
@@ -413,6 +420,7 @@ export default function Touchpad({navigation}) {
       textInputRef.current?.blur();
     } else {
       textInputRef.current?.focus();
+      keyboardModalRef?.current?.dismiss();
     }
   };
   const showControls = () => {
@@ -483,12 +491,14 @@ export default function Touchpad({navigation}) {
               <Animated.View style={styles.touchpad}></Animated.View>
             </GestureDetector>
             <View style={styles.clicksWrapper}>
+              <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
+                <Text style={styles.clickBtnText}>Left Click</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.clickBtn}
-                onPress={sendLeftClick}></TouchableOpacity>
-              <TouchableOpacity
-                style={styles.clickBtn}
-                onPress={sendRightClick}></TouchableOpacity>
+                onPress={sendRightClick}>
+                <Text style={styles.clickBtnText}>Right Click</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
@@ -574,5 +584,10 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 4,
     backgroundColor: colors.CLICK_BTN,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clickBtnText: {
+    fontFamily: 'Raleway-Thin',
   },
 });

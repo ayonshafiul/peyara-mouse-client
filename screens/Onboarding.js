@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useEffect} from 'react';
+import React, {useRef, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -15,7 +15,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  Easing,
   withRepeat,
 } from 'react-native-reanimated';
 
@@ -24,19 +23,17 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import NextIcon from '../assets/svg/arrow-next.svg';
 import ServerIcon from '../assets/img/server.png';
 import StartServerIcon from '../assets/img/server-start.png';
-import ServerConnectIcon from '../assets/img/server-connect.jpg';
-import QRCodeIcon from '../assets/img/qrcode.jpg';
-import TouchpadIcon from '../assets/img/touchpad-short.jpg';
+import ServerConnectIcon from '../assets/img/server-connect.png';
+import QRCodeIcon from '../assets/img/qrcode.png';
+
 import FingerIcon from '../assets/svg/finger.svg';
 import CursorIcon from '../assets/svg/cursor.svg';
 import SingleTapIcon from '../assets/svg/single-tap.svg';
 import DoubleTapIcon from '../assets/svg/double-tap.svg';
 import TwoFingerScrollIcon from '../assets/svg/two-finger-scroll.svg';
-import ThreeFingerWindowDragIcon from '../assets/svg/three-finger-window-drag.svg';
 
 import {setBooleanValueFor} from '../utils/storage';
 import {SETTINGS_ONBOARDING_SHOW_FIRST_TIME} from '../assets/constants/constants';
-import {useNavigation} from '@react-navigation/native';
 
 const duration = 2000;
 const WIDTH = Dimensions.get('window').width;
@@ -88,15 +85,12 @@ function ScanQRCode() {
 function ConnectServer() {
   return (
     <View style={[styles.downloadContainer]}>
-      <Image source={ServerConnectIcon} style={{width: 280, height: 320}} />
-    </View>
-  );
-}
-
-function TouchpadControls() {
-  return (
-    <View style={[styles.downloadContainer]}>
-      <Image source={TouchpadIcon} style={{width: 280, height: 440}} />
+      <Image
+        source={ServerConnectIcon}
+        style={{width: WIDTH, height: 120}}
+        resizeMethod="scale"
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -191,7 +185,7 @@ function TwoFingerScroll() {
   );
 }
 
-function ThreeFingerWindowDrag() {
+function TapAndMoveToWindowDrag() {
   const t = useSharedValue(50);
 
   const moveHorizontally = useAnimatedStyle(() => ({
@@ -216,7 +210,7 @@ function ThreeFingerWindowDrag() {
       </Window>
       <View style={styles.touchpad}>
         <Animated.View style={moveHorizontally}>
-          <ThreeFingerWindowDragIcon />
+          <SingleTapIcon />
         </Animated.View>
       </View>
     </>
@@ -229,51 +223,46 @@ function ShowKeyboard() {
 
 const steps = [
   {
-    label: 'Step 1: Download Server Client on your desktop',
+    label: 'Download Server Client on your desktop',
     component: <DownloadServer />,
   },
   {
-    label: 'Step 2: Install Server Client and start Server on your desktop',
+    label: 'Install Server client and start server on your desktop',
     component: <StartServer />,
   },
   {
-    label: 'Step 3: Scan QRCode from  the mobile app',
+    label: 'Scan QRCode from  the mobile app',
     component: <ScanQRCode />,
   },
   {
-    label: 'Step 4: Select a Server and click to connect',
+    label: 'Select a Server and click to connect',
     component: <ConnectServer />,
   },
   {
-    label: 'Now lets learn about touchpad controls!',
-    component: <TouchpadControls />,
-  },
-
-  {
-    label: 'Tutorial: Move the desktop cursor',
+    label: 'Move the desktop cursor with your finger',
     component: <MoveCursor />,
   },
 
   {
-    label: 'Tutorial: Tap once for click',
+    label: 'Tap once for click',
     component: <TapOnce />,
   },
   {
-    label: 'Tutorial: Tap twice for double click',
+    label: 'Tap twice for double click',
     component: <TapTwice />,
   },
 
   {
-    label: 'Tutorial: Two Finger Drag to scroll',
+    label: 'Two Finger Drag to scroll',
     component: <TwoFingerScroll />,
   },
 
   {
-    label: 'Tutorial: Three Finger Drag to move/resize windows',
-    component: <ThreeFingerWindowDrag />,
+    label: 'Tap and move to drag windows around',
+    component: <TapAndMoveToWindowDrag />,
   },
   {
-    label: 'Press to show keyboard',
+    label: 'Press to toggle keyboard',
     component: <ShowKeyboard />,
   },
 ];
@@ -314,14 +303,15 @@ export default function Onboarding({navigation}) {
         {item.component}
         <TouchableOpacity
           onPress={() => goToNextStep(index + 1)}
-          style={[styles.nextButton]}>
-          <NextIcon />
+          style={[styles.nextButton]}
+          activeOpacity={0.8}>
+          {/* <NextIcon /> */}
 
           <Text style={styles.nextButtonText}>
             {index == 0
               ? 'Done'
               : index == steps.length - 1
-              ? "Let's start"
+              ? "Let's Start"
               : 'Next'}
           </Text>
         </TouchableOpacity>
@@ -412,15 +402,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'yellow',
   },
   label: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Raleway-Regular',
     color: colors.WHITE,
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 18,
     textAlign: 'center',
+    marginHorizontal: 24,
   },
   nextButton: {
-    width: 200,
-    height: 50,
+    width: '60%',
+    height: 40,
     borderRadius: 25,
     overflow: 'hidden',
     backgroundColor: colors.PRIM_ACCENT,
@@ -429,10 +420,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nextButtonText: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Raleway-Regular',
     color: colors.PRIM_BG,
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
     textTransform: 'uppercase',
   },
   downloadContainer: {
@@ -443,12 +434,12 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   whiteText: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Raleway-Regular',
     color: colors.WHITE,
     fontSize: 16,
   },
   linkText: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Raleway-Regular',
     color: colors.PRIM_FRONT,
     textDecorationLine: 'underline',
   },

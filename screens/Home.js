@@ -18,17 +18,42 @@ import global from '../assets/styles/global';
 import {getServers, setServers} from '../utils/servers';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import AppIcon from '../assets/icon.png';
+import AppIcon from '../assets/img/mouse.png';
 import {QRCODE_SECRET, SERVER_URL_KEY} from '../assets/constants/constants';
 
 import {setValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSpring,
+} from 'react-native-reanimated';
 
 const OVERSWIPE_DIST = 20;
 
+const MouseMove = () => {
+  const offset = useSharedValue(200);
+
+  // const animStyle = useAnimatedStyle(() => ({
+  //   transform: [{translateX: offset.value}],
+  // }));
+
+  useEffect(() => {
+    offset.value = withRepeat(withSpring(-offset.value), -1, true);
+  }, []);
+
+  return (
+    <Animated.View style={styles.mainCardWrapper}>
+      <Image source={AppIcon} style={styles.icon} />
+    </Animated.View>
+  );
+};
+
 export default function Home({navigation}) {
   const [data, setData] = useState([]);
+
   const itemRefs = useRef(new Map());
   const isFocused = useIsFocused();
 
@@ -74,8 +99,7 @@ export default function Home({navigation}) {
   return (
     <Background>
       <SafeAreaView style={global.container}>
-        <Image source={AppIcon} style={styles.icon} />
-
+        <MouseMove />
         <DraggableFlatList
           keyExtractor={item => item.key}
           data={data}
@@ -193,6 +217,15 @@ function UnderlayRight({item}) {
 }
 
 const styles = StyleSheet.create({
+  mainCardWrapper: {
+    height: 200,
+    padding: 16,
+    borderRadius: 4,
+    marginVertical: 16,
+    backgroundColor: colors.PRIM_ACCENT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   row: {
     flexDirection: 'row',
     flex: 1,
@@ -212,22 +245,24 @@ const styles = StyleSheet.create({
   text: {
     color: colors.WHITE,
     fontSize: 16,
+    fontFamily: 'Raleway-Regular',
   },
   textBold: {
     color: colors.WHITE,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'Raleway-Bold',
   },
   listTitleText: {
-    fontWeight: 'bold',
     color: colors.WHITE,
     fontSize: 16,
     marginTop: 16,
+    fontFamily: 'Raleway-Bold',
   },
   textDark: {
-    fontWeight: 'bold',
     fontSize: 16,
     color: colors.PRIM_BG,
+    fontFamily: 'Raleway-Bold',
   },
   underlayRight: {
     backgroundColor: colors.PRIM_ACCENT,
@@ -239,12 +274,16 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   icon: {
-    width: 152,
-    height: 152,
+    width: 80,
+    height: 80,
     alignSelf: 'center',
-    marginTop: 24,
   },
-  helperText: {textAlign: 'center', marginTop: 200, fontSize: 18},
+  helperText: {
+    textAlign: 'center',
+    marginTop: 200,
+    fontSize: 18,
+    fontFamily: 'Raleway-Regular',
+  },
   plusButton: {
     width: 64,
     height: 64,

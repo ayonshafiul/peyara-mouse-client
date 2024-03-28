@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -41,7 +42,10 @@ function SwitchCard({item}) {
   };
 
   return (
-    <View style={styles.switchCardContainer}>
+    <TouchableOpacity
+      onPress={() => handleChange(!isOn)}
+      style={styles.switchCardContainer}
+      activeOpacity={0.8}>
       <Text style={styles.switchCardText}>{item?.label}</Text>
       <Switch
         value={isOn}
@@ -51,7 +55,7 @@ function SwitchCard({item}) {
         circleSize={20}
         backgroundActive={colors.PRIM_ACCENT}
       />
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -132,11 +136,13 @@ const styles = StyleSheet.create({
   },
   switchCardText: {
     color: colors.WHITE,
+    fontFamily: 'Raleway-Regular',
   },
   settingsHeader: {
     color: colors.WHITE,
-    fontSize: 24,
+    fontSize: 18,
     marginVertical: 24,
+    fontFamily: 'Raleway-Bold',
   },
   sliderContainer: {
     justifyContent: 'center',
