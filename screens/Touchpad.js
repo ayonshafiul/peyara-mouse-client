@@ -229,14 +229,18 @@ export default function Touchpad({navigation}) {
   const setLastTappedInRef = time => {
     lastTappedInRef.current = time;
   };
+
+  const setDraggingRef = value => {
+    isDragging.current = value;
+  };
   const setPendingLeftClick = value => {
     pendingLeftClick.current = value;
   };
 
   useInterval(() => {
     if (pendingLeftClick.current) {
-      if (Date.now() - lastTappedInRef.current > 130) {
-        // console.log('Sending click');
+      if (Date.now() - lastTappedInRef.current > DRAG_START_THRESHOLD_IN_MS) {
+        console.log('Sending click');
         socket?.emit('clicks', {
           finger: 'left',
           doubleTap: false,
@@ -246,6 +250,8 @@ export default function Touchpad({navigation}) {
     }
 
     if (isDraggingRef.current) {
+      // console.log('Drag window update');
+      pendingLeftClick.current = false;
       socket?.emit('windowdragupdate', {
         x: tX.current * tS.current,
         y: tY.current * tS.current,
@@ -322,7 +328,9 @@ export default function Touchpad({navigation}) {
     .onStart(e => {
       const timeSinceLastTapped = Date.now() - lastTapped.value;
       if (timeSinceLastTapped < DRAG_START_THRESHOLD_IN_MS) {
+        // console.log('Drag start');
         isDragging.value = true;
+        runOnJS(setDraggingRef)(true);
         runOnJS(sendWindowDragStart)();
       }
     })
@@ -331,21 +339,14 @@ export default function Touchpad({navigation}) {
         x: e.translationX,
         y: e.translationY,
       };
-      // if (isDragging.value) {
-      // runOnJS(sendWindowDragUpdate)(coordinates);
-      // } else {
       runOnJS(setCoordinates)(coordinates);
-      // }
     })
     .onEnd(() => {
-      // coord = {
-      //   x: 0,
-      //   y: 0,
-      // };
       if (isDragging.value) {
         runOnJS(sendWindowDragEnd)();
+        runOnJS(setDraggingRef)(false);
+        // console.log('Drag end');
         isDragging.value = false;
-        isDraggingRef.current = false;
       }
     });
 
@@ -367,7 +368,7 @@ export default function Touchpad({navigation}) {
   //   .minPointers(2)
   //   .onStart(_event => {});
   const oneFingerTap = Gesture.Tap()
-    .maxDuration(100)
+    .maxDuration(150)
     .onStart((_event, success) => {})
     .onEnd(e => {
       lastTapped.value = Date.now();
