@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "release-build": "npx react-native build-android --mode=release"
+    "release-build": "npx react-native build-android --mode=release",
+    "release-apk": "yarn android --mode release"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.1",
