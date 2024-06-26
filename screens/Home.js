@@ -18,38 +18,15 @@ import global from '../assets/styles/global';
 import {getServers, setServers} from '../utils/servers';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import AppIcon from '../assets/img/mouse.png';
 import {QRCODE_SECRET, SERVER_URL_KEY} from '../assets/constants/constants';
 
 import {setValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSpring,
-} from 'react-native-reanimated';
+
+import MouseMove from '../components/MouseMove';
 
 const OVERSWIPE_DIST = 20;
-
-const MouseMove = () => {
-  const offset = useSharedValue(200);
-
-  // const animStyle = useAnimatedStyle(() => ({
-  //   transform: [{translateX: offset.value}],
-  // }));
-
-  useEffect(() => {
-    offset.value = withRepeat(withSpring(-offset.value), -1, true);
-  }, []);
-
-  return (
-    <Animated.View style={styles.mainCardWrapper}>
-      <Image source={AppIcon} style={styles.icon} />
-    </Animated.View>
-  );
-};
 
 export default function Home({navigation}) {
   const [data, setData] = useState([]);

@@ -11,31 +11,17 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-} from 'react-native-reanimated';
 
 import colors from '../assets/constants/colors';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import NextIcon from '../assets/svg/arrow-next.svg';
+
 import ServerIcon from '../assets/img/server.png';
 import StartServerIcon from '../assets/img/server-start.png';
 import ServerConnectIcon from '../assets/img/server-connect.png';
 import QRCodeIcon from '../assets/img/qrcode.png';
 
-import FingerIcon from '../assets/svg/finger.svg';
-import CursorIcon from '../assets/svg/cursor.svg';
-import SingleTapIcon from '../assets/svg/single-tap.svg';
-import DoubleTapIcon from '../assets/svg/double-tap.svg';
-import TwoFingerScrollIcon from '../assets/svg/two-finger-scroll.svg';
-
 import {setBooleanValueFor} from '../utils/storage';
 import {SETTINGS_ONBOARDING_SHOW_FIRST_TIME} from '../assets/constants/constants';
 
-const duration = 2000;
 const WIDTH = Dimensions.get('window').width;
 const SERVER_LINK = 'https://peyara-remote-mouse.vercel.app';
 
@@ -95,132 +81,6 @@ function ConnectServer() {
   );
 }
 
-export function MoveCursor() {
-  const tX = useSharedValue(50);
-
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{translateX: tX.value}],
-  }));
-
-  React.useEffect(() => {
-    tX.value = withRepeat(
-      withTiming(-tX.value, {
-        duration,
-      }),
-      -1,
-      true,
-    );
-  }, []);
-  return (
-    <>
-      <Window>
-        <Animated.View style={animStyle}>
-          <CursorIcon />
-        </Animated.View>
-      </Window>
-      <View style={styles.touchpad}>
-        <Animated.View style={animStyle}>
-          <FingerIcon />
-        </Animated.View>
-      </View>
-    </>
-  );
-}
-
-function TapOnce() {
-  return (
-    <>
-      <Window>
-        <CursorIcon />
-      </Window>
-      <View style={styles.touchpad}>
-        <SingleTapIcon />
-      </View>
-    </>
-  );
-}
-
-function TapTwice() {
-  return (
-    <>
-      <Window>
-        <CursorIcon />
-      </Window>
-      <View style={styles.touchpad}>
-        <DoubleTapIcon />
-      </View>
-    </>
-  );
-}
-
-function TwoFingerScroll() {
-  const t = useSharedValue(50);
-
-  const moveVertically = useAnimatedStyle(() => ({
-    transform: [{translateY: t.value}],
-  }));
-
-  React.useEffect(() => {
-    t.value = withRepeat(
-      withTiming(-t.value, {
-        duration,
-      }),
-      -1,
-      true,
-    );
-  }, []);
-  return (
-    <>
-      <Window>
-        <Animated.View
-          style={[styles.scrollbar, moveVertically]}></Animated.View>
-        <CursorIcon />
-      </Window>
-      <View style={styles.touchpad}>
-        <Animated.View style={moveVertically}>
-          <TwoFingerScrollIcon />
-        </Animated.View>
-      </View>
-    </>
-  );
-}
-
-function TapAndMoveToWindowDrag() {
-  const t = useSharedValue(50);
-
-  const moveHorizontally = useAnimatedStyle(() => ({
-    transform: [{translateX: t.value}],
-  }));
-
-  React.useEffect(() => {
-    t.value = withRepeat(
-      withTiming(-t.value, {
-        duration,
-      }),
-      -1,
-      true,
-    );
-  }, []);
-  return (
-    <>
-      <Window style={moveHorizontally}>
-        <View style={styles.placeTop}>
-          <CursorIcon />
-        </View>
-      </Window>
-      <View style={styles.touchpad}>
-        <Animated.View style={moveHorizontally}>
-          <SingleTapIcon />
-        </Animated.View>
-      </View>
-    </>
-  );
-}
-
-function ShowKeyboard() {
-  return <MaterialIcons name="keyboard-hide" size={48} color={colors.WHITE} />;
-}
-
 const steps = [
   {
     label: 'Download Server Client on your desktop',
@@ -238,47 +98,7 @@ const steps = [
     label: 'Select a Server and click to connect',
     component: <ConnectServer />,
   },
-  {
-    label: 'Move the desktop cursor with your finger',
-    component: <MoveCursor />,
-  },
-
-  {
-    label: 'Tap once for click',
-    component: <TapOnce />,
-  },
-  {
-    label: 'Tap twice for double click',
-    component: <TapTwice />,
-  },
-
-  {
-    label: 'Two Finger Drag to scroll',
-    component: <TwoFingerScroll />,
-  },
-
-  {
-    label: 'Tap and move to drag windows around',
-    component: <TapAndMoveToWindowDrag />,
-  },
-  {
-    label: 'Press to toggle keyboard',
-    component: <ShowKeyboard />,
-  },
 ];
-
-function Window({children, style}) {
-  return (
-    <Animated.View style={[styles.touchpad, style]}>
-      <View style={styles.dotContainer}>
-        <View style={[styles.dot, styles.dotRed]}></View>
-        <View style={[styles.dot, styles.dotYellow]}></View>
-        <View style={[styles.dot, styles.dotGreen]}></View>
-      </View>
-      {children}
-    </Animated.View>
-  );
-}
 
 export default function Onboarding({navigation}) {
   const flatListRef = useRef();
@@ -334,7 +154,7 @@ export default function Onboarding({navigation}) {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   containerSafe: {
     flex: 1,
     backgroundColor: colors.PRIM_BG,

@@ -9,6 +9,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Settings from '../screens/Settings';
 import Touchpad from '../screens/Touchpad';
+import TouchpadNavigator from './TouchpadNavigator';
 
 const Tabs = createBottomTabNavigator();
 
@@ -52,7 +53,7 @@ export default function TabsNavigator() {
             </View>
           ),
         }}
-        component={Touchpad}
+        component={TouchpadNavigator}
       />
       <Tabs.Screen
         name="settings"

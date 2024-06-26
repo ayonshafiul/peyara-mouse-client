@@ -206,6 +206,9 @@ export default function Touchpad({navigation}) {
       socket?.disconnect();
     }
   };
+  const openHelp = () => {
+    navigation.navigate('TouchpadHelp');
+  };
 
   useEffect(() => {
     connectSocket();
@@ -471,6 +474,10 @@ export default function Touchpad({navigation}) {
                   size={24}
                   color={colors.WHITE}
                 />
+              </RoundKey>
+
+              <RoundKey onPress={openHelp}>
+                <MaterialIcons name="help" size={24} color={colors.WHITE} />
               </RoundKey>
               <RoundKey onPress={disconnectSocket}>
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />

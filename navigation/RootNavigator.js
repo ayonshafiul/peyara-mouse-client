@@ -17,8 +17,6 @@ export default function RootNavigator({initialRoute}) {
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="QRCode" component={QRCode} />
       <Stack.Screen name="Tabs" component={TabsNavigator} />
-      {/*<Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="Settings" component={Settings} /> */}
     </Stack.Navigator>
   );
 }
