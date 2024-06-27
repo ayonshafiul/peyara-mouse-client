@@ -1,79 +1,44 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Peyara Remote Mouse
 
-# Getting Started
+[![Download Android app from Google Play](https://peyara-remote-mouse.vercel.app/img/google-play.png)](https://play.google.com/store/apps/details?id=io.github.ayonshafiul.peyara)
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Wifi Remote Mouse for your Windows/Linux/Mac PCs.
 
-## Step 1: Start the Metro Server
+<p align="center"><img src="https://peyara-remote-mouse.vercel.app/img/client-logo.png" alt="Logo" width="250"></p>
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+<img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/touchpad.png" alt="Touchpad" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/keyboard.png" alt="Keyboard" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/settings-1.png" alt="Settings" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/settings-2.png" alt="Settings" width="250">
 
-To start Metro, run the following command from the _root_ of your React Native project:
+## Turn your mobile into a wireless mouse and keyboard combo with Peyara Remote Mouse in 4 easy steps.
 
-```bash
-# using npm
-npm start
+### Step 1. Download Desktop Client on Windows/Linux/Mac from
 
-# OR using Yarn
-yarn start
-```
+https://peyara-remote-mouse.vercel.app/
 
-## Step 2: Start your Application
+### Step 2: Install the desktop client and start the server.
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+![Start Server](https://peyara-remote-mouse.vercel.app/img/run-server.png)
 
-### For Android
+### Step 3: Install the app on your phone
 
-```bash
-# using npm
-npm run android
+[![Download Android app from Google Play](https://peyara-remote-mouse.vercel.app/img/google-play.png)](https://play.google.com/store/apps/details?id=io.github.ayonshafiul.peyara)
 
-# OR using Yarn
-yarn android
-```
+### Step 4: Scan the QRCode and connect!
 
-### For iOS
+<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="250">
 
-```bash
-# using npm
-npm run ios
+Follow the initial onboarding steps to get started!
 
-# OR using Yarn
-yarn ios
-```
+## Built using these amazing libraries
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+[react-native-reanimated](https://github.com/software-mansion/react-native-reanimated/)
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+[react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler)
 
-## Step 3: Modifying your App
+[react-native-mmkv](https://github.com/mrousavy/react-native-mmkv)
 
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+[socket.io](https://github.com/socketio/socket.io)
