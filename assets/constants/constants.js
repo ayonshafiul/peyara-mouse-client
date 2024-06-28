@@ -19,6 +19,8 @@ export const SETTINGS_TOUCHPAD_SENSITIVITY = 'sensitivity';
 
 export const SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY = 'scrollsensitivity';
 
+export const SETTINGS_TOUCHPAD_RESPONSE_RATE = 'responserate';
+
 export const SETTINGS_ONBOARDING_SHOW_EVERYTIME =
   'settingsonboardingshoweverytime';
 

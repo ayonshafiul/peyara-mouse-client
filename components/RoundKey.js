@@ -11,8 +11,8 @@ export default function RoundKey({onPress = null, children}) {
 
 const styles = StyleSheet.create({
   keysContainer: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     borderRadius: 20,
     margin: 8,
     justifyContent: 'center',

@@ -1,8 +1,10 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-// import {activateKeepAwakeAsync, deactivateKeepAwake} from 'expo-keep-awake';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  activateKeepAwake,
+  deactivateKeepAwake,
+} from '@sayem314/react-native-keep-awake';
 import {
   ActivityIndicator,
-  FlatList,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -18,31 +20,29 @@ import {io} from 'socket.io-client';
 import {
   getInvertedScrollSettings,
   getKeepAwakeSettings,
+  getResponseRateSettings,
 } from '../utils/settings';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   SERVER_URL_KEY,
-  SETTINGS_KEEP_AWAKE_KEY,
   SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
   SETTINGS_TOUCHPAD_SENSITIVITY,
-  mediaKeysData,
 } from '../assets/constants/constants';
 import useInterval from '../hooks/useInterval';
-// import * as Notifications from 'expo-notifications';
-import {getValueFor, setValueFor} from '../utils/storage';
+import {getValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import KeyboardModal from '../modals/KeyboardModal';
 import RoundKey from '../components/RoundKey';
 import {useFocusEffect} from '@react-navigation/native';
 import notifee, {
   AndroidColor,
-  AndroidFlags,
   AuthorizationStatus,
   EventType,
 } from '@notifee/react-native';
+import KeepAwakeText from '../components/KeepAwakeText';
 
 let socket = null;
-let textInputValueProps = Platform.os == 'ios' ? {value: ''} : {};
+let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
 
 const eventHandler = async ({type, detail}) => {
   if (type === EventType.ACTION_PRESS) {
@@ -64,6 +64,7 @@ export default function Touchpad({navigation}) {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
+  const responseRate = getResponseRateSettings();
 
   // touchpad coordinates
   const tX = useRef(0);
@@ -88,29 +89,9 @@ export default function Touchpad({navigation}) {
   const pendingLeftClick = useRef(false);
 
   useEffect(() => {
-    // const subscription = Notifications.addNotificationResponseReceivedListener(
-    //   ({actionIdentifier}) => {
-    //     switch (actionIdentifier) {
-    //       case 'vup':
-    //         socket?.emit('media-key', 'audio_vol_up');
-    //         break;
-    //       case 'vdown':
-    //         socket?.emit('media-key', 'audio_vol_down');
-    //         break;
-    //       case 'play':
-    //         socket?.emit('media-key', 'audio_play');
-    //         break;
-    //       default:
-    //         console.log(`Unhandled action identifier: ${actionIdentifier}`);
-    //     }
-    //   },
-    // );
-    // return () => subscription.remove();
     (async function requestUserPermission() {
       const settings = await notifee.requestPermission();
-
       if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-        console.log('Permission settings:', settings);
       } else {
         console.log('User declined permissions');
       }
@@ -130,17 +111,16 @@ export default function Touchpad({navigation}) {
           const invertedScroll = getInvertedScrollSettings();
           const keepAwake = getKeepAwakeSettings();
           if (keepAwake) {
-            // activateKeepAwakeAsync(SETTINGS_KEEP_AWAKE_KEY);
-          } else if (keepAwake == false) {
-            // do not do anything if it is null
-            // deactivateKeepAwake(SETTINGS_KEEP_AWAKE_KEY);
+            activateKeepAwake();
+          } else {
+            deactivateKeepAwake();
           }
           setSettingsData({
             invertedScroll: invertedScroll,
           });
         }
       })();
-      keyboardModalRef?.current?.present();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 
@@ -182,6 +162,7 @@ export default function Touchpad({navigation}) {
 
         setStatus('Connected');
         setLoading(false);
+        keyboardModalRef?.current?.present();
       });
 
       socket.on('connect_error', error => {
@@ -204,6 +185,7 @@ export default function Touchpad({navigation}) {
   const disconnectSocket = async () => {
     if (socket) {
       socket?.disconnect();
+      keyboardModalRef?.current?.dismiss();
     }
   };
   const openHelp = () => {
@@ -218,6 +200,7 @@ export default function Touchpad({navigation}) {
         socket.disconnect();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setCoordinates = coordinates => {
@@ -243,7 +226,6 @@ export default function Touchpad({navigation}) {
   useInterval(() => {
     if (pendingLeftClick.current) {
       if (Date.now() - lastTappedInRef.current > DRAG_START_THRESHOLD_IN_MS) {
-        console.log('Sending click');
         socket?.emit('clicks', {
           finger: 'left',
           doubleTap: false,
@@ -253,7 +235,6 @@ export default function Touchpad({navigation}) {
     }
 
     if (isDraggingRef.current) {
-      // console.log('Drag window update');
       pendingLeftClick.current = false;
       socket?.emit('windowdragupdate', {
         x: tX.current * tS.current,
@@ -285,22 +266,15 @@ export default function Touchpad({navigation}) {
     tY.current = 0;
     sX.current = 0;
     sY.current = 0;
-  }, 32);
+  }, Number(responseRate ?? 16));
 
   const setScroll = coordinates => {
     sX.current = coordinates.x;
     sY.current = coordinates.y;
   };
-  const sendClicks = state => {
-    socket?.emit('clicks', state);
-  };
-
   const sendWindowDragStart = coordinates => {
     isDraggingRef.current = true;
     socket?.emit('windowdragstart', coordinates);
-  };
-  const sendWindowDragUpdate = coordinates => {
-    socket?.emit('windowdragupdate', coordinates);
   };
   const sendWindowDragEnd = coordinates => {
     isDraggingRef.current = false;
@@ -382,7 +356,6 @@ export default function Touchpad({navigation}) {
     .maxDuration(150)
     .numberOfTaps(2)
     .onEnd((_event, success) => {
-      console.log('Double Tap');
       let state = {
         finger: 'left',
         doubleTap: true,
@@ -391,7 +364,7 @@ export default function Touchpad({navigation}) {
     });
 
   const composed =
-    Platform.OS == 'ios'
+    Platform.OS === 'ios'
       ? Gesture.Race(
           Gesture.Race(dragGesture, dragGestureScroll),
           Gesture.Exclusive(oneFingerDoubleTap, oneFingerTap),
@@ -415,7 +388,7 @@ export default function Touchpad({navigation}) {
   };
 
   const clearInput = () => {
-    if (Platform.OS != 'ios') {
+    if (Platform.OS !== 'ios') {
       textInputRef.current?.clear();
     }
   };
@@ -433,15 +406,7 @@ export default function Touchpad({navigation}) {
     }
     keyboardModalRef?.current?.present();
   };
-  const renderItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={styles.rowKey}
-        onPress={() => sendMediaKey(item.key)}>
-        <MaterialIcons name={item.icon} size={24} color={colors.WHITE} />
-      </TouchableOpacity>
-    );
-  };
+
   return (
     <Background>
       <SafeAreaView style={styles.container}>
@@ -449,16 +414,19 @@ export default function Touchpad({navigation}) {
           <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
         )}
 
-        {status == 'Disconnected' && (
-          <Text style={styles.text}>
-            Go to home, select a server and connect again.
+        {status === 'Disconnected' && (
+          <View style={styles.retryWrapper}>
+            <Text style={styles.text}>
+              Go to home, select a server and connect again.
+            </Text>
+
             <TouchableOpacity onPress={connectSocket}>
-              <Text style={styles.txtRetry}>{'\n'} Reconnect</Text>
+              <Text style={styles.txtRetry}>Reconnect to this server</Text>
             </TouchableOpacity>
-          </Text>
+          </View>
         )}
 
-        {status == 'Connected' && (
+        {status === 'Connected' && (
           <>
             <View style={styles.keysConatiner}>
               <RoundKey onPress={focusToggle}>
@@ -496,7 +464,9 @@ export default function Touchpad({navigation}) {
             />
 
             <GestureDetector gesture={composed}>
-              <Animated.View style={styles.touchpad}></Animated.View>
+              <Animated.View style={styles.touchpad}>
+                <KeepAwakeText />
+              </Animated.View>
             </GestureDetector>
             <View style={styles.clicksWrapper}>
               <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
@@ -510,7 +480,12 @@ export default function Touchpad({navigation}) {
             </View>
           </>
         )}
-        <KeyboardModal ref={keyboardModalRef} sendMediaKey={sendMediaKey} />
+        <KeyboardModal
+          ref={keyboardModalRef}
+          sendMediaKey={sendMediaKey}
+          sendLeftClick={sendLeftClick}
+          sendRightClick={sendRightClick}
+        />
       </SafeAreaView>
     </Background>
   );
@@ -540,9 +515,10 @@ const styles = StyleSheet.create({
   },
   touchpad: {
     width: '100%',
-    minHeight: 400,
+    minHeight: 360,
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginTop: 16,
+    marginBottom: 2,
     borderRadius: 8,
     backgroundColor: colors.TOUCHPAD,
     justifyContent: 'center',
@@ -557,14 +533,24 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'blue',
   },
+  retryWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   text: {
     color: colors.WHITE,
-    marginTop: 8,
     textAlign: 'center',
     fontSize: 16,
+    fontFamily: 'Raleway-Regular',
   },
   txtRetry: {
-    color: colors.PRIM_ACCENT,
+    color: colors.PRIM_BG,
+    marginTop: 16,
+    backgroundColor: colors.PRIM_ACCENT,
+    borderRadius: 4,
+    padding: 8,
+    fontFamily: 'Raleway-Regular',
   },
   input: {
     height: 40,
@@ -588,10 +574,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   clickBtn: {
-    width: '48%',
+    width: '49.6%',
     height: 60,
     borderRadius: 4,
-    backgroundColor: colors.CLICK_BTN,
+    backgroundColor: colors.TOUCHPAD,
     justifyContent: 'center',
     alignItems: 'center',
   },

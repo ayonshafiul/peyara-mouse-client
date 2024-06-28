@@ -4,6 +4,7 @@ import {
   SETTINGS_KEEP_AWAKE_KEY,
   SETTINGS_ONBOARDING_SHOW_EVERYTIME,
   SETTINGS_ONBOARDING_SHOW_FIRST_TIME,
+  SETTINGS_TOUCHPAD_RESPONSE_RATE,
 } from '../assets/constants/constants';
 import {setBooleanValueFor, getBooleanValueFor} from './storage';
 
@@ -32,6 +33,10 @@ export function getInvertedScrollSettings() {
 
 export function getKeepAwakeSettings() {
   return getBooleanValueFor(SETTINGS_KEEP_AWAKE_KEY);
+}
+
+export function getResponseRateSettings() {
+  return getBooleanValueFor(SETTINGS_TOUCHPAD_RESPONSE_RATE);
 }
 
 export function getShowOnBoardingSettingsEverytime() {

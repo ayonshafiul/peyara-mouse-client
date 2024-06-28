@@ -1,6 +1,6 @@
 {
-  "name": "io.github.ayonshafiul.peyara",
-  "version": "0.0.1",
+  "name": "peyara-mouse-client",
+  "version": "1.0.31",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
