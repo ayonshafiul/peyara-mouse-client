@@ -127,7 +127,7 @@ export default function Settings() {
               />
             </View>
             <Text style={styles.switchCardText}>
-              Touchpad Respoinse rate: {responseRate}ms
+              Touchpad Response rate: {responseRate}ms
             </Text>
             <View style={styles.sliderContainer}>
               <Slider
