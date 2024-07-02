@@ -6,13 +6,14 @@
 
 <p align="center"><img src="https://peyara-remote-mouse.vercel.app/img/client-logo.png" alt="Logo" width="250"></p>
 
-<img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="250">
-<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="250">
-<img src="https://peyara-remote-mouse.vercel.app/img/touchpad.png" alt="Touchpad" width="250">
-<img src="https://peyara-remote-mouse.vercel.app/img/keyboard.png" alt="Keyboard" width="250">
-<img src="https://peyara-remote-mouse.vercel.app/img/settings-1.png" alt="Settings" width="250">
-<img src="https://peyara-remote-mouse.vercel.app/img/settings-2.png" alt="Settings" width="250">
-
+<div style="display: flex; flex-wrap: wrap;">
+<img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/touchpad.png" alt="Touchpad" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/keyboard.png" alt="Keyboard" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/settings-1.png" alt="Settings" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/settings-2.png" alt="Settings" width="150">
+</div>
 ## Turn your mobile into a wireless mouse and keyboard combo with Peyara Remote Mouse in 4 easy steps.
 
 ### Step 1. Download Desktop Client on Windows/Linux/Mac from
@@ -29,7 +30,7 @@ https://peyara-remote-mouse.vercel.app/
 
 ### Step 4: Scan the QRCode and connect!
 
-<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="250">
+<img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="150">
 
 Follow the initial onboarding steps to get started!
 
