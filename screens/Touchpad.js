@@ -447,6 +447,13 @@ export default function Touchpad({navigation}) {
               <RoundKey onPress={openHelp}>
                 <MaterialIcons name="help" size={24} color={colors.WHITE} />
               </RoundKey>
+              <RoundKey onPress={null}>
+                <MaterialIcons
+                  name="text-fields"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
               <RoundKey onPress={disconnectSocket}>
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
@@ -505,7 +512,7 @@ const styles = StyleSheet.create({
     maxHeight: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 16,
+    gap: 8,
     paddingHorizontal: 16,
     marginTop: 16,
   },

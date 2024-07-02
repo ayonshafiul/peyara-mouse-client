@@ -1,4 +1,10 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {forwardRef, useMemo} from 'react';
 import {mediaKeysData} from '../assets/constants/constants';
 import RoundKey from '../components/RoundKey';
@@ -10,9 +16,13 @@ import {
 } from '@gorhom/bottom-sheet';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated from 'react-native-reanimated';
+import ClipText from '../components/ClipText';
 
-function KeyboardModal({sendMediaKey, sendLeftClick, sendRightClick}, ref) {
-  const snapPoints = useMemo(() => ['33%', '50%'], []);
+function KeyboardModal(
+  {sendMediaKey, sendLeftClick, sendRightClick, sendText},
+  ref,
+) {
+  const snapPoints = useMemo(() => ['33%', '50%', '70%'], []);
 
   return (
     <View style={styles.container}>
@@ -53,6 +63,7 @@ function KeyboardModal({sendMediaKey, sendLeftClick, sendRightClick}, ref) {
               );
             })}
           </View>
+          <ClipText sendText={sendText} />
         </BottomSheetScrollView>
       </BottomSheetModal>
     </View>
