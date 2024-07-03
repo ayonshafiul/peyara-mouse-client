@@ -19,7 +19,7 @@ import Animated from 'react-native-reanimated';
 import ClipText from '../components/ClipText';
 
 function KeyboardModal(
-  {sendMediaKey, sendLeftClick, sendRightClick, sendText},
+  {sendMediaKey, sendLeftClick, sendRightClick, sendText, receivedText},
   ref,
 ) {
   const snapPoints = useMemo(() => ['33%', '50%', '70%'], []);
@@ -63,7 +63,7 @@ function KeyboardModal(
               );
             })}
           </View>
-          <ClipText sendText={sendText} />
+          <ClipText sendText={sendText} receivedText={receivedText} />
         </BottomSheetScrollView>
       </BottomSheetModal>
     </View>

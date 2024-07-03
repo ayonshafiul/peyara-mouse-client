@@ -222,9 +222,8 @@ export const styles = StyleSheet.create({
     backgroundColor: 'yellow',
   },
   label: {
-    fontFamily: 'Raleway-Regular',
+    fontFamily: 'Raleway-Bold',
     color: colors.WHITE,
-    fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center',
     marginHorizontal: 24,

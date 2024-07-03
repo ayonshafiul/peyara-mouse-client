@@ -64,6 +64,7 @@ export default function Touchpad({navigation}) {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [settingsData, setSettingsData] = useState({});
+  const [receivedText, setReceivedText] = useState('');
   const responseRate = getResponseRateSettings();
 
   // touchpad coordinates
@@ -176,6 +177,10 @@ export default function Touchpad({navigation}) {
         setStatus('Disconnected');
         setLoading(false);
       });
+
+      socket.on('text-mobile', text => {
+        setReceivedText(text);
+      });
     } else {
       setLoading(false);
       setStatus('Disconnected');
@@ -285,6 +290,9 @@ export default function Touchpad({navigation}) {
   };
   const sendMediaKey = key => {
     socket?.emit('media-key', key);
+  };
+  const sendText = text => {
+    socket?.emit('text', text);
   };
   const sendLeftClick = () => {
     socket?.emit('clicks', {
@@ -492,6 +500,8 @@ export default function Touchpad({navigation}) {
           sendMediaKey={sendMediaKey}
           sendLeftClick={sendLeftClick}
           sendRightClick={sendRightClick}
+          sendText={sendText}
+          receivedText={receivedText}
         />
       </SafeAreaView>
     </Background>
