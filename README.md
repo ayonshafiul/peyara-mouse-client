@@ -14,6 +14,7 @@
 <img src="https://peyara-remote-mouse.vercel.app/img/settings-1.png" alt="Settings" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/settings-2.png" alt="Settings" width="150">
 </div>
+
 ## Turn your mobile into a wireless mouse and keyboard combo with Peyara Remote Mouse in 4 easy steps.
 
 ### Step 1. Download Desktop Client on Windows/Linux/Mac from
@@ -34,7 +35,7 @@ https://peyara-remote-mouse.vercel.app/
 
 Follow the initial onboarding steps to get started!
 
-## Built using these amazing libraries
+## Built with ❤️ using React Native and these amazing libraries
 
 [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated/)
 
