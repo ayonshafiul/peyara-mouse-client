@@ -1,16 +1,12 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import colors from '../assets/constants/colors';
 import AppButton from './AppButton';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {TextInput} from 'react-native-gesture-handler';
+import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
-export default function ClipText({sendText, receivedText}) {
+export default function ClipText({sendText, receivedText, onFocus}) {
   const [text, setText] = useState('');
   const [copyBtnText, setCopyBtnText] = useState('Copy to Clipoboard');
   useEffect(() => {
@@ -40,10 +36,12 @@ export default function ClipText({sendText, receivedText}) {
         value={text}
         onChangeText={setText}
         style={styles.input}
+        onFocus={onFocus}
         multiline
         numberOfLines={3}
         textAlignVertical="top"
         placeholder="Paste or Type here to send to PC"
+        keyboardAppearance="light"
       />
       <AppButton
         text={'Send to pc'}
@@ -60,8 +58,7 @@ export default function ClipText({sendText, receivedText}) {
 
 const styles = StyleSheet.create({
   input: {
-    borderBottomWidth: 1,
-    borderLeftWidth: 1,
+    borderWidth: 1,
     borderColor: colors.PRIM_ACCENT,
     color: colors.WHITE,
     marginHorizontal: 16,

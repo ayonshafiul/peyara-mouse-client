@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {forwardRef, useMemo} from 'react';
+import React, {forwardRef, useMemo, useRef} from 'react';
 import {mediaKeysData} from '../assets/constants/constants';
 import RoundKey from '../components/RoundKey';
 import colors from '../assets/constants/colors';
@@ -22,8 +22,11 @@ function KeyboardModal(
   {sendMediaKey, sendLeftClick, sendRightClick, sendText, receivedText},
   ref,
 ) {
-  const snapPoints = useMemo(() => ['33%', '50%', '70%'], []);
-
+  const snapPoints = useMemo(() => ['33%', '60%'], []);
+  const scrollViewRef = useRef(null);
+  const scrollToBottom = () => {
+    scrollViewRef.current?.scrollToEnd({animated: true});
+  };
   return (
     <View style={styles.container}>
       <BottomSheetModal
@@ -39,7 +42,8 @@ function KeyboardModal(
         style={{
           backgroundColor: colors.PRIM_BG,
         }}
-        enableOverDrag={false}>
+        enableOverDrag={false}
+        detached>
         <View style={styles.clicksWrapper}>
           <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
             <Text style={styles.clickBtnText}>Left Click</Text>
@@ -50,7 +54,8 @@ function KeyboardModal(
         </View>
         <BottomSheetScrollView
           style={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          ref={scrollViewRef}>
           <View style={styles.contentContainer}>
             {mediaKeysData.map((item, idx) => {
               return (
@@ -64,7 +69,11 @@ function KeyboardModal(
               );
             })}
           </View>
-          <ClipText sendText={sendText} receivedText={receivedText} />
+          <ClipText
+            sendText={sendText}
+            receivedText={receivedText}
+            onFocus={scrollToBottom}
+          />
         </BottomSheetScrollView>
       </BottomSheetModal>
     </View>
