@@ -3045,6 +3045,13 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+apisauce@^2.1.1:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/apisauce/-/apisauce-2.1.6.tgz#94887f335bf3d735305fc895c8a191c9c2608a7f"
+  integrity sha512-MdxR391op/FucS2YQRfB/NMRyCnHEPDd4h17LRIuVYi0BpGmMhpxc0shbOpfs5ahABuBEffNCGal5EcsydbBWg==
+  dependencies:
+    axios "^0.21.4"
+
 appdirsjs@^1.2.4:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/appdirsjs/-/appdirsjs-1.2.7.tgz#50b4b7948a26ba6090d4aede2ae2dc2b051be3b3"
@@ -3200,6 +3207,13 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+axios@^0.21.4:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+  dependencies:
+    follow-redirects "^1.14.0"
 
 babel-core@^7.0.0-bridge.0:
   version "7.0.0-bridge.0"
@@ -5019,6 +5033,11 @@ flow-parser@^0.206.0:
   version "0.206.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
+
+follow-redirects@^1.14.0:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 fontfaceobserver@^2.1.0:
   version "2.3.0"
@@ -7694,6 +7713,21 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-device-info@10.3.0:
+  version "10.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-10.3.0.tgz#6bab64d84d3415dd00cc446c73ec5e2e61fddbe7"
+  integrity sha512-/ziZN1sA1REbJTv5mQZ4tXggcTvSbct+u5kCaze8BmN//lbxcTvWsU6NQd4IihLt89VkbX+14IGc9sVApSxd/w==
+
+react-native-device-info@^0.9.3:
+  version "0.9.9"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.9.9.tgz#42490719b8be2b8ffe689f3c74d56884ca05c0d7"
+  integrity sha512-BsRPImeOSPOioitx2OREwuyGRsXiqhcNMPrIJ79FFWB2kbANZk56VqoSxta/i/RB1v3Xws0YDLLSqz9kEeudcQ==
+
+react-native-device-info@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-11.1.0.tgz#7db5c4e5a179dce761efac155a493aa0956a40ab"
+  integrity sha512-hzXJSObJdezEz0hF7MAJ3tGeoesuQWenXXt9mrQR9Mjb8kXpZ09rqSsZ/quNpJdZpQ3rYiFa3/0GFG5KNn9PBg==
+
 react-native-draggable-flatlist@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-4.0.1.tgz#2f027d387ba4b8f3eb0907340e32cb85e6460df2"
@@ -7743,6 +7777,14 @@ react-native-screens@^3.29.0:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-siren@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-siren/-/react-native-siren-0.0.5.tgz#cc32e62eda163d3ae28bb2cb1b342eb859c3bd1c"
+  integrity sha512-mOzjFpm8ASNI/vnc+uWcj4ogboRrzfzmueCMYavLvyz5QbLyDem2LI9vtsz7t9fxzw2tZzc8XPfRb0IjUJXfZw==
+  dependencies:
+    apisauce "^2.1.1"
+    react-native-device-info "^0.9.3"
 
 react-native-splash-screen@^3.3.0:
   version "3.3.0"
@@ -8160,6 +8202,11 @@ scheduler@^0.23.0:
   dependencies:
     loose-envify "^1.1.0"
 
+semver@7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.2.1.tgz#d997aa36bdbb00b501ae4ac4c7d17e9f7a587ae5"
+  integrity sha512-aHhm1pD02jXXkyIpq25qBZjr3CQgg8KST8uX0OWXch3xE6jw+1bfbWnCjzMwojsTquroUmKFHNzU6x26mEiRxw==
+
 semver@7.3.2:
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.2.tgz#604962b052b81ed0786aae84389ffba70ffd3938"
@@ -8417,6 +8464,16 @@ source-map@^0.7.3:
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.4.tgz#a9bbe705c9d8846f4e08ff6765acf0f1b0898656"
   integrity sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==
+
+sp-react-native-in-app-updates@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/sp-react-native-in-app-updates/-/sp-react-native-in-app-updates-1.4.0.tgz#60f1fc3bac5dd4f1992c32aa4fd666c2fbab7bc3"
+  integrity sha512-zhFUjeaPqykDVyYLRXCLLZjDMMfbe4ylOqPEpF3vvzC0V+WB9q07KkYxOm+ETuaZhEXbQADiqJh7uzFOZynmnw==
+  dependencies:
+    react-native-device-info "10.3.0"
+    react-native-siren "0.0.5"
+    semver "7.2.1"
+    underscore "1.12.1"
 
 split-on-first@^1.0.0:
   version "1.1.0"
@@ -8962,6 +9019,11 @@ unbox-primitive@^1.0.2:
     has-bigints "^1.0.2"
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
+
+underscore@1.12.1:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.12.1.tgz#7bb8cc9b3d397e201cf8553336d262544ead829e"
+  integrity sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==
 
 undici-types@~5.26.4:
   version "5.26.5"
