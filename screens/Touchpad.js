@@ -5,6 +5,7 @@ import {
 } from '@sayem314/react-native-keep-awake';
 import {
   ActivityIndicator,
+  Keyboard,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -33,7 +34,7 @@ import {getValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import KeyboardModal from '../modals/KeyboardModal';
 import RoundKey from '../components/RoundKey';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import notifee, {
   AndroidColor,
   AuthorizationStatus,
@@ -60,12 +61,14 @@ notifee.onBackgroundEvent(eventHandler);
 
 const DRAG_START_THRESHOLD_IN_MS = 200;
 
-export default function Touchpad({navigation}) {
+export default function Touchpad({navigation, route}) {
   const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [showTextInput, setShowTextInput] = useState(false);
   const [settingsData, setSettingsData] = useState({});
   const [receivedText, setReceivedText] = useState('');
   const responseRate = getResponseRateSettings();
+  const isFocused = useIsFocused();
 
   // touchpad coordinates
   const tX = useRef(0);
@@ -101,33 +104,39 @@ export default function Touchpad({navigation}) {
     return notifee.onForegroundEvent(eventHandler);
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      (async function setSensitivities() {
-        if (navigation.isFocused) {
-          tS.current = Number(getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY) ?? 1);
-          sS.current = Number(
-            getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY) ?? 0.2,
-          );
-          const invertedScroll = getInvertedScrollSettings();
-          const keepAwake = getKeepAwakeSettings();
-          if (keepAwake) {
-            activateKeepAwake();
-          } else {
-            deactivateKeepAwake();
-          }
-          setSettingsData({
-            invertedScroll: invertedScroll,
-          });
+  useEffect(() => {
+    (async function setSensitivities() {
+      if (isFocused) {
+        tS.current = Number(getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY) ?? 1);
+        sS.current = Number(
+          getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY) ?? 0.2,
+        );
+        const invertedScroll = getInvertedScrollSettings();
+        const keepAwake = getKeepAwakeSettings();
+        if (keepAwake) {
+          activateKeepAwake();
+        } else {
+          deactivateKeepAwake();
         }
-      })();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
-  );
+        setSettingsData({
+          invertedScroll: invertedScroll,
+        });
+        console.log(route.params, 'params');
+        if (route?.params?.serverUrl) {
+          connectSocket();
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
 
   // socket connection handler
   const connectSocket = async () => {
-    const serverUrl = getValueFor(SERVER_URL_KEY);
+    setLoading(true);
+    const serverUrl =
+      route?.params?.serverUrl ?? getValueFor(SERVER_URL_KEY) ?? null;
+
+    console.log('🚀 ~ connectSocket ~ serverUrl:', serverUrl);
     // disconnect existing connections
     disconnectSocket();
     if (serverUrl) {
@@ -135,6 +144,7 @@ export default function Touchpad({navigation}) {
         transports: ['websocket'],
       });
       socket.on('connect', () => {
+        notifee.cancelAllNotifications();
         notifee.displayNotification({
           title: 'Peyara Remote Mosue',
           body: 'Connected',
@@ -163,12 +173,14 @@ export default function Touchpad({navigation}) {
 
         setStatus('Connected');
         setLoading(false);
-        keyboardModalRef?.current?.present();
+        if (isFocused) {
+          keyboardModalRef?.current?.present();
+        }
       });
 
       socket.on('connect_error', error => {
         console.log(error);
-        setStatus('Error');
+        setStatus('Disconnected');
         socket.disconnect();
         setLoading(false);
       });
@@ -196,17 +208,6 @@ export default function Touchpad({navigation}) {
   const openHelp = () => {
     navigation.navigate('TouchpadHelp');
   };
-
-  useEffect(() => {
-    connectSocket();
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const setCoordinates = coordinates => {
     tX.current = coordinates.x;
@@ -401,12 +402,8 @@ export default function Touchpad({navigation}) {
     }
   };
   const focusToggle = () => {
-    if (textInputRef.current?.isFocused()) {
-      textInputRef.current?.blur();
-    } else {
-      textInputRef.current?.focus();
-      keyboardModalRef?.current?.dismiss();
-    }
+    keyboardModalRef?.current?.dismiss();
+    setShowTextInput(p => !p);
   };
   const showControls = () => {
     if (textInputRef.current?.isFocused()) {
@@ -459,17 +456,20 @@ export default function Touchpad({navigation}) {
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
             </View>
-            <TextInput
-              ref={textInputRef}
-              onKeyPress={handleKeyPress}
-              style={styles.input}
-              multiline
-              autoCapitalize="none"
-              autoComplete={'off'}
-              autoCorrect={false}
-              spellCheck={false}
-              {...textInputValueProps}
-            />
+            {showTextInput && (
+              <TextInput
+                ref={textInputRef}
+                onKeyPress={handleKeyPress}
+                style={styles.input}
+                multiline
+                autoCapitalize="none"
+                autoComplete={'off'}
+                autoCorrect={false}
+                spellCheck={false}
+                autoFocus={true}
+                {...textInputValueProps}
+              />
+            )}
 
             <GestureDetector gesture={composed}>
               <Animated.View style={styles.touchpad}>
@@ -572,6 +572,7 @@ const styles = StyleSheet.create({
     display: 'none',
     color: colors.PRIM_BG,
     backgroundColor: 'white',
+    zIndex: 100,
   },
   txtStatus: {
     color: colors.WHITE,

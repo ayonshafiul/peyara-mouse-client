@@ -30,6 +30,7 @@ export default function TabsNavigator() {
         },
         tabBarActiveTintColor: colors.PRIM_ACCENT,
         tabBarHideOnKeyboard: true,
+        unmountOnBlur: true,
       }}>
       <Tabs.Screen
         name="Home"

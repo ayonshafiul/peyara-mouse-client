@@ -1,12 +1,18 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {TextInput} from 'react-native-gesture-handler';
 import colors from '../assets/constants/colors';
 import AppButton from './AppButton';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 export default function ClipText({sendText, receivedText}) {
   const [text, setText] = useState('');
+  const [copyBtnText, setCopyBtnText] = useState('Copy to Clipoboard');
   useEffect(() => {
     setText(receivedText);
   }, [receivedText]);
@@ -14,6 +20,10 @@ export default function ClipText({sendText, receivedText}) {
   const copyToClipboard = () => {
     if (text) {
       Clipboard.setString(text);
+      setCopyBtnText('Copied!');
+      setTimeout(() => {
+        setCopyBtnText('Copy to Clipboard');
+      }, 1200);
     }
   };
   return (
@@ -22,7 +32,7 @@ export default function ClipText({sendText, receivedText}) {
         <Text style={styles.text}>Send / Receive from PC</Text>
         <TouchableOpacity onPress={copyToClipboard}>
           <Text style={[styles.text, {color: colors.PRIM_ACCENT}]}>
-            Copy to clipboard
+            {copyBtnText}
           </Text>
         </TouchableOpacity>
       </View>

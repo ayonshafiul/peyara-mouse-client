@@ -39,8 +39,7 @@ function KeyboardModal(
         style={{
           backgroundColor: colors.PRIM_BG,
         }}
-        enableOverDrag={false}
-        detached>
+        enableOverDrag={false}>
         <View style={styles.clicksWrapper}>
           <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
             <Text style={styles.clickBtnText}>Left Click</Text>
@@ -49,7 +48,9 @@ function KeyboardModal(
             <Text style={styles.clickBtnText}>Right Click</Text>
           </TouchableOpacity>
         </View>
-        <BottomSheetScrollView style={styles.scrollContainer}>
+        <BottomSheetScrollView
+          style={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled">
           <View style={styles.contentContainer}>
             {mediaKeysData.map((item, idx) => {
               return (

@@ -185,7 +185,12 @@ function UnderlayRight({item}) {
       style={[styles.row, styles.underlayRight]}
       onPress={() => {
         setValueFor(SERVER_URL_KEY, item?.url);
-        navigation.navigate('Touchpad');
+        navigation.navigate('Touchpad', {
+          screen: 'TouchpadScreen',
+          params: {
+            serverUrl: item?.url,
+          },
+        });
         close();
       }}>
       <Text style={styles.textDark}>Connect</Text>

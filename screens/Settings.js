@@ -61,19 +61,23 @@ function SwitchCard({item}) {
 }
 
 export default function Settings() {
-  const [touchSens, setTouchSens] = useState(1);
-  const [scrollSens, setScrollSens] = useState(0.5);
+  const [touchSens, setTouchSens] = useState(0.75);
+  const [scrollSens, setScrollSens] = useState(0.35);
   const [responseRate, setResponseRate] = useState(16);
 
   useEffect(() => {
     (async function getSliderValues() {
       let ts = getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY);
       let ss = getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY);
+      let rr = getValueFor(SETTINGS_TOUCHPAD_RESPONSE_RATE);
       if (ts) {
         setTouchSens(Number(ts));
       }
       if (ss) {
         setScrollSens(Number(ss));
+      }
+      if (rr) {
+        setResponseRate(Number(rr));
       }
     })();
   }, []);
