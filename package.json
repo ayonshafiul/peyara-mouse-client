@@ -1,6 +1,6 @@
 {
   "name": "peyara-mouse-client",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

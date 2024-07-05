@@ -455,13 +455,6 @@ export default function Touchpad({navigation}) {
               <RoundKey onPress={openHelp}>
                 <MaterialIcons name="help" size={24} color={colors.WHITE} />
               </RoundKey>
-              <RoundKey onPress={null}>
-                <MaterialIcons
-                  name="text-fields"
-                  size={24}
-                  color={colors.WHITE}
-                />
-              </RoundKey>
               <RoundKey onPress={disconnectSocket}>
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
