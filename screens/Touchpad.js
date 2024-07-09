@@ -594,5 +594,6 @@ const styles = StyleSheet.create({
   },
   clickBtnText: {
     fontFamily: 'Raleway-Thin',
+    color: colors.WHITE,
   },
 });

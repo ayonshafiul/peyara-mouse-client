@@ -35,6 +35,7 @@ export default function ClipText({sendText, receivedText, onFocus}) {
       <TextInput
         value={text}
         onChangeText={setText}
+        placeholderTextColor={colors.WHITE}
         style={styles.input}
         onFocus={onFocus}
         multiline
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   text: {
     marginHorizontal: 16,
     fontFamily: 'Raleway-Regular',
+    color: colors.WHITE,
   },
   labelWrapper: {
     flex: 1,
