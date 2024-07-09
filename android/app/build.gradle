@@ -79,8 +79,8 @@ android {
         applicationId "io.github.ayonshafiul.peyara"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 35
-        versionName "1.0.35"
+        versionCode 36
+        versionName "1.3.6"
     }
     signingConfigs {
         debug {

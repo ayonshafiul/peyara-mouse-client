@@ -15,7 +15,12 @@ import {
   View,
 } from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import Animated, {runOnJS, useSharedValue} from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import colors from '../assets/constants/colors';
 import {io} from 'socket.io-client';
 import {
@@ -45,6 +50,10 @@ import KeepAwakeText from '../components/KeepAwakeText';
 let socket = null;
 let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
 
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
+
 const eventHandler = async ({type, detail}) => {
   if (type === EventType.ACTION_PRESS) {
     switch (detail.pressAction.id) {
@@ -60,6 +69,7 @@ const eventHandler = async ({type, detail}) => {
 notifee.onBackgroundEvent(eventHandler);
 
 const DRAG_START_THRESHOLD_IN_MS = 200;
+const MAX_TRANSLATE_Y = 180;
 
 export default function Touchpad({navigation, route}) {
   const [status, setStatus] = useState('');
@@ -77,10 +87,15 @@ export default function Touchpad({navigation, route}) {
   // scroll coordinates
   const sX = useRef(0);
   const sY = useRef(0);
+
   // touchpad sensitivity
   const tS = useRef(0);
   // scroll sensitivity
   const sS = useRef(0);
+
+  // scroll wheel translations
+
+  const translationY = useSharedValue(0);
 
   // click state
   const clickStateFinger = useRef('');
@@ -383,6 +398,32 @@ export default function Touchpad({navigation, route}) {
           dragGesture,
           Gesture.Exclusive(oneFingerDoubleTap, oneFingerTap),
         );
+  const scrollGesture = Gesture.Pan()
+    .minDistance(1)
+    .onStart(_ => {})
+    .onUpdate(event => {
+      translationY.value = clamp(
+        event.translationY,
+        -MAX_TRANSLATE_Y,
+        MAX_TRANSLATE_Y,
+      );
+      let coordinates = {
+        x: 0,
+        y: settingsData?.invertedScroll
+          ? translationY.value
+          : translationY.value * -1,
+      };
+      runOnJS(setScroll)(coordinates);
+    })
+    .onEnd(_ => {
+      translationY.value = withTiming(0, {
+        duration: 100,
+      });
+    })
+    .runOnJS(true);
+  const scrollWheelStyles = useAnimatedStyle(() => ({
+    transform: [{translateY: translationY.value}],
+  }));
   const textInputRef = useRef();
   const timeoutRef = useRef();
   const keyboardModalRef = useRef();
@@ -456,6 +497,8 @@ export default function Touchpad({navigation, route}) {
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
             </View>
+
+            {/* Hidden Input for Keyboard */}
             {showTextInput && (
               <TextInput
                 ref={textInputRef}
@@ -470,12 +513,32 @@ export default function Touchpad({navigation, route}) {
                 {...textInputValueProps}
               />
             )}
+            {/* Hidden Input for Keyboard */}
 
-            <GestureDetector gesture={composed}>
-              <Animated.View style={styles.touchpad}>
-                <KeepAwakeText />
+            {/* Touchpad */}
+            <Animated.View style={styles.touchpadContainer}>
+              <GestureDetector gesture={composed}>
+                <Animated.View style={styles.touchpad}>
+                  <KeepAwakeText />
+                </Animated.View>
+              </GestureDetector>
+
+              <Animated.View style={styles.scrollWheelContainer}>
+                <Animated.View style={styles.scrollWheelTrack}>
+                  <GestureDetector gesture={scrollGesture}>
+                    <Animated.View
+                      style={[styles.scrollWheelThumb, scrollWheelStyles]}>
+                      <View style={styles.thumbLine} />
+                      <View style={styles.thumbLine} />
+                      <View style={styles.thumbLine} />
+                    </Animated.View>
+                  </GestureDetector>
+                </Animated.View>
               </Animated.View>
-            </GestureDetector>
+            </Animated.View>
+            {/* Touchpad */}
+
+            {/* Mouse Buttons */}
             <View style={styles.clicksWrapper}>
               <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
                 <Text style={styles.clickBtnText}>Left Click</Text>
@@ -486,6 +549,7 @@ export default function Touchpad({navigation, route}) {
                 <Text style={styles.clickBtnText}>Right Click</Text>
               </TouchableOpacity>
             </View>
+            {/* Mouse Buttons */}
           </>
         )}
         <KeyboardModal
@@ -523,16 +587,51 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     paddingHorizontal: 8,
   },
-  touchpad: {
+
+  touchpadContainer: {
     width: '100%',
     minHeight: 360,
-    marginHorizontal: 16,
+    height: '50%',
     marginTop: 16,
     marginBottom: 2,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  touchpad: {
+    width: '94%',
+    height: '100%',
     borderRadius: 8,
     backgroundColor: colors.TOUCHPAD,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  scrollWheelContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '6%',
+    height: '100%',
+  },
+  scrollWheelTrack: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 1,
+    backgroundColor: colors.WHITE,
+    height: '100%',
+    left: 4,
+  },
+  scrollWheelThumb: {
+    width: 20,
+    height: 60,
+    backgroundColor: colors.WHITE,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thumbLine: {
+    width: 12,
+    height: 2,
+    backgroundColor: colors.PRIM_BG,
+    marginVertical: 2,
   },
   buttonContainer: {
     flexDirection: 'row',
