@@ -30,6 +30,9 @@ import {
 } from '../utils/settings';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
+  DEFAULT_TOUCHPAD_RESPONSE_RATE,
+  DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY,
+  DEFAULT_TOUCHPAD_SENSITIVITY,
   SERVER_URL_KEY,
   SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
   SETTINGS_TOUCHPAD_SENSITIVITY,
@@ -122,9 +125,13 @@ export default function Touchpad({navigation, route}) {
   useEffect(() => {
     (async function setSensitivities() {
       if (isFocused) {
-        tS.current = Number(getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY) ?? 1);
+        tS.current = Number(
+          getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY) ??
+            DEFAULT_TOUCHPAD_SENSITIVITY,
+        );
         sS.current = Number(
-          getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY) ?? 0.2,
+          getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY) ??
+            DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY,
         );
         const invertedScroll = getInvertedScrollSettings();
         const keepAwake = getKeepAwakeSettings();
@@ -287,7 +294,7 @@ export default function Touchpad({navigation, route}) {
     tY.current = 0;
     sX.current = 0;
     sY.current = 0;
-  }, Number(responseRate ?? 16));
+  }, Number(responseRate ?? DEFAULT_TOUCHPAD_RESPONSE_RATE));
 
   const setScroll = coordinates => {
     sX.current = coordinates.x;

@@ -12,17 +12,7 @@ import SplashScreen from 'react-native-splash-screen';
 import {ActivityIndicator, Platform} from 'react-native';
 import colors from './assets/constants/colors';
 
-import SpInAppUpdates, {
-  NeedsUpdateResponse,
-  IAUUpdateKind,
-  StartUpdateOptions,
-} from 'sp-react-native-in-app-updates';
-
 initializeDefaultSettings();
-
-const inAppUpdates = new SpInAppUpdates(
-  false, // isDebug
-);
 
 export default function App() {
   const [initialRoute, setInitialRoute] = useState('');
@@ -43,23 +33,6 @@ export default function App() {
         setInitialRoute('Tabs');
       }
       SplashScreen.hide();
-
-      inAppUpdates
-        .checkNeedsUpdate()
-        .then(result => {
-          if (result.shouldUpdate) {
-            let updateOptions = {};
-            if (Platform.OS === 'android') {
-              updateOptions = {
-                updateType: IAUUpdateKind.FLEXIBLE,
-              };
-            }
-            inAppUpdates.startUpdate(updateOptions);
-          }
-        })
-        .catch(err => {
-          console.log('🚀 ~ inAppUpdates.checkNeedsUpdate ~ err:', err);
-        });
     }
     getFirstTimeSettings();
   }, []);

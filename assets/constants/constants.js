@@ -103,3 +103,7 @@ export const mediaKeysData = [
     label: 'Arrow Right',
   },
 ];
+
+export const DEFAULT_TOUCHPAD_SENSITIVITY = 0.5;
+export const DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY = 0.5;
+export const DEFAULT_TOUCHPAD_RESPONSE_RATE = 12;

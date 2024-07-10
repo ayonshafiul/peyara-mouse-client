@@ -25,6 +25,9 @@ import {
   SETTINGS_TOUCHPAD_SENSITIVITY,
   SETTINGS_TOUCHPAD_RESPONSE_RATE,
   settingsData,
+  DEFAULT_TOUCHPAD_SENSITIVITY,
+  DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY,
+  DEFAULT_TOUCHPAD_RESPONSE_RATE,
 } from '../assets/constants/constants';
 import Background from '../components/Background';
 
@@ -61,9 +64,13 @@ function SwitchCard({item}) {
 }
 
 export default function Settings() {
-  const [touchSens, setTouchSens] = useState(0.75);
-  const [scrollSens, setScrollSens] = useState(0.35);
-  const [responseRate, setResponseRate] = useState(16);
+  const [touchSens, setTouchSens] = useState(DEFAULT_TOUCHPAD_SENSITIVITY);
+  const [scrollSens, setScrollSens] = useState(
+    DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY,
+  );
+  const [responseRate, setResponseRate] = useState(
+    DEFAULT_TOUCHPAD_RESPONSE_RATE,
+  );
 
   useEffect(() => {
     (async function getSliderValues() {
