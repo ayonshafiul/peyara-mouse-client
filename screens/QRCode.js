@@ -15,19 +15,19 @@ import QrCodeRectangleIcon from '../assets/svg/qr-code-rectangle.svg';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors from '../assets/constants/colors';
 import {addServer} from '../utils/servers';
+import AppButton from '../components/AppButton';
 
 export default function QRCode({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const getBarCodeScannerPermissions = async () => {
+    const {status} = await BarCodeScanner.requestPermissionsAsync();
+    console.log(status);
+    setHasPermission(status === 'granted');
+  };
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const {status} = await BarCodeScanner.requestPermissionsAsync();
-      console.log(status);
-      setHasPermission(status === 'granted');
-    };
-
     getBarCodeScannerPermissions();
   }, []);
 
@@ -48,10 +48,26 @@ export default function QRCode({navigation}) {
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Requesting for camera permission</Text>
+        <AppButton
+          text={'Grant Permission'}
+          onPress={getBarCodeScannerPermissions}
+        />
+      </View>
+    );
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>No access to camera</Text>
+        <AppButton
+          text={'Grant Permission'}
+          onPress={getBarCodeScannerPermissions}
+        />
+      </View>
+    );
   }
 
   return (
@@ -79,11 +95,7 @@ export default function QRCode({navigation}) {
           <Text style={styles.scanAgainButtonText}>Scan Again</Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity
-        style={styles.scanAgainButton}
-        onPress={() => navigation.goBack()}>
-        <Text style={styles.scanAgainButtonText}>Go Back</Text>
-      </TouchableOpacity>
+      <AppButton text={'Cancel'} onPress={() => navigation.goBack()} />
     </View>
   );
 }
@@ -108,10 +120,12 @@ const styles = StyleSheet.create({
     top: 15,
     left: 25,
     zIndex: -1,
+    width: 280,
+    height: 280,
   },
   barcodeContainer: {
-    width: 300,
-    height: 300,
+    width: 280,
+    height: 280,
   },
 
   scanAgainButton: {
@@ -131,5 +145,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  text: {
+    color: colors.WHITE,
   },
 });
