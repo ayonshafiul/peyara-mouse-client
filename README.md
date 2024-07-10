@@ -6,6 +6,12 @@
 
 <p align="center"><img src="https://peyara-remote-mouse.vercel.app/img/client-logo.png" alt="Logo" width="250"></p>
 
+![App Version](https://img.shields.io/github/package-json/v/ayonshafiul/peyara-mouse-client/rn-raw?label=Version)
+![React Native Version](https://img.shields.io/github/package-json/dependency-version/ayonshafiul/peyara-mouse-client/react-native?label=React%20Native)
+![GitHub last commit](https://img.shields.io/github/last-commit/ayonshafiul/peyara-mouse-client)
+![GitHub Repo stars](https://img.shields.io/github/stars/ayonshafiul/peyara-mouse-client)
+![GitHub Repo forks](https://img.shields.io/github/forks/ayonshafiul/peyara-mouse-client)
+
 <div style="display: flex; flex-wrap: wrap; gap: 8;">
 <img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="150">
