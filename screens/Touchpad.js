@@ -50,8 +50,23 @@ import notifee, {
 } from '@notifee/react-native';
 import KeepAwakeText from '../components/KeepAwakeText';
 
+import {
+  ScreenCapturePickerView,
+  RTCPeerConnection,
+  RTCIceCandidate,
+  RTCSessionDescription,
+  RTCView,
+  MediaStream,
+  MediaStreamTrack,
+  mediaDevices,
+  registerGlobals,
+} from 'react-native-webrtc';
+
 let socket = null;
 let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
+let peerConnection = null;
+
+let answerClient = null;
 
 function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
@@ -82,6 +97,8 @@ export default function Touchpad({navigation, route}) {
   const [receivedText, setReceivedText] = useState('');
   const responseRate = getResponseRateSettings();
   const isFocused = useIsFocused();
+
+  const [remoteStream, setRemoteStream] = useState(null);
 
   // touchpad coordinates
   const tX = useRef(0);
@@ -214,6 +231,61 @@ export default function Touchpad({navigation, route}) {
 
       socket.on('text-mobile', text => {
         setReceivedText(text);
+      });
+
+      /// webrtc handlers
+      socket.on('offer', async offer => {
+        console.log('Offer recieved on phone. generating answer', offer);
+
+        peerConnection = new RTCPeerConnection({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
+        });
+        peerConnection.ontrack = async event => {
+          // event.streams contains a MediaStream with the received track
+          const [stream] = event.streams;
+          console.log('Received Stream inside on track', stream);
+          setRemoteStream(stream);
+        };
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offer),
+        );
+        // const stream = await mediaDevices.getUserMedia({
+        //   video: true,
+        // });
+
+        // console.log(stream);
+        // for (let track of stream.getTracks()) {
+        //   await peerConnection.addTrack(track, stream);
+        // }
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        answerClient = answer;
+
+        // peerConnection.onaddstream = event => {
+        //   // Access the received stream
+        //   console.log('On add stream', event);
+        //   const remoteStream = event.stream;
+
+        //   // Update your component state to trigger a re-render with the new stream
+        //   // For example, if you're using React Hooks:
+        //   setRemoteStream(remoteStream);
+        // };
+
+        peerConnection.addEventListener('icecandidate', event => {
+          console.log('generating ice on phone', event.candidate);
+          socket.emit('answer-ice-candidate', event.candidate);
+        });
+
+        socket.emit('answer', answer);
+      });
+      socket.on('recieve-offer-ice-candidate', async function (iceCandidate) {
+        console.log('Recieve Offer ice candidate on phone', iceCandidate);
+        if (iceCandidate) {
+          await peerConnection?.addIceCandidate(
+            new RTCIceCandidate(iceCandidate),
+          );
+        }
       });
     } else {
       setLoading(false);
@@ -559,6 +631,10 @@ export default function Touchpad({navigation, route}) {
             {/* Mouse Buttons */}
           </>
         )}
+        <RTCView
+          style={{width: 300, height: 200}}
+          streamURL={remoteStream ? remoteStream?.toURL() : null}
+        />
         <KeyboardModal
           ref={keyboardModalRef}
           sendMediaKey={sendMediaKey}
