@@ -4,6 +4,7 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
 import android.app.Application
+import android.media.AudioAttributes
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -13,6 +14,8 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
+import com.oney.WebRTCModule.WebRTCModuleOptions
+import org.webrtc.audio.JavaAudioDeviceModule
 
 
 class MainApplication : Application(), ReactApplication {
@@ -39,14 +42,14 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     super.onCreate()
     SoLoader.init(this, false)
-//    var options = WebRTCModuleOptions.getInstance()
-//    var audioAttributes = AudioAttributes.Builder()
-//      .setUsage(AudioAttributes.USAGE_MEDIA)
-//      .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-//      .build(),
-//    options.audioDeviceModule = JavaAudioDeviceModule.builder(this)
-//      .setAudioAttributes(audioAttributes)
-//      .createAudioDeviceModule()
+    var options = WebRTCModuleOptions.getInstance()
+    var audioAttributes = AudioAttributes.Builder()
+      .setUsage(AudioAttributes.USAGE_MEDIA)
+      .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+      .build()
+    options.audioDeviceModule = JavaAudioDeviceModule.builder(this)
+      .setAudioAttributes(audioAttributes)
+      .createAudioDeviceModule()
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()

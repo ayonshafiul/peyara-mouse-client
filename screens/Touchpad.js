@@ -3,11 +3,14 @@ import {
   activateKeepAwake,
   deactivateKeepAwake,
 } from '@sayem314/react-native-keep-awake';
+import Orientation from 'react-native-orientation-locker';
 import {
   ActivityIndicator,
+  Dimensions,
   Keyboard,
   Platform,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -135,7 +138,7 @@ export default function Touchpad({navigation, route}) {
         console.log('User declined permissions');
       }
     })();
-
+    Orientation.lockToLandscapeLeft();
     return notifee.onForegroundEvent(eventHandler);
   }, []);
 
@@ -534,6 +537,7 @@ export default function Touchpad({navigation, route}) {
 
   return (
     <Background>
+      <StatusBar translucent={true} backgroundColor={'transparent'} hidden />
       <SafeAreaView style={styles.container}>
         {loading && (
           <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
@@ -595,7 +599,7 @@ export default function Touchpad({navigation, route}) {
             {/* Hidden Input for Keyboard */}
 
             {/* Touchpad */}
-            <Animated.View style={styles.touchpadContainer}>
+            {/* <Animated.View style={styles.touchpadContainer}>
               <GestureDetector gesture={composed}>
                 <Animated.View style={styles.touchpad}>
                   <KeepAwakeText />
@@ -614,11 +618,11 @@ export default function Touchpad({navigation, route}) {
                   </GestureDetector>
                 </Animated.View>
               </Animated.View>
-            </Animated.View>
+            </Animated.View> */}
             {/* Touchpad */}
 
             {/* Mouse Buttons */}
-            <View style={styles.clicksWrapper}>
+            {/* <View style={styles.clicksWrapper}>
               <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
                 <Text style={styles.clickBtnText}>Left Click</Text>
               </TouchableOpacity>
@@ -627,13 +631,16 @@ export default function Touchpad({navigation, route}) {
                 onPress={sendRightClick}>
                 <Text style={styles.clickBtnText}>Right Click</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             {/* Mouse Buttons */}
           </>
         )}
         <RTCView
-          style={{width: 300, height: 200}}
+          style={{
+            ...StyleSheet.absoluteFillObject,
+          }}
           streamURL={remoteStream ? remoteStream?.toURL() : null}
+          objectFit="contain"
         />
         <KeyboardModal
           ref={keyboardModalRef}
