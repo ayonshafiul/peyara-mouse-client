@@ -50,3 +50,9 @@ Follow the initial onboarding steps to get started!
 [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv)
 
 [socket.io](https://github.com/socketio/socket.io)
+
+## Icons
+
+Icons from flaticons
+
+<a href="https://www.flaticon.com/free-icons/guava" title="guava icons">Guava icons created by bqlqn - Flaticon</a>
