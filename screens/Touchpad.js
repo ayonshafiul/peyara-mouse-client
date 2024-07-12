@@ -3,11 +3,14 @@ import {
   activateKeepAwake,
   deactivateKeepAwake,
 } from '@sayem314/react-native-keep-awake';
+import Orientation from 'react-native-orientation-locker';
 import {
   ActivityIndicator,
+  Dimensions,
   Keyboard,
   Platform,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -50,8 +53,23 @@ import notifee, {
 } from '@notifee/react-native';
 import KeepAwakeText from '../components/KeepAwakeText';
 
+import {
+  ScreenCapturePickerView,
+  RTCPeerConnection,
+  RTCIceCandidate,
+  RTCSessionDescription,
+  RTCView,
+  MediaStream,
+  MediaStreamTrack,
+  mediaDevices,
+  registerGlobals,
+} from 'react-native-webrtc';
+
 let socket = null;
 let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
+let peerConnection = null;
+
+let answerClient = null;
 
 function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
@@ -82,6 +100,8 @@ export default function Touchpad({navigation, route}) {
   const [receivedText, setReceivedText] = useState('');
   const responseRate = getResponseRateSettings();
   const isFocused = useIsFocused();
+
+  const [remoteStream, setRemoteStream] = useState(null);
 
   // touchpad coordinates
   const tX = useRef(0);
@@ -118,7 +138,7 @@ export default function Touchpad({navigation, route}) {
         console.log('User declined permissions');
       }
     })();
-
+    Orientation.lockToLandscapeLeft();
     return notifee.onForegroundEvent(eventHandler);
   }, []);
 
@@ -214,6 +234,61 @@ export default function Touchpad({navigation, route}) {
 
       socket.on('text-mobile', text => {
         setReceivedText(text);
+      });
+
+      /// webrtc handlers
+      socket.on('offer', async offer => {
+        console.log('Offer recieved on phone. generating answer', offer);
+
+        peerConnection = new RTCPeerConnection({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
+        });
+        peerConnection.ontrack = async event => {
+          // event.streams contains a MediaStream with the received track
+          const [stream] = event.streams;
+          console.log('Received Stream inside on track', stream);
+          setRemoteStream(stream);
+        };
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offer),
+        );
+        // const stream = await mediaDevices.getUserMedia({
+        //   video: true,
+        // });
+
+        // console.log(stream);
+        // for (let track of stream.getTracks()) {
+        //   await peerConnection.addTrack(track, stream);
+        // }
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        answerClient = answer;
+
+        // peerConnection.onaddstream = event => {
+        //   // Access the received stream
+        //   console.log('On add stream', event);
+        //   const remoteStream = event.stream;
+
+        //   // Update your component state to trigger a re-render with the new stream
+        //   // For example, if you're using React Hooks:
+        //   setRemoteStream(remoteStream);
+        // };
+
+        peerConnection.addEventListener('icecandidate', event => {
+          console.log('generating ice on phone', event.candidate);
+          socket.emit('answer-ice-candidate', event.candidate);
+        });
+
+        socket.emit('answer', answer);
+      });
+      socket.on('recieve-offer-ice-candidate', async function (iceCandidate) {
+        console.log('Recieve Offer ice candidate on phone', iceCandidate);
+        if (iceCandidate) {
+          await peerConnection?.addIceCandidate(
+            new RTCIceCandidate(iceCandidate),
+          );
+        }
       });
     } else {
       setLoading(false);
@@ -462,6 +537,7 @@ export default function Touchpad({navigation, route}) {
 
   return (
     <Background>
+      <StatusBar translucent={true} backgroundColor={'transparent'} hidden />
       <SafeAreaView style={styles.container}>
         {loading && (
           <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
@@ -523,7 +599,7 @@ export default function Touchpad({navigation, route}) {
             {/* Hidden Input for Keyboard */}
 
             {/* Touchpad */}
-            <Animated.View style={styles.touchpadContainer}>
+            {/* <Animated.View style={styles.touchpadContainer}>
               <GestureDetector gesture={composed}>
                 <Animated.View style={styles.touchpad}>
                   <KeepAwakeText />
@@ -542,11 +618,11 @@ export default function Touchpad({navigation, route}) {
                   </GestureDetector>
                 </Animated.View>
               </Animated.View>
-            </Animated.View>
+            </Animated.View> */}
             {/* Touchpad */}
 
             {/* Mouse Buttons */}
-            <View style={styles.clicksWrapper}>
+            {/* <View style={styles.clicksWrapper}>
               <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
                 <Text style={styles.clickBtnText}>Left Click</Text>
               </TouchableOpacity>
@@ -555,10 +631,17 @@ export default function Touchpad({navigation, route}) {
                 onPress={sendRightClick}>
                 <Text style={styles.clickBtnText}>Right Click</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             {/* Mouse Buttons */}
           </>
         )}
+        <RTCView
+          style={{
+            ...StyleSheet.absoluteFillObject,
+          }}
+          streamURL={remoteStream ? remoteStream?.toURL() : null}
+          objectFit="contain"
+        />
         <KeyboardModal
           ref={keyboardModalRef}
           sendMediaKey={sendMediaKey}
