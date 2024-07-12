@@ -241,7 +241,6 @@ export default function Touchpad({navigation, route}) {
         console.log('Offer recieved on phone. generating answer', offer);
 
         peerConnection = new RTCPeerConnection({
-          offerToReceiveAudio: true,
           offerToReceiveVideo: true,
         });
         peerConnection.ontrack = async event => {
