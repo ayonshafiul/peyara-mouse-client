@@ -32,7 +32,7 @@ export default function ClipText({sendText, receivedText, onFocus}) {
           </Text>
         </TouchableOpacity>
       </View>
-      <TextInput
+      <BottomSheetTextInput
         value={text}
         onChangeText={setText}
         placeholderTextColor={colors.WHITE}

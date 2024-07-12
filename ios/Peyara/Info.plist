@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key></key>
+	<string></string>
+	<key> </key>
+	<string></string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -31,8 +35,17 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Peyara Remote Mouse needs access to camera in order to scan barcodes</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Raleway-Bold.ttf</string>
+		<string>Raleway-Regular.ttf</string>
+		<string>Raleway-Thin.ttf</string>
+		<string>MaterialIcons.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -42,23 +55,14 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key> </key>
-	<string></string>
-	<key></key>
-	<string></string>
-	<key>NSCameraUsageDescription</key>
-	<string>Peyara Remote Mouse needs access to camera in order to scan barcodes</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Raleway-Bold.ttf</string>
-		<string>Raleway-Regular.ttf</string>
-		<string>Raleway-Thin.ttf</string>
-		<string>MaterialIcons.ttf</string>
-	</array>
 </dict>
 </plist>
