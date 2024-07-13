@@ -30,6 +30,7 @@ import {
   DEFAULT_TOUCHPAD_RESPONSE_RATE,
 } from '../assets/constants/constants';
 import Background from '../components/Background';
+import Orientation from 'react-native-orientation-locker';
 
 const width = Dimensions.get('window').width;
 
@@ -73,6 +74,7 @@ export default function Settings() {
   );
 
   useEffect(() => {
+    Orientation.lockToPortrait();
     (async function getSliderValues() {
       let ts = getValueFor(SETTINGS_TOUCHPAD_SENSITIVITY);
       let ss = getValueFor(SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY);

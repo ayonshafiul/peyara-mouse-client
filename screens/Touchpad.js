@@ -138,7 +138,7 @@ export default function Touchpad({navigation, route}) {
         console.log('User declined permissions');
       }
     })();
-    Orientation.lockToLandscapeLeft();
+
     return notifee.onForegroundEvent(eventHandler);
   }, []);
 
@@ -277,6 +277,21 @@ export default function Touchpad({navigation, route}) {
         peerConnection.addEventListener('icecandidate', event => {
           console.log('generating ice on phone', event.candidate);
           socket.emit('answer-ice-candidate', event.candidate);
+        });
+
+        peerConnection.addEventListener('connectionstatechange', event => {
+          console.log(event, ' event', peerConnection.connectionState);
+          switch (peerConnection.connectionState) {
+            case 'connected':
+              Orientation.lockToLandscapeLeft();
+              break;
+            case 'closed':
+            case 'failed':
+            case 'disconnected':
+              console.log('Switching to portrait');
+              Orientation.lockToPortrait();
+              break;
+          }
         });
 
         socket.emit('answer', answer);

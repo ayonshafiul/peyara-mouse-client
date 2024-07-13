@@ -25,6 +25,7 @@ import Background from '../components/Background';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 import MouseMove from '../components/MouseMove';
+import Orientation from 'react-native-orientation-locker';
 
 const OVERSWIPE_DIST = 20;
 
@@ -55,6 +56,7 @@ export default function Home({navigation}) {
 
   useEffect(() => {
     if (isFocused) {
+      Orientation.lockToPortrait();
       const res = getServers();
       if (Array.isArray(res)) {
         let servers = res?.map((s, index) => {
