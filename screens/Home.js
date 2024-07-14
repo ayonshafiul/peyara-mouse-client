@@ -26,11 +26,13 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 import MouseMove from '../components/MouseMove';
 import Orientation from 'react-native-orientation-locker';
+import {useGlobalStore} from '../store/useGlobalStore';
 
 const OVERSWIPE_DIST = 20;
 
 export default function Home({navigation}) {
   const [data, setData] = useState([]);
+  const setShowBottomBar = useGlobalStore(state => state.setShowBottomBar);
 
   const itemRefs = useRef(new Map());
   const isFocused = useIsFocused();
@@ -72,6 +74,7 @@ export default function Home({navigation}) {
         });
         setData(servers);
       }
+      setShowBottomBar(true);
     }
   }, [isFocused]);
 

@@ -45,7 +45,11 @@ import {getValueFor} from '../utils/storage';
 import Background from '../components/Background';
 import KeyboardModal from '../modals/KeyboardModal';
 import RoundKey from '../components/RoundKey';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import notifee, {
   AndroidColor,
   AuthorizationStatus,
@@ -64,6 +68,9 @@ import {
   mediaDevices,
   registerGlobals,
 } from 'react-native-webrtc';
+import PortraitTouchpad from '../components/PortraitTouchpad';
+import LandscapeTouchpad from '../components/LandscapeTouchpad';
+import {useGlobalStore} from '../store/useGlobalStore';
 
 let socket = null;
 let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
@@ -93,6 +100,7 @@ const DRAG_START_THRESHOLD_IN_MS = 200;
 const MAX_TRANSLATE_Y = 180;
 
 export default function Touchpad({navigation, route}) {
+  const setShowBottomBar = useGlobalStore(state => state.setShowBottomBar);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTextInput, setShowTextInput] = useState(false);
@@ -101,6 +109,7 @@ export default function Touchpad({navigation, route}) {
   const responseRate = getResponseRateSettings();
   const isFocused = useIsFocused();
 
+  const [showRemoteStream, setShowRemoteStream] = useState(false);
   const [remoteStream, setRemoteStream] = useState(null);
 
   // touchpad coordinates
@@ -215,7 +224,7 @@ export default function Touchpad({navigation, route}) {
 
         setStatus('Connected');
         setLoading(false);
-        if (isFocused) {
+        if (isFocused && !showRemoteStream) {
           keyboardModalRef?.current?.present();
         }
       });
@@ -234,6 +243,14 @@ export default function Touchpad({navigation, route}) {
 
       socket.on('text-mobile', text => {
         setReceivedText(text);
+        keyboardModalRef?.current.present();
+      });
+
+      socket.on('stop-screen-share', () => {
+        console.log('stop');
+        setShowRemoteStream(false);
+        Orientation.lockToPortrait();
+        setShowBottomBar(true);
       });
 
       /// webrtc handlers
@@ -283,13 +300,15 @@ export default function Touchpad({navigation, route}) {
           console.log(event, ' event', peerConnection.connectionState);
           switch (peerConnection.connectionState) {
             case 'connected':
+              setShowRemoteStream(true);
               Orientation.lockToLandscapeLeft();
               break;
             case 'closed':
             case 'failed':
             case 'disconnected':
-              console.log('Switching to portrait');
+              setShowRemoteStream(false);
               Orientation.lockToPortrait();
+              setShowBottomBar(true);
               break;
           }
         });
@@ -313,6 +332,10 @@ export default function Touchpad({navigation, route}) {
   const disconnectSocket = async () => {
     if (socket) {
       socket?.disconnect();
+      peerConnection?.close();
+      setShowRemoteStream(false);
+      setShowBottomBar(true);
+      Orientation.lockToPortrait();
       keyboardModalRef?.current?.dismiss();
     }
   };
@@ -398,6 +421,7 @@ export default function Touchpad({navigation, route}) {
     socket?.emit('windowdragend', coordinates);
   };
   const sendKey = key => {
+    console.log('key', key);
     socket?.emit('key', key);
   };
   const sendMediaKey = key => {
@@ -550,70 +574,67 @@ export default function Touchpad({navigation, route}) {
   };
 
   return (
-    <Background>
+    <SafeAreaView style={styles.container}>
       <StatusBar translucent={true} backgroundColor={'transparent'} hidden />
-      <SafeAreaView style={styles.container}>
-        {loading && (
-          <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />
-        )}
+      {loading && <ActivityIndicator size="large" color={colors.PRIM_ACCENT} />}
 
-        {status === 'Disconnected' && (
-          <View style={styles.retryWrapper}>
-            <Text style={styles.text}>
-              Go to home, select a server and connect again.
-            </Text>
+      {status === 'Disconnected' && (
+        <View style={styles.retryWrapper}>
+          <Text style={styles.text}>
+            Go to home, select a server and connect again.
+          </Text>
 
-            <TouchableOpacity onPress={connectSocket}>
-              <Text style={styles.txtRetry}>Reconnect to this server</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          <TouchableOpacity onPress={connectSocket}>
+            <Text style={styles.txtRetry}>Reconnect to this server</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-        {status === 'Connected' && (
-          <>
-            <View style={styles.keysConatiner}>
-              <RoundKey onPress={focusToggle}>
-                <MaterialIcons
-                  name="keyboard-hide"
-                  size={24}
-                  color={colors.WHITE}
-                />
-              </RoundKey>
-              <RoundKey onPress={showControls}>
-                <MaterialIcons
-                  name="control-camera"
-                  size={24}
-                  color={colors.WHITE}
-                />
-              </RoundKey>
-
-              <RoundKey onPress={openHelp}>
-                <MaterialIcons name="help" size={24} color={colors.WHITE} />
-              </RoundKey>
-              <RoundKey onPress={disconnectSocket}>
-                <MaterialIcons name="close" size={24} color={colors.WHITE} />
-              </RoundKey>
-            </View>
-
-            {/* Hidden Input for Keyboard */}
-            {showTextInput && (
-              <TextInput
-                ref={textInputRef}
-                onKeyPress={handleKeyPress}
-                style={styles.input}
-                multiline
-                autoCapitalize="none"
-                autoComplete={'off'}
-                autoCorrect={false}
-                spellCheck={false}
-                autoFocus={true}
-                {...textInputValueProps}
+      {status === 'Connected' && (
+        <>
+          <View style={styles.keysConatiner}>
+            <RoundKey onPress={focusToggle}>
+              <MaterialIcons
+                name="keyboard-hide"
+                size={24}
+                color={colors.WHITE}
               />
-            )}
-            {/* Hidden Input for Keyboard */}
+            </RoundKey>
+            <RoundKey onPress={showControls}>
+              <MaterialIcons
+                name="control-camera"
+                size={24}
+                color={colors.WHITE}
+              />
+            </RoundKey>
 
-            {/* Touchpad */}
-            {/* <Animated.View style={styles.touchpadContainer}>
+            <RoundKey onPress={openHelp}>
+              <MaterialIcons name="help" size={24} color={colors.WHITE} />
+            </RoundKey>
+            <RoundKey onPress={disconnectSocket}>
+              <MaterialIcons name="close" size={24} color={colors.WHITE} />
+            </RoundKey>
+          </View>
+
+          {/* Hidden Input for Keyboard */}
+          {showTextInput && (
+            <TextInput
+              ref={textInputRef}
+              onKeyPress={handleKeyPress}
+              style={styles.input}
+              multiline
+              autoCapitalize="none"
+              autoComplete={'off'}
+              autoCorrect={false}
+              spellCheck={false}
+              autoFocus={true}
+              {...textInputValueProps}
+            />
+          )}
+          {/* Hidden Input for Keyboard */}
+
+          {/* Touchpad */}
+          {/* <Animated.View style={styles.touchpadContainer}>
               <GestureDetector gesture={composed}>
                 <Animated.View style={styles.touchpad}>
                   <KeepAwakeText />
@@ -633,10 +654,10 @@ export default function Touchpad({navigation, route}) {
                 </Animated.View>
               </Animated.View>
             </Animated.View> */}
-            {/* Touchpad */}
+          {/* Touchpad */}
 
-            {/* Mouse Buttons */}
-            {/* <View style={styles.clicksWrapper}>
+          {/* Mouse Buttons */}
+          {/* <View style={styles.clicksWrapper}>
               <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick}>
                 <Text style={styles.clickBtnText}>Left Click</Text>
               </TouchableOpacity>
@@ -646,26 +667,45 @@ export default function Touchpad({navigation, route}) {
                 <Text style={styles.clickBtnText}>Right Click</Text>
               </TouchableOpacity>
             </View> */}
-            {/* Mouse Buttons */}
-          </>
-        )}
+          {/* Mouse Buttons */}
+          {showRemoteStream ? (
+            <LandscapeTouchpad
+              composed={composed}
+              scrollGesture={scrollGesture}
+              scrollWheelStyles={scrollWheelStyles}
+              sendLeftClick={sendLeftClick}
+              sendRightClick={sendRightClick}
+            />
+          ) : (
+            <PortraitTouchpad
+              composed={composed}
+              scrollGesture={scrollGesture}
+              scrollWheelStyles={scrollWheelStyles}
+              sendLeftClick={sendLeftClick}
+              sendRightClick={sendRightClick}
+            />
+          )}
+        </>
+      )}
+      {showRemoteStream && (
         <RTCView
           style={{
             ...StyleSheet.absoluteFillObject,
+            zIndex: -1,
           }}
           streamURL={remoteStream ? remoteStream?.toURL() : null}
           objectFit="contain"
         />
-        <KeyboardModal
-          ref={keyboardModalRef}
-          sendMediaKey={sendMediaKey}
-          sendLeftClick={sendLeftClick}
-          sendRightClick={sendRightClick}
-          sendText={sendText}
-          receivedText={receivedText}
-        />
-      </SafeAreaView>
-    </Background>
+      )}
+      <KeyboardModal
+        ref={keyboardModalRef}
+        sendMediaKey={sendMediaKey}
+        sendLeftClick={sendLeftClick}
+        sendRightClick={sendRightClick}
+        sendText={sendText}
+        receivedText={receivedText}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -675,6 +715,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    backgroundColor: colors.PRIM_BG,
+    paddingHorizontal: 8,
   },
   keysConatiner: {
     flex: 1,
@@ -780,23 +822,5 @@ const styles = StyleSheet.create({
   txtStatus: {
     color: colors.WHITE,
     marginTop: 16,
-  },
-  clicksWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  clickBtn: {
-    width: '49.6%',
-    height: 60,
-    borderRadius: 4,
-    backgroundColor: colors.TOUCHPAD,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  clickBtnText: {
-    fontFamily: 'Raleway-Thin',
-    color: colors.WHITE,
   },
 });

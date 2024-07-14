@@ -11,9 +11,12 @@ import Settings from '../screens/Settings';
 import Touchpad from '../screens/Touchpad';
 import TouchpadNavigator from './TouchpadNavigator';
 
+import {useGlobalStore} from '../store/useGlobalStore';
+
 const Tabs = createBottomTabNavigator();
 
 export default function TabsNavigator() {
+  const showBottomBar = useGlobalStore(state => state.showBottomBar);
   return (
     <Tabs.Navigator
       initialRouteName="Home"
@@ -25,7 +28,7 @@ export default function TabsNavigator() {
           position: 'absolute',
           bottom: 0,
           left: 0,
-          height: 60,
+          height: showBottomBar ? 60 : 0,
           shadowColor: 'transparent',
         },
         tabBarActiveTintColor: colors.PRIM_ACCENT,

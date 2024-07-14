@@ -40,7 +40,8 @@
     "react-native-switch": "^1.5.1",
     "react-native-vector-icons": "^10.0.3",
     "react-native-webrtc": "^124.0.3",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

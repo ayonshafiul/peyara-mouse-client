@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import colors from '../assets/constants/colors';
 import AppButton from './AppButton';
@@ -32,18 +32,33 @@ export default function ClipText({sendText, receivedText, onFocus}) {
           </Text>
         </TouchableOpacity>
       </View>
-      <BottomSheetTextInput
-        value={text}
-        onChangeText={setText}
-        placeholderTextColor={colors.WHITE}
-        style={styles.input}
-        onFocus={onFocus}
-        multiline
-        numberOfLines={3}
-        textAlignVertical="top"
-        placeholder="Paste or Type here to send to PC"
-        keyboardAppearance="light"
-      />
+      {Platform.OS === 'android' ? (
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholderTextColor={colors.WHITE}
+          style={styles.input}
+          onFocus={onFocus}
+          multiline
+          numberOfLines={3}
+          textAlignVertical="top"
+          placeholder="Paste or Type here to send to PC"
+          keyboardAppearance="light"
+        />
+      ) : (
+        <BottomSheetTextInput
+          value={text}
+          onChangeText={setText}
+          placeholderTextColor={colors.WHITE}
+          style={styles.input}
+          onFocus={onFocus}
+          multiline
+          numberOfLines={3}
+          textAlignVertical="top"
+          placeholder="Paste or Type here to send to PC"
+          keyboardAppearance="light"
+        />
+      )}
       <AppButton
         text={'Send to pc'}
         onPress={() => {
