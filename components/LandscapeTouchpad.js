@@ -6,6 +6,8 @@ import {GestureDetector} from 'react-native-gesture-handler';
 import colors from '../assets/constants/colors';
 import {useNavigation} from '@react-navigation/native';
 import {useGlobalStore} from '../store/useGlobalStore';
+import RoundKey from './RoundKey';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function LandscapeTouchpad({
   composed,
@@ -13,6 +15,7 @@ export default function LandscapeTouchpad({
   scrollWheelStyles,
   sendLeftClick,
   sendRightClick,
+  hideTopControlsAfterDelay,
 }) {
   const setShowBottomBar = useGlobalStore(state => state.setShowBottomBar);
 
@@ -47,6 +50,11 @@ export default function LandscapeTouchpad({
         <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick} />
         <TouchableOpacity style={styles.clickBtn} onPress={sendRightClick} />
       </View>
+      <RoundKey
+        containerStyle={styles.settings}
+        onPress={hideTopControlsAfterDelay}>
+        <MaterialIcons name={'settings'} size={24} color={colors.WHITE} />
+      </RoundKey>
     </>
   );
 }
@@ -101,23 +109,28 @@ const styles = StyleSheet.create({
   },
   clicksWrapper: {
     position: 'absolute',
-    top: 40,
+    top: 20,
     left: 0,
-    bottom: 40,
-    width: 38,
-
+    bottom: 20,
+    width: 24,
     justifyContent: 'space-between',
   },
   clickBtn: {
     height: '49.6%',
     borderRadius: 4,
     backgroundColor: colors.WHITE,
-    opacity: 0.05,
+    opacity: 0.1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   clickBtnText: {
     fontFamily: 'Raleway-Thin',
     color: colors.WHITE,
+  },
+  settings: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    opacity: 0.6,
   },
 });

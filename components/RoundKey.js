@@ -1,9 +1,11 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 
-export default function RoundKey({onPress = null, children}) {
+export default function RoundKey({onPress = null, children, containerStyle}) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.keysContainer}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.keysContainer, containerStyle]}>
       {children}
     </TouchableOpacity>
   );

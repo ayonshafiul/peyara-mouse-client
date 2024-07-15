@@ -98,6 +98,7 @@ notifee.onBackgroundEvent(eventHandler);
 
 const DRAG_START_THRESHOLD_IN_MS = 200;
 const MAX_TRANSLATE_Y = 180;
+let hideControlsTimer;
 
 export default function Touchpad({navigation, route}) {
   const setShowBottomBar = useGlobalStore(state => state.setShowBottomBar);
@@ -109,6 +110,7 @@ export default function Touchpad({navigation, route}) {
   const responseRate = getResponseRateSettings();
   const isFocused = useIsFocused();
 
+  const [showTopControls, setShowTopControls] = useState(true);
   const [showRemoteStream, setShowRemoteStream] = useState(false);
   const [remoteStream, setRemoteStream] = useState(null);
 
@@ -138,6 +140,29 @@ export default function Touchpad({navigation, route}) {
   const isDragging = useSharedValue(false);
   const isDraggingRef = useRef(false);
   const pendingLeftClick = useRef(false);
+
+  const hideTopControlsAfterDelay = () => {
+    setShowTopControls(true);
+    clearTimeout(hideControlsTimer);
+    hideControlsTimer = setTimeout(() => {
+      setShowTopControls(false);
+    }, 3000);
+  };
+
+  const setPortraitMode = () => {
+    clearTimeout(hideControlsTimer);
+    setShowRemoteStream(false);
+    setShowTopControls(true);
+    Orientation.lockToPortrait();
+    setShowBottomBar(true);
+  };
+
+  const setLandscapeMode = () => {
+    setShowRemoteStream(true);
+    Orientation.lockToLandscapeLeft();
+    hideTopControlsAfterDelay();
+    keyboardModalRef.current?.dismiss();
+  };
 
   useEffect(() => {
     (async function requestUserPermission() {
@@ -248,9 +273,7 @@ export default function Touchpad({navigation, route}) {
 
       socket.on('stop-screen-share', () => {
         console.log('stop');
-        setShowRemoteStream(false);
-        Orientation.lockToPortrait();
-        setShowBottomBar(true);
+        setPortraitMode();
       });
 
       /// webrtc handlers
@@ -300,15 +323,12 @@ export default function Touchpad({navigation, route}) {
           console.log(event, ' event', peerConnection.connectionState);
           switch (peerConnection.connectionState) {
             case 'connected':
-              setShowRemoteStream(true);
-              Orientation.lockToLandscapeLeft();
+              setLandscapeMode();
               break;
             case 'closed':
             case 'failed':
             case 'disconnected':
-              setShowRemoteStream(false);
-              Orientation.lockToPortrait();
-              setShowBottomBar(true);
+              setPortraitMode();
               break;
           }
         });
@@ -333,10 +353,8 @@ export default function Touchpad({navigation, route}) {
     if (socket) {
       socket?.disconnect();
       peerConnection?.close();
-      setShowRemoteStream(false);
-      setShowBottomBar(true);
-      Orientation.lockToPortrait();
       keyboardModalRef?.current?.dismiss();
+      setPortraitMode();
     }
   };
   const openHelp = () => {
@@ -592,29 +610,43 @@ export default function Touchpad({navigation, route}) {
 
       {status === 'Connected' && (
         <>
-          <View style={styles.keysConatiner}>
-            <RoundKey onPress={focusToggle}>
-              <MaterialIcons
-                name="keyboard-hide"
-                size={24}
-                color={colors.WHITE}
-              />
-            </RoundKey>
-            <RoundKey onPress={showControls}>
-              <MaterialIcons
-                name="control-camera"
-                size={24}
-                color={colors.WHITE}
-              />
-            </RoundKey>
+          {showTopControls && (
+            <View style={styles.keysConatiner}>
+              <RoundKey onPress={focusToggle}>
+                <MaterialIcons
+                  name="keyboard-hide"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
+              <RoundKey onPress={showControls}>
+                <MaterialIcons
+                  name="control-camera"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
 
-            <RoundKey onPress={openHelp}>
-              <MaterialIcons name="help" size={24} color={colors.WHITE} />
-            </RoundKey>
-            <RoundKey onPress={disconnectSocket}>
-              <MaterialIcons name="close" size={24} color={colors.WHITE} />
-            </RoundKey>
-          </View>
+              <RoundKey
+                onPress={showRemoteStream ? setPortraitMode : setLandscapeMode}>
+                <MaterialIcons
+                  name={
+                    showRemoteStream
+                      ? 'stay-primary-portrait'
+                      : 'stay-primary-landscape'
+                  }
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
+              <RoundKey onPress={openHelp}>
+                <MaterialIcons name="help" size={24} color={colors.WHITE} />
+              </RoundKey>
+              <RoundKey onPress={disconnectSocket}>
+                <MaterialIcons name="close" size={24} color={colors.WHITE} />
+              </RoundKey>
+            </View>
+          )}
 
           {/* Hidden Input for Keyboard */}
           {showTextInput && (
@@ -675,6 +707,7 @@ export default function Touchpad({navigation, route}) {
               scrollWheelStyles={scrollWheelStyles}
               sendLeftClick={sendLeftClick}
               sendRightClick={sendRightClick}
+              hideTopControlsAfterDelay={hideTopControlsAfterDelay}
             />
           ) : (
             <PortraitTouchpad
