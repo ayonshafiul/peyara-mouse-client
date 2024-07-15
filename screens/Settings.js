@@ -93,75 +93,77 @@ export default function Settings() {
 
   return (
     <Background>
-      <Text style={styles.settingsHeader}>Settings</Text>
-      <FlatList
-        data={settingsData}
-        ListHeaderComponent={
-          <>
-            <Text style={styles.switchCardText}>
-              Touchpad Sensitivity : {touchSens.toFixed(2)}
-            </Text>
-            <View style={styles.sliderContainer}>
-              <Slider
-                style={styles.slider}
-                minimumValue={0.05}
-                maximumValue={5}
-                step={0.05}
-                value={touchSens}
-                onValueChange={setTouchSens}
-                maximumTrackTintColor={colors.PRIM_ACCENT}
-                minimumTrackTintColor={colors.PRIM_ACCENT}
-                thumbTintColor={colors.PRIM_ACCENT}
-                onSlidingComplete={async value => {
-                  setValueFor(SETTINGS_TOUCHPAD_SENSITIVITY, String(value));
-                }}
-              />
-            </View>
-            <Text style={styles.switchCardText}>
-              Scroll Sensitivity: {scrollSens.toFixed(2)}
-            </Text>
-            <View style={styles.sliderContainer}>
-              <Slider
-                style={styles.slider}
-                minimumValue={0.05}
-                maximumValue={2}
-                step={0.05}
-                value={scrollSens}
-                onValueChange={setScrollSens}
-                maximumTrackTintColor={colors.PRIM_ACCENT}
-                minimumTrackTintColor={colors.PRIM_ACCENT}
-                thumbTintColor={colors.PRIM_ACCENT}
-                onSlidingComplete={async value => {
-                  setValueFor(
-                    SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
-                    String(value),
-                  );
-                }}
-              />
-            </View>
-            <Text style={styles.switchCardText}>
-              Touchpad Response rate: {responseRate}ms
-            </Text>
-            <View style={styles.sliderContainer}>
-              <Slider
-                style={styles.slider}
-                minimumValue={4}
-                maximumValue={120}
-                step={4}
-                value={responseRate}
-                onValueChange={setResponseRate}
-                maximumTrackTintColor={colors.PRIM_ACCENT}
-                minimumTrackTintColor={colors.PRIM_ACCENT}
-                thumbTintColor={colors.PRIM_ACCENT}
-                onSlidingComplete={async value => {
-                  setValueFor(SETTINGS_TOUCHPAD_RESPONSE_RATE, String(value));
-                }}
-              />
-            </View>
-          </>
-        }
-        renderItem={props => <SwitchCard {...props} />}
-      />
+      <SafeAreaView style={global.container}>
+        <Text style={styles.settingsHeader}>Settings</Text>
+        <FlatList
+          data={settingsData}
+          ListHeaderComponent={
+            <>
+              <Text style={styles.switchCardText}>
+                Touchpad Sensitivity : {touchSens.toFixed(2)}
+              </Text>
+              <View style={styles.sliderContainer}>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={0.05}
+                  maximumValue={5}
+                  step={0.05}
+                  value={touchSens}
+                  onValueChange={setTouchSens}
+                  maximumTrackTintColor={colors.PRIM_ACCENT}
+                  minimumTrackTintColor={colors.PRIM_ACCENT}
+                  thumbTintColor={colors.PRIM_ACCENT}
+                  onSlidingComplete={async value => {
+                    setValueFor(SETTINGS_TOUCHPAD_SENSITIVITY, String(value));
+                  }}
+                />
+              </View>
+              <Text style={styles.switchCardText}>
+                Scroll Sensitivity: {scrollSens.toFixed(2)}
+              </Text>
+              <View style={styles.sliderContainer}>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={0.05}
+                  maximumValue={2}
+                  step={0.05}
+                  value={scrollSens}
+                  onValueChange={setScrollSens}
+                  maximumTrackTintColor={colors.PRIM_ACCENT}
+                  minimumTrackTintColor={colors.PRIM_ACCENT}
+                  thumbTintColor={colors.PRIM_ACCENT}
+                  onSlidingComplete={async value => {
+                    setValueFor(
+                      SETTINGS_TOUCHPAD_SCROLL_SENSITIVITY,
+                      String(value),
+                    );
+                  }}
+                />
+              </View>
+              <Text style={styles.switchCardText}>
+                Touchpad Response rate: {responseRate}ms
+              </Text>
+              <View style={styles.sliderContainer}>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={4}
+                  maximumValue={120}
+                  step={4}
+                  value={responseRate}
+                  onValueChange={setResponseRate}
+                  maximumTrackTintColor={colors.PRIM_ACCENT}
+                  minimumTrackTintColor={colors.PRIM_ACCENT}
+                  thumbTintColor={colors.PRIM_ACCENT}
+                  onSlidingComplete={async value => {
+                    setValueFor(SETTINGS_TOUCHPAD_RESPONSE_RATE, String(value));
+                  }}
+                />
+              </View>
+            </>
+          }
+          renderItem={props => <SwitchCard {...props} />}
+        />
+      </SafeAreaView>
     </Background>
   );
 }

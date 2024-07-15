@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect} from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -23,6 +23,11 @@ export default function MouseMove() {
 
   return (
     <Animated.View style={styles.mainCardWrapper}>
+      <Image
+        style={styles.bg}
+        source={require('../assets/img/frame.png')}
+        resizeMode="stretch"
+      />
       <Animated.Image source={AppIcon} style={[styles.icon, animStyle]} />
     </Animated.View>
   );
@@ -31,12 +36,18 @@ export default function MouseMove() {
 const styles = StyleSheet.create({
   mainCardWrapper: {
     height: 200,
-    padding: 16,
     borderRadius: 4,
-    marginVertical: 16,
+    marginVertical: 8,
     backgroundColor: colors.PRIM_ACCENT,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  bg: {
+    width: '100%',
+    height: 200,
+    ...StyleSheet.absoluteFill,
+    borderRadius: 4,
   },
   icon: {
     width: 80,

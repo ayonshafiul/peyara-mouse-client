@@ -9,7 +9,6 @@ export default function Background({children}) {
       style={{
         flex: 1,
         backgroundColor: colors.PRIM_BG,
-        paddingHorizontal: 16,
       }}
       imageStyle={{
         opacity: 0.05,
