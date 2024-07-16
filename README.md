@@ -12,9 +12,18 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/ayonshafiul/peyara-mouse-client)
 ![GitHub Repo forks](https://img.shields.io/github/forks/ayonshafiul/peyara-mouse-client)
 
+### What's new in v2.0.1
+
+- All new icon
+- Desktop Screen share (_Update the desktop app to v0.1.0_)
+- Landscape and portrait touchpad
+- Side Scroll Wheel for easy scrolling
+
 <div style="display: flex; flex-wrap: wrap; gap: 8;">
 <img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/screen-desk.png" alt="Scan QR" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/screen-mob.png" alt="Touchpad" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/touchpad-2.png" alt="Touchpad" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/keyboard.png" alt="Keyboard" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/touchpad.png" alt="Media & Clipboard" width="150">
@@ -27,7 +36,7 @@
 
 https://peyara-remote-mouse.vercel.app/
 
-### Step 2: Install the desktop client and start the server.
+### Step 2: Install the desktop client and start.
 
 ![Start Server](https://peyara-remote-mouse.vercel.app/img/server.png)
 
