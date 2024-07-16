@@ -6,8 +6,8 @@ import {
   LayoutAnimation,
   TouchableOpacity,
   Image,
-  SafeAreaView,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import SwipeableItem, {
   useSwipeableItemParams,
   OpenDirection,
