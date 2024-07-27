@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   text: {
+    flex: 1,
     fontFamily: 'Raleway-Regular',
     fontSize: 18,
     color: colors.WHITE,

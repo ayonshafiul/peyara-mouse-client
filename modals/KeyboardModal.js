@@ -81,7 +81,7 @@ function KeyboardModal(
               <ControlButton
                 onPress={() => sendMediaKey('left')}
                 text={'←'}
-                containerStyle={styles.left}
+                containerStyle={[styles.left]}
               />
               <ControlButton
                 onPress={() => sendMediaKey('right')}
@@ -92,24 +92,24 @@ function KeyboardModal(
 
             <View style={styles.fourKeys}>
               <ControlButton
-                onPress={() => sendMediaKey('volume-up')}
+                onPress={() => sendMediaKey('audio_vol_up')}
                 text={'V+'}
                 containerStyle={styles.up}
               />
               <ControlButton
-                onPress={() => sendMediaKey('volume-down')}
+                onPress={() => sendMediaKey('audio_vol_down')}
                 text={'V-'}
                 containerStyle={styles.down}
               />
               <ControlButton
-                onPress={() => sendMediaKey('volume-off')}
+                onPress={() => sendMediaKey('audio_mute')}
                 text={'Mute'}
-                containerStyle={styles.left}
+                containerStyle={[styles.left, {left: -10}]}
               />
               <ControlButton
-                onPress={() => sendMediaKey('stop')}
+                onPress={() => sendMediaKey('audio_stop')}
                 text={'Stop'}
-                containerStyle={[styles.right, {right: -6}]}
+                containerStyle={[styles.right]}
               />
             </View>
 
@@ -123,19 +123,19 @@ function KeyboardModal(
               <ControlButton
                 onPress={() => sendMediaKey('audio_pause')}
                 text={'Pause'}
-                containerStyle={[styles.down, {right: 52}]}
+                containerStyle={[styles.down]}
                 smallVariation
               />
               <ControlButton
                 onPress={() => sendMediaKey('audio_prev')}
                 text={'Prev'}
-                containerStyle={[styles.left, {right: 116}]}
+                containerStyle={[styles.left]}
                 smallVariation
               />
               <ControlButton
                 onPress={() => sendMediaKey('audio_next')}
                 text={'Next'}
-                containerStyle={[styles.right, {right: 0}]}
+                containerStyle={[styles.right, {left: 124}]}
                 smallVariation
               />
             </View>
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 80,
     position: 'relative',
+    marginVertical: 8,
   },
   clicksWrapper: {
     flexDirection: 'row',
@@ -192,22 +193,22 @@ const styles = StyleSheet.create({
   },
   up: {
     position: 'absolute',
-    right: 60,
+    left: 60,
     top: 0,
   },
   down: {
     position: 'absolute',
-    right: 60,
+    left: 60,
     top: 36,
   },
   left: {
     position: 'absolute',
-    right: 110,
+    left: 10,
     top: 36,
   },
   right: {
     position: 'absolute',
-    right: 10,
+    left: 110,
     top: 36,
   },
 });
