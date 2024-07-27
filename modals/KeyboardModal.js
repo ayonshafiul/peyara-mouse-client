@@ -17,6 +17,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated from 'react-native-reanimated';
 import ClipText from '../components/ClipText';
+import ControlButton from '../components/ControlButton';
 
 function KeyboardModal(
   {sendMediaKey, sendLeftClick, sendRightClick, sendText, receivedText},
@@ -57,18 +58,89 @@ function KeyboardModal(
           keyboardShouldPersistTaps="handled"
           ref={scrollViewRef}>
           <View style={styles.contentContainer}>
-            {mediaKeysData.map((item, idx) => {
+            {/* {mediaKeysData.map((item, idx) => {
               return (
-                <RoundKey key={idx} onPress={() => sendMediaKey(item.key)}>
-                  <MaterialIcons
-                    name={item.icon}
-                    size={24}
-                    color={colors.WHITE}
-                  />
-                </RoundKey>
+                <ControlButton
+                  key={idx}
+                  onPress={() => sendMediaKey(item.key)}
+                  text={item.label}
+                />
               );
-            })}
+            })} */}
+            <View style={styles.fourKeys}>
+              <ControlButton
+                onPress={() => sendMediaKey('up')}
+                text={'↑'}
+                containerStyle={styles.up}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('down')}
+                text={'↓'}
+                containerStyle={styles.down}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('left')}
+                text={'←'}
+                containerStyle={styles.left}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('right')}
+                text={'→'}
+                containerStyle={styles.right}
+              />
+            </View>
+
+            <View style={styles.fourKeys}>
+              <ControlButton
+                onPress={() => sendMediaKey('volume-up')}
+                text={'V+'}
+                containerStyle={styles.up}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('volume-down')}
+                text={'V-'}
+                containerStyle={styles.down}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('volume-off')}
+                text={'Mute'}
+                containerStyle={styles.left}
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('stop')}
+                text={'Stop'}
+                containerStyle={[styles.right, {right: -6}]}
+              />
+            </View>
+
+            <View style={styles.fourKeys}>
+              <ControlButton
+                onPress={() => sendMediaKey('audio_play')}
+                text={'Play'}
+                containerStyle={styles.up}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('audio_pause')}
+                text={'Pause'}
+                containerStyle={[styles.down, {right: 52}]}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('audio_prev')}
+                text={'Prev'}
+                containerStyle={[styles.left, {right: 116}]}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendMediaKey('audio_next')}
+                text={'Next'}
+                containerStyle={[styles.right, {right: 0}]}
+                smallVariation
+              />
+            </View>
           </View>
+
           <ClipText
             sendText={sendText}
             receivedText={receivedText}
@@ -89,16 +161,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.PRIM_BG,
   },
   contentContainer: {
-    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
-    padding: 8,
-    borderWidth: 0,
-    borderColor: 'transparent',
   },
-
+  fourKeys: {
+    width: 180,
+    height: 80,
+    position: 'relative',
+  },
   clicksWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -109,7 +180,7 @@ const styles = StyleSheet.create({
   },
   clickBtn: {
     width: '49.6%',
-    height: 60,
+    height: 30,
     borderRadius: 4,
     backgroundColor: colors.TOUCHPAD,
     justifyContent: 'center',
@@ -118,5 +189,25 @@ const styles = StyleSheet.create({
   clickBtnText: {
     fontFamily: 'Raleway-Thin',
     color: colors.WHITE,
+  },
+  up: {
+    position: 'absolute',
+    right: 60,
+    top: 0,
+  },
+  down: {
+    position: 'absolute',
+    right: 60,
+    top: 36,
+  },
+  left: {
+    position: 'absolute',
+    right: 110,
+    top: 36,
+  },
+  right: {
+    position: 'absolute',
+    right: 10,
+    top: 36,
   },
 });

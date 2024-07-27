@@ -45,17 +45,17 @@ export const mediaKeysData = [
   {
     icon: 'volume-off',
     key: 'audio_mute',
-    label: 'Mute the volume',
+    label: 'Mute',
   },
   {
     icon: 'volume-down',
     key: 'audio_vol_down',
-    label: 'Lower the volume',
+    label: 'V-',
   },
   {
     icon: 'volume-up',
     key: 'audio_vol_up',
-    label: 'Increase the volume',
+    label: 'V+',
   },
   {
     icon: 'play-arrow',
@@ -75,32 +75,35 @@ export const mediaKeysData = [
   {
     icon: 'skip-previous',
     key: 'audio_prev',
-    label: 'Previous Track',
+    label: 'Previous',
   },
   {
     icon: 'skip-next',
     key: 'audio_next',
-    label: 'Next Track',
+    label: 'Next',
   },
+];
+
+export const arrowKeysData = [
   {
     icon: 'keyboard-arrow-up',
     key: 'up',
-    label: 'Arrow Up',
+    label: '↑',
   },
   {
     icon: 'keyboard-arrow-down',
     key: 'down',
-    label: 'Arrow Down',
+    label: '↓',
   },
   {
     icon: 'keyboard-arrow-left',
     key: 'left',
-    label: 'Arrow Left',
+    label: '←',
   },
   {
     icon: 'keyboard-arrow-right',
     key: 'right',
-    label: 'Arrow Right',
+    label: '→',
   },
 ];
 
