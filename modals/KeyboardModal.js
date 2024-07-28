@@ -1,4 +1,5 @@
 import {
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -20,7 +21,14 @@ import ClipText from '../components/ClipText';
 import ControlButton from '../components/ControlButton';
 
 function KeyboardModal(
-  {sendMediaKey, sendLeftClick, sendRightClick, sendText, receivedText},
+  {
+    sendMediaKey,
+    sendEditKey,
+    sendLeftClick,
+    sendRightClick,
+    sendText,
+    receivedText,
+  },
   ref,
 ) {
   const snapPoints = useMemo(() => ['33%', '60%'], []);
@@ -28,6 +36,9 @@ function KeyboardModal(
   const scrollToBottom = () => {
     scrollViewRef.current?.scrollToEnd({animated: true});
   };
+
+  const modifier = Platform.OS === 'ios' ? ['command'] : ['control'];
+
   return (
     <View style={styles.container}>
       <BottomSheetModal
@@ -136,6 +147,33 @@ function KeyboardModal(
                 onPress={() => sendMediaKey('audio_next')}
                 text={'Next'}
                 containerStyle={[styles.right, {left: 124}]}
+                smallVariation
+              />
+            </View>
+
+            <View style={styles.fourKeys}>
+              <ControlButton
+                onPress={() => sendEditKey({key: 'c', modifier: modifier})}
+                text={'Copy'}
+                containerStyle={styles.up}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendEditKey({key: 'v', modifier: modifier})}
+                text={'Paste'}
+                containerStyle={[styles.down]}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendEditKey({key: 'a', modifier: modifier})}
+                text={'All'}
+                containerStyle={[styles.left, {left: 20}]}
+                smallVariation
+              />
+              <ControlButton
+                onPress={() => sendEditKey({key: 'x', modifier: modifier})}
+                text={'Cut'}
+                containerStyle={[styles.right, {left: 118}]}
                 smallVariation
               />
             </View>

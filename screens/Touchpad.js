@@ -445,6 +445,9 @@ export default function Touchpad({navigation, route}) {
   const sendMediaKey = key => {
     socket?.emit('media-key', key);
   };
+  const sendEditKey = payload => {
+    socket?.emit('edit-key', {key: payload.key, modifier: payload.modifier});
+  };
   const sendText = text => {
     socket?.emit('text', text);
   };
@@ -733,6 +736,7 @@ export default function Touchpad({navigation, route}) {
       <KeyboardModal
         ref={keyboardModalRef}
         sendMediaKey={sendMediaKey}
+        sendEditKey={sendEditKey}
         sendLeftClick={sendLeftClick}
         sendRightClick={sendRightClick}
         sendText={sendText}
