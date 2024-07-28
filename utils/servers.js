@@ -3,6 +3,7 @@ import {
   QRCODE_SECRET,
   SERVER_REST_RESPONSE,
   SERVER_KEY,
+  DESKTOP_APP_VERSION,
 } from '../assets/constants/constants';
 import {getValueFor, setValueFor} from './storage';
 
@@ -32,29 +33,45 @@ function sleep(time) {
 }
 
 export async function addServer(qrCodeValue) {
+  let errorObject = {
+    error: false,
+    errorTitle: '',
+  };
+
   if (!qrCodeValue) {
-    return false;
-  }
-  let servers = getValueFor(SERVER_KEY);
-  if (!qrCodeValue.includes(QRCODE_SECRET)) {
-    return false;
+    errorObject.error = true;
+    errorObject.errorTitle = 'No data found';
+    return errorObject;
   }
 
   let qrCodeServers = qrCodeValue.split(',');
   if (!(qrCodeServers.length > 2)) {
-    return false;
+    errorObject.error = true;
+    errorObject.errorTitle = 'QRCode seems to be invalid';
+    return errorObject;
   }
 
-  let secret = qrCodeServers[0];
+  let appVersion = qrCodeServers[0]; // first index should be app version
+  if (appVersion !== DESKTOP_APP_VERSION) {
+    errorObject.error = true;
+    errorObject.errorTitle =
+      'Please update desktop app to the latest version and try again';
+    return errorObject;
+  }
+
+  let secret = qrCodeServers[1];
   if (secret !== QRCODE_SECRET) {
-    return false;
+    errorObject.error = true;
+    errorObject.errorTitle =
+      'Make sure to scan the QRcode shown only on Peyara Desktop App';
+    return errorObject;
   }
 
-  let hostName = qrCodeServers[1];
+  let hostName = qrCodeServers[2];
   let serverEntry = null;
   // try all possible servers to see which works
 
-  for (let i = 2; i < qrCodeServers.length; i++) {
+  for (let i = 3; i < qrCodeServers.length; i++) {
     let url = qrCodeServers[i];
     // Alert.alert(url, 'url');
     try {
@@ -75,9 +92,11 @@ export async function addServer(qrCodeValue) {
     }
   }
   if (!serverEntry) {
-    return false;
+    errorObject.error = true;
+    errorObject.errorTitle = "Couldn't connect to server";
+    return errorObject;
   }
-
+  let servers = getValueFor(SERVER_KEY);
   if (servers) {
     try {
       let serversArray = JSON.parse(servers);
@@ -85,13 +104,15 @@ export async function addServer(qrCodeValue) {
       setValueFor(SERVER_KEY, JSON.stringify(serversArray));
     } catch (e) {
       setValueFor(SERVER_KEY, JSON.stringify([]));
-      return false;
+      errorObject.error = true;
+      errorObject.errorTitle = "Couldn't save the server url";
+      return errorObject;
     }
   } else {
     // initialize store with server value
     setValueFor(SERVER_KEY, JSON.stringify([serverEntry]));
   }
-  return true;
+  return {error: false};
 }
 
 export function setServers(serversArray) {

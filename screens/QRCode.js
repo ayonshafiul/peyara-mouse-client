@@ -33,14 +33,12 @@ export default function QRCode({navigation}) {
 
   const handleBarCodeScanned = async ({type, data}) => {
     setLoading(true);
-    let qrCodeAdded = await addServer(data);
+    console.log(data);
+    let {error, errorTitle} = await addServer(data);
 
     setLoading(false);
-    if (!qrCodeAdded) {
-      Alert.alert(
-        'Invalid QR code or different wifi network.',
-        'Make sure your desktop and mobile are connected to the same wifi network. Only scan the QR code shown on Peyara desktop client. ',
-      );
+    if (error) {
+      Alert.alert(errorTitle);
       setScanned(true);
     } else {
       navigation.goBack();
