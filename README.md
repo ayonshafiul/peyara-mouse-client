@@ -2,6 +2,10 @@
 
 [![Download Android app from Google Play](https://peyara-remote-mouse.vercel.app/img/google-play.png)](https://play.google.com/store/apps/details?id=io.github.ayonshafiul.peyara)
 
+<a href='https://peyara-remote-mouse.en.uptodown.com/android' title='Download Peyara Remote Mouse' >
+  <img src='https://stc.utdstc.com/img/mediakit/download-aao-small.png' alt='Download Peyara Remote Mouse'>
+</a>
+
 ## Wifi Remote Mouse for your Windows/Linux/Mac PCs.
 
 <p align="center"><img src="https://peyara-remote-mouse.vercel.app/img/client-logo.png" alt="Logo" width="250"></p>
