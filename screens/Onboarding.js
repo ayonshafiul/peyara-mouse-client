@@ -10,6 +10,7 @@ import {
   Image,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 
 import colors from '../assets/constants/colors';
@@ -166,6 +167,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 48,
+    paddingBottom: Platform.OS === 'ios' ? 80 : 0,
     // backgroundColor: "blue",
   },
   image: {

@@ -1,5 +1,6 @@
 import {
   FlatList,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -168,6 +169,16 @@ function ShowControls() {
   return <MaterialIcons name="control-camera" size={48} color={colors.WHITE} />;
 }
 
+function Orientation() {
+  return (
+    <MaterialIcons
+      name="stay-primary-landscape"
+      size={48}
+      color={colors.WHITE}
+    />
+  );
+}
+
 const steps = [
   {
     label: 'Move the desktop cursor with your finger',
@@ -199,6 +210,10 @@ const steps = [
   {
     label: 'Press to show more controls',
     component: <ShowControls />,
+  },
+  {
+    label: 'Press to change orientation of touchpad',
+    component: <Orientation />,
   },
 ];
 export default function Help({navigation}) {
