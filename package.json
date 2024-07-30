@@ -1,6 +1,6 @@
 {
   "name": "peyara-mouse-client",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -40,6 +40,7 @@
     "react-native-switch": "^1.5.1",
     "react-native-vector-icons": "^10.0.3",
     "react-native-webrtc": "^124.0.3",
+    "semver": "^7.6.3",
     "socket.io-client": "^4.7.5",
     "zustand": "^4.5.4"
   },

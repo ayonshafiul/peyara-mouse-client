@@ -5,7 +5,7 @@ export const SERVER_URL_KEY = 'SERVER_URL';
 
 export const QRCODE_SECRET = '<peyara>';
 
-export const DESKTOP_APP_VERSION = '0.1.1';
+export const MIN_DESKTOP_APP_VERSION = '0.1.1';
 
 export const SERVER_REST_RESPONSE = 'peyara';
 

@@ -3,9 +3,10 @@ import {
   QRCODE_SECRET,
   SERVER_REST_RESPONSE,
   SERVER_KEY,
-  DESKTOP_APP_VERSION,
+  MIN_DESKTOP_APP_VERSION,
 } from '../assets/constants/constants';
 import {getValueFor, setValueFor} from './storage';
+import {gte} from 'semver';
 
 export function getServers() {
   let servers = getValueFor(SERVER_KEY);
@@ -52,7 +53,12 @@ export async function addServer(qrCodeValue) {
   }
 
   let appVersion = qrCodeServers[0]; // first index should be app version
-  if (appVersion !== DESKTOP_APP_VERSION) {
+  console.log(
+    gte(appVersion, MIN_DESKTOP_APP_VERSION),
+    appVersion,
+    MIN_DESKTOP_APP_VERSION,
+  );
+  if (!gte(appVersion, MIN_DESKTOP_APP_VERSION)) {
     errorObject.error = true;
     errorObject.errorTitle =
       'Please update desktop app to the latest version and try again';
