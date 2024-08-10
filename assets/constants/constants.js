@@ -112,3 +112,10 @@ export const arrowKeysData = [
 export const DEFAULT_TOUCHPAD_SENSITIVITY = 0.5;
 export const DEFAULT_TOUCHPAD_SCROLL_SENSITIVITY = 0.5;
 export const DEFAULT_TOUCHPAD_RESPONSE_RATE = 12;
+
+export const FILE_UPLOAD_STATUS = {
+  uploading: 'uploading',
+  success: 'success',
+  failed: 'failed',
+  cancelled: 'cancelled',
+};

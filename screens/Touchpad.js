@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   activateKeepAwake,
   deactivateKeepAwake,
@@ -71,6 +71,7 @@ import {
 import PortraitTouchpad from '../components/PortraitTouchpad';
 import LandscapeTouchpad from '../components/LandscapeTouchpad';
 import {useGlobalStore} from '../store/useGlobalStore';
+import FileUploadModal from '../modals/FileUploadModal';
 
 let socket = null;
 let textInputValueProps = Platform.os === 'ios' ? {value: ''} : {};
@@ -113,6 +114,13 @@ export default function Touchpad({navigation, route}) {
   const [showTopControls, setShowTopControls] = useState(true);
   const [showRemoteStream, setShowRemoteStream] = useState(false);
   const [remoteStream, setRemoteStream] = useState(null);
+
+  const serverUrl = useMemo(
+    () => route?.params?.serverUrl ?? getValueFor(SERVER_URL_KEY) ?? null,
+    [route?.params],
+  );
+
+  console.log('🚀 ~ Touchpad ~ serverUrl:', serverUrl);
 
   // touchpad coordinates
   const tX = useRef(0);
@@ -209,8 +217,6 @@ export default function Touchpad({navigation, route}) {
   // socket connection handler
   const connectSocket = async () => {
     setLoading(true);
-    const serverUrl =
-      route?.params?.serverUrl ?? getValueFor(SERVER_URL_KEY) ?? null;
 
     console.log('🚀 ~ connectSocket ~ serverUrl:', serverUrl);
     // disconnect existing connections
@@ -568,6 +574,7 @@ export default function Touchpad({navigation, route}) {
   const textInputRef = useRef();
   const timeoutRef = useRef();
   const keyboardModalRef = useRef();
+  const fileUploadModalRef = useRef();
 
   const handleKeyPress = event => {
     let key = event.nativeEvent.key;
@@ -585,6 +592,7 @@ export default function Touchpad({navigation, route}) {
   };
   const focusToggle = () => {
     keyboardModalRef?.current?.dismiss();
+    fileUploadModalRef?.current?.dismiss();
     setShowTextInput(p => !p);
   };
   const showControls = () => {
@@ -592,6 +600,15 @@ export default function Touchpad({navigation, route}) {
       textInputRef.current?.blur();
     }
     keyboardModalRef?.current?.present();
+    fileUploadModalRef?.current?.dismiss();
+  };
+
+  const showFileUpload = () => {
+    if (textInputRef.current?.isFocused()) {
+      textInputRef.current?.blur();
+    }
+    keyboardModalRef?.current?.dismiss();
+    fileUploadModalRef?.current?.present();
   };
 
   return (
@@ -615,14 +632,14 @@ export default function Touchpad({navigation, route}) {
         <>
           {showTopControls && (
             <View style={styles.keysConatiner}>
-              <RoundKey onPress={focusToggle}>
+              <RoundKey containerStyle={styles.roundKey} onPress={focusToggle}>
                 <MaterialIcons
                   name="keyboard-hide"
                   size={24}
                   color={colors.WHITE}
                 />
               </RoundKey>
-              <RoundKey onPress={showControls}>
+              <RoundKey containerStyle={styles.roundKey} onPress={showControls}>
                 <MaterialIcons
                   name="control-camera"
                   size={24}
@@ -631,6 +648,17 @@ export default function Touchpad({navigation, route}) {
               </RoundKey>
 
               <RoundKey
+                containerStyle={styles.roundKey}
+                onPress={showFileUpload}>
+                <MaterialIcons
+                  name="file-upload"
+                  size={24}
+                  color={colors.WHITE}
+                />
+              </RoundKey>
+
+              <RoundKey
+                containerStyle={styles.roundKey}
                 onPress={showRemoteStream ? setPortraitMode : setLandscapeMode}>
                 <MaterialIcons
                   name={
@@ -642,10 +670,12 @@ export default function Touchpad({navigation, route}) {
                   color={colors.WHITE}
                 />
               </RoundKey>
-              <RoundKey onPress={openHelp}>
+              <RoundKey containerStyle={styles.roundKey} onPress={openHelp}>
                 <MaterialIcons name="help" size={24} color={colors.WHITE} />
               </RoundKey>
-              <RoundKey onPress={disconnectSocket}>
+              <RoundKey
+                containerStyle={styles.roundKey}
+                onPress={disconnectSocket}>
                 <MaterialIcons name="close" size={24} color={colors.WHITE} />
               </RoundKey>
             </View>
@@ -742,6 +772,7 @@ export default function Touchpad({navigation, route}) {
         sendText={sendText}
         receivedText={receivedText}
       />
+      <FileUploadModal ref={fileUploadModalRef} url={serverUrl} />
     </SafeAreaView>
   );
 }
@@ -762,9 +793,12 @@ const styles = StyleSheet.create({
     maxHeight: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
     paddingHorizontal: 16,
     marginTop: 16,
+  },
+  roundKey: {
+    width: 34,
+    height: 34,
   },
   rowKey: {
     marginHorizontal: 4,

@@ -1,22 +1,7 @@
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {forwardRef, useMemo, useRef} from 'react';
-import {mediaKeysData} from '../assets/constants/constants';
-import RoundKey from '../components/RoundKey';
 import colors from '../assets/constants/colors';
-import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Animated from 'react-native-reanimated';
+import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import ClipText from '../components/ClipText';
 import ControlButton from '../components/ControlButton';
 
@@ -69,15 +54,6 @@ function KeyboardModal(
           keyboardShouldPersistTaps="handled"
           ref={scrollViewRef}>
           <View style={styles.contentContainer}>
-            {/* {mediaKeysData.map((item, idx) => {
-              return (
-                <ControlButton
-                  key={idx}
-                  onPress={() => sendMediaKey(item.key)}
-                  text={item.label}
-                />
-              );
-            })} */}
             <View style={styles.fourKeys}>
               <ControlButton
                 onPress={() => sendMediaKey('up')}
