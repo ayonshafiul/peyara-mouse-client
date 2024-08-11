@@ -1,5 +1,5 @@
 import {Alert, Image, StyleSheet, View} from 'react-native';
-import React, {forwardRef, useMemo, useRef, useState} from 'react';
+import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react';
 import {FILE_UPLOAD_STATUS} from '../assets/constants/constants';
 import colors from '../assets/constants/colors';
 import {BottomSheetModal, BottomSheetScrollView} from '@gorhom/bottom-sheet';
@@ -9,8 +9,13 @@ import DocumentPicker from 'react-native-document-picker';
 import * as Progress from 'react-native-progress';
 import axios from 'axios';
 import AppButton from '../components/AppButton';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const DEFAULT_BTN_TEXT = 'Select a file to send';
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function FileUploadModal({url}, ref) {
   const snapPoints = useMemo(() => ['80%'], []);
@@ -41,24 +46,40 @@ function FileUploadModal({url}, ref) {
     }
   };
 
-  const handleFileUpload = async file => {
+  const pickMedia = async () => {
+    try {
+      const {assets} = await launchImageLibrary({
+        selectionLimit: 0,
+        mediaType: 'mixed',
+      });
+      console.log(assets);
+      if (assets && assets.length > 0) {
+        setFile(assets.map(a => ({...a, name: a.fileName})));
+      }
+    } catch (err) {
+      setUploadStatus(FILE_UPLOAD_STATUS.failed);
+      console.error(err);
+    }
+  };
+
+  const handleFileUpload = useCallback(async () => {
     if (!file) {
       Alert.alert('Please select a file first.');
       return;
     }
-    setUploadStatus(FILE_UPLOAD_STATUS.uploading);
-    try {
-      // Create a FormData object to send the file
-      const formData = new FormData();
-      formData.append('file', {
-        uri: file[0].uri,
-        type: file[0].type,
-        name: file[0].name,
-      });
+    for (const f of file) {
+      setUploadStatus(FILE_UPLOAD_STATUS.uploading);
+      try {
+        const formData = new FormData();
+        formData.append('file', {
+          uri: f.uri,
+          type: f.type,
+          name: f.name,
+        });
+        console.log(formData, 'formdata');
 
-      // Send the file using axios
-      axios
-        .post(url + 'upload', formData, {
+        // Send the file using axios
+        const res = await axios.post(url + 'upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -68,26 +89,19 @@ function FileUploadModal({url}, ref) {
             );
             setUploadProgress(progress);
           },
-        })
-        .then(response => {
-          setUploadStatus(FILE_UPLOAD_STATUS.success);
-          Alert.alert(
-            'File Sent Successfully',
-            'Check your downloads folder in your pc.',
-          );
-          setFile(null);
-          setBtnText(DEFAULT_BTN_TEXT);
-          setUploadProgress(0);
-        })
-        .catch(error => {
-          setUploadStatus(FILE_UPLOAD_STATUS.failed);
-          console.error(error);
         });
-    } catch (err) {
-      setUploadStatus(FILE_UPLOAD_STATUS.failed);
-      console.error(err);
+        setUploadStatus(FILE_UPLOAD_STATUS.success);
+      } catch (err) {
+        setUploadStatus(FILE_UPLOAD_STATUS.failed);
+        console.error(err);
+      }
+      await sleep(1000);
     }
-  };
+    Alert.alert(
+      'Files sent successfully.',
+      'Check the Downloads folder on you PC.',
+    );
+  }, [file, url]);
   return (
     <View style={styles.container}>
       <BottomSheetModal
@@ -125,13 +139,22 @@ function FileUploadModal({url}, ref) {
 
           <View style={styles.selectContainer}>
             <MaterialIcons
+              name="file-present"
+              size={24}
+              color={colors.PRIM_ACCENT}
+            />
+            <AppButton text={btnText} onPress={pickMedia} style={styles.btn} />
+          </View>
+
+          <View style={styles.selectContainer}>
+            <MaterialIcons
               name="file-upload"
               size={24}
               color={colors.PRIM_ACCENT}
             />
             <AppButton
               text={'Send to PC'}
-              onPress={() => handleFileUpload(file)}
+              onPress={handleFileUpload}
               style={styles.btn}
             />
           </View>
