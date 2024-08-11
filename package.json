@@ -10,7 +10,8 @@
     "start": "react-native start",
     "test": "jest",
     "release-build": "npx react-native build-android --mode=release",
-    "release-apk": "yarn android --mode release"
+    "release-apk": "yarn android --mode release",
+    "adb-reverse": "adb reverse tcp:9090 tcp:9090"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.1",
@@ -63,6 +64,7 @@
     "prettier": "2.8.8",
     "react-native-svg-transformer": "^1.3.0",
     "react-test-renderer": "18.2.0",
+    "reactotron-react-native": "^5.1.7",
     "typescript": "5.0.4"
   },
   "engines": {

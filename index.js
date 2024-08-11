@@ -12,6 +12,11 @@ import notifee, {AndroidImportance} from '@notifee/react-native';
 //     // Long running task...
 //   });
 // });
+
+if (__DEV__) {
+  require('./ReactotronConfig');
+}
+
 notifee.createChannel({
   id: 'media',
   name: 'Media Controls',
