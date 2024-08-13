@@ -1,4 +1,11 @@
-import {Alert, Image, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react';
 import {FILE_UPLOAD_STATUS} from '../assets/constants/constants';
 import colors from '../assets/constants/colors';
@@ -11,8 +18,6 @@ import axios from 'axios';
 import AppButton from '../components/AppButton';
 import {launchImageLibrary} from 'react-native-image-picker';
 
-const DEFAULT_BTN_TEXT = 'Select a file to send';
-
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -22,23 +27,23 @@ function FileUploadModal({url}, ref) {
   const scrollViewRef = useRef(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [file, setFile] = useState(null);
-  const [btnText, setBtnText] = useState(DEFAULT_BTN_TEXT);
+  const [files, setFiles] = useState([]);
+  const [currentFile, setCurrentFile] = useState('');
 
   const pickFile = async () => {
     try {
       let f = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
+        allowMultiSelection: true,
       });
       if (f.length > 0) {
-        setFile(f);
-        setBtnText(f[0].name);
+        setFiles(f);
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         setUploadStatus(FILE_UPLOAD_STATUS.cancelled);
-        setBtnText(DEFAULT_BTN_TEXT);
-        setFile(null);
+
+        setFiles([]);
       } else {
         setUploadStatus(FILE_UPLOAD_STATUS.failed);
         console.error(err);
@@ -52,9 +57,8 @@ function FileUploadModal({url}, ref) {
         selectionLimit: 0,
         mediaType: 'mixed',
       });
-      console.log(assets);
       if (assets && assets.length > 0) {
-        setFile(assets.map(a => ({...a, name: a.fileName})));
+        setFiles(assets.map(a => ({...a, name: a.fileName})));
       }
     } catch (err) {
       setUploadStatus(FILE_UPLOAD_STATUS.failed);
@@ -63,11 +67,11 @@ function FileUploadModal({url}, ref) {
   };
 
   const handleFileUpload = useCallback(async () => {
-    if (!file) {
-      Alert.alert('Please select a file first.');
+    if (!files) {
+      Alert.alert('Please select files first.');
       return;
     }
-    for (const f of file) {
+    for (const f of files) {
       setUploadStatus(FILE_UPLOAD_STATUS.uploading);
       try {
         const formData = new FormData();
@@ -76,7 +80,7 @@ function FileUploadModal({url}, ref) {
           type: f.type,
           name: f.name,
         });
-        console.log(formData, 'formdata');
+        setCurrentFile(f.name);
 
         // Send the file using axios
         const res = await axios.post(url + 'upload', formData, {
@@ -95,13 +99,15 @@ function FileUploadModal({url}, ref) {
         setUploadStatus(FILE_UPLOAD_STATUS.failed);
         console.error(err);
       }
-      await sleep(1000);
+      await sleep(500);
     }
+    setFiles([]);
+    setCurrentFile('');
     Alert.alert(
-      'Files sent successfully.',
-      'Check the Downloads folder on you PC.',
+      'File(s) sent successfully.',
+      'Check the Downloads folder on your PC.',
     );
-  }, [file, url]);
+  }, [files, url]);
   return (
     <View style={styles.container}>
       <BottomSheetModal
@@ -128,23 +134,47 @@ function FileUploadModal({url}, ref) {
             style={styles.img}
             resizeMode="cover"
           />
-          <View style={styles.selectContainer}>
-            <MaterialIcons
-              name="file-present"
-              size={24}
-              color={colors.PRIM_ACCENT}
-            />
-            <AppButton text={btnText} onPress={pickFile} style={styles.btn} />
-          </View>
+          {files.length === 0 && (
+            <>
+              <View style={styles.selectContainer}>
+                <MaterialIcons
+                  name="file-present"
+                  size={24}
+                  color={colors.PRIM_ACCENT}
+                />
+                <AppButton
+                  text={'Select Files'}
+                  onPress={pickFile}
+                  style={styles.btn}
+                />
+              </View>
 
-          <View style={styles.selectContainer}>
-            <MaterialIcons
-              name="file-present"
-              size={24}
-              color={colors.PRIM_ACCENT}
-            />
-            <AppButton text={btnText} onPress={pickMedia} style={styles.btn} />
-          </View>
+              <View style={styles.selectContainer}>
+                <MaterialIcons
+                  name="perm-media"
+                  size={24}
+                  color={colors.PRIM_ACCENT}
+                />
+                <AppButton
+                  text={'Select Media'}
+                  onPress={pickMedia}
+                  style={styles.btn}
+                />
+              </View>
+            </>
+          )}
+          {files.length > 0 && (
+            <>
+              <Text style={styles.currentFileTxt}>
+                {files.length} file(s) selected for sending.
+              </Text>
+              <TouchableOpacity onPress={() => setFiles([])}>
+                <Text style={[styles.currentFileTxt, styles.cancelTxt]}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
 
           <View style={styles.selectContainer}>
             <MaterialIcons
@@ -158,6 +188,8 @@ function FileUploadModal({url}, ref) {
               style={styles.btn}
             />
           </View>
+
+          <Text style={styles.currentFileTxt}>{currentFile}</Text>
 
           {(uploadStatus === FILE_UPLOAD_STATUS.uploading ||
             uploadStatus === FILE_UPLOAD_STATUS.failed) && (
@@ -220,5 +252,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     flex: 1,
+  },
+  currentFileTxt: {
+    color: colors.WHITE,
+    fontFamily: 'Raleway-Regular',
+    textAlign: 'center',
+    marginVertical: 4,
+  },
+  cancelTxt: {
+    color: colors.PRIM_ACCENT,
   },
 });
