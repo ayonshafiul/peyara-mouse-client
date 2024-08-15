@@ -105,7 +105,7 @@ function FileUploadModal({url}, ref) {
     setCurrentFile('');
     Alert.alert(
       'File(s) sent successfully.',
-      'Check the Recieved folder on your PC.',
+      'Check the Received folder on your PC.',
     );
   }, [files, url]);
   return (

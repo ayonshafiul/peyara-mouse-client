@@ -171,6 +171,10 @@ function ShowControls() {
   return <MaterialIcons name="control-camera" size={48} color={colors.WHITE} />;
 }
 
+function SendFiles() {
+  return <MaterialIcons name="folder" size={48} color={colors.WHITE} />;
+}
+
 function Orientation() {
   return (
     <MaterialIcons
@@ -212,6 +216,10 @@ const steps = [
   {
     label: 'Press to show more controls',
     component: <ShowControls />,
+  },
+  {
+    label: 'Press to open file sending options',
+    component: <SendFiles />,
   },
   {
     label: 'Press to change orientation of touchpad',
