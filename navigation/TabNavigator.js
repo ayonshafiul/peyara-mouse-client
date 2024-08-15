@@ -1,4 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
+/* eslint-disable react/no-unstable-nested-components */
+import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import colors from '../assets/constants/colors';
 import HomeIcon from '../assets/icons/HomeIcon';
@@ -8,7 +9,6 @@ import SettingsIcon from '../assets/icons/SettingsIcon';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Settings from '../screens/Settings';
-import Touchpad from '../screens/Touchpad';
 import TouchpadNavigator from './TouchpadNavigator';
 
 import {useGlobalStore} from '../store/useGlobalStore';

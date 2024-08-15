@@ -105,7 +105,7 @@ function FileUploadModal({url}, ref) {
     setCurrentFile('');
     Alert.alert(
       'File(s) sent successfully.',
-      'Check the Downloads folder on your PC.',
+      'Check the Recieved folder on your PC.',
     );
   }, [files, url]);
   return (
@@ -189,7 +189,11 @@ function FileUploadModal({url}, ref) {
             />
           </View>
 
-          <Text style={styles.currentFileTxt}>{currentFile}</Text>
+          {currentFile && (
+            <Text style={styles.currentFileTxt}>
+              Transferring {currentFile}...
+            </Text>
+          )}
 
           {(uploadStatus === FILE_UPLOAD_STATUS.uploading ||
             uploadStatus === FILE_UPLOAD_STATUS.failed) && (

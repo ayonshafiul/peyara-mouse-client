@@ -1,4 +1,4 @@
-import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import React, {useEffect} from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -15,6 +15,7 @@ export default function MouseMove() {
 
   useEffect(() => {
     offset.value = withRepeat(withSpring(-offset.value), -1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animStyle = useAnimatedStyle(() => ({

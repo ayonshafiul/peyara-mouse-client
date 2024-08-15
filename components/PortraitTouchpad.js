@@ -21,6 +21,7 @@ export default function PortraitTouchpad({
           </Animated.View>
         </GestureDetector>
 
+        {/* Touchpad */}
         <Animated.View style={styles.scrollWheelContainer}>
           <Animated.View style={styles.scrollWheelTrack}>
             <GestureDetector gesture={scrollGesture}>
@@ -45,6 +46,7 @@ export default function PortraitTouchpad({
           <Text style={styles.clickBtnText}>Right Click</Text>
         </TouchableOpacity>
       </View>
+      {/* Mouse Buttons */}
     </>
   );
 }

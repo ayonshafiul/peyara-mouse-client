@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {
   Text,
@@ -5,7 +6,6 @@ import {
   StyleSheet,
   LayoutAnimation,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SwipeableItem, {
@@ -76,6 +76,7 @@ export default function Home({navigation}) {
       }
       setShowBottomBar(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   return (
@@ -87,7 +88,7 @@ export default function Home({navigation}) {
           data={data}
           bounces={false}
           renderItem={renderItem}
-          onDragEnd={({data}) => setData(data)}
+          onDragEnd={({d}) => setData(d)}
           activationDistance={20}
           ListHeaderComponent={() => {
             return (
@@ -95,7 +96,7 @@ export default function Home({navigation}) {
                 {data.length > 0 && (
                   <Text style={styles.listTitleText}>Servers List</Text>
                 )}
-                {data.length == 0 && (
+                {data.length === 0 && (
                   <Text style={[styles.text, styles.helperText]}>
                     Tap the + button to scan for QRCode.
                   </Text>
@@ -103,11 +104,7 @@ export default function Home({navigation}) {
               </View>
             );
           }}
-          containerStyle={{
-            flex: 1,
-            flexGrow: 1,
-            paddingVertical: 16,
-          }}
+          containerStyle={styles.container}
         />
 
         <TouchableOpacity
@@ -135,7 +132,9 @@ function RowItem({item, itemRefs, drag, onPressDelete}) {
       onChange={({openDirection}) => {
         if (openDirection !== OpenDirection.NONE) {
           [...itemRefs.current.entries()].forEach(([key, ref]) => {
-            if (key !== item.key && ref) ref.close();
+            if (key !== item.key && ref) {
+              ref.close();
+            }
           });
         }
       }}
@@ -175,9 +174,7 @@ const UnderlayLeft = ({onPressDelete}) => {
     <TouchableOpacity
       style={[styles.row, styles.underlayLeft]}
       onPress={onPressDelete}>
-      {/* <TouchableOpacity onPress={onPressDelete}> */}
-      <Text style={styles.textBold}>{`Delete`}</Text>
-      {/* </TouchableOpacity> */}
+      <Text style={styles.textBold}>Delete</Text>
     </TouchableOpacity>
   );
 };
@@ -204,6 +201,11 @@ function UnderlayRight({item}) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexGrow: 1,
+    paddingVertical: 16,
+  },
   mainCardWrapper: {
     height: 200,
     padding: 16,

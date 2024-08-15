@@ -650,11 +650,7 @@ export default function Touchpad({navigation, route}) {
               <RoundKey
                 containerStyle={styles.roundKey}
                 onPress={showFileUpload}>
-                <MaterialIcons
-                  name="file-upload"
-                  size={24}
-                  color={colors.WHITE}
-                />
+                <MaterialIcons name="folder" size={24} color={colors.WHITE} />
               </RoundKey>
 
               <RoundKey

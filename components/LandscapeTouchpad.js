@@ -1,10 +1,8 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import React, {useEffect} from 'react';
-import KeepAwakeText from './KeepAwakeText';
 import Animated from 'react-native-reanimated';
 import {GestureDetector} from 'react-native-gesture-handler';
 import colors from '../assets/constants/colors';
-import {useNavigation} from '@react-navigation/native';
 import {useGlobalStore} from '../store/useGlobalStore';
 import RoundKey from './RoundKey';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -21,15 +19,17 @@ export default function LandscapeTouchpad({
 
   useEffect(() => {
     setShowBottomBar(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       <Animated.View style={styles.touchpadContainer}>
         <GestureDetector gesture={composed}>
-          <Animated.View style={styles.touchpad}></Animated.View>
+          <Animated.View style={styles.touchpad} />
         </GestureDetector>
 
+        {/* Touchpad */}
         <Animated.View style={styles.scrollWheelContainer}>
           <Animated.View style={styles.scrollWheelTrack}>
             <GestureDetector gesture={scrollGesture}>
@@ -50,11 +50,15 @@ export default function LandscapeTouchpad({
         <TouchableOpacity style={styles.clickBtn} onPress={sendLeftClick} />
         <TouchableOpacity style={styles.clickBtn} onPress={sendRightClick} />
       </View>
+      {/* Mouse Buttons */}
+
+      {/* Settings Key */}
       <RoundKey
         containerStyle={styles.settings}
         onPress={hideTopControlsAfterDelay}>
         <MaterialIcons name={'settings'} size={24} color={colors.WHITE} />
       </RoundKey>
+      {/* Settings Key */}
     </>
   );
 }

@@ -1,6 +1,5 @@
 import {
   FlatList,
-  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -55,6 +54,7 @@ function MoveCursor() {
       -1,
       true,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -113,6 +113,7 @@ function TwoFingerScroll() {
       -1,
       true,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -144,6 +145,7 @@ function TapAndMoveToWindowDrag() {
       -1,
       true,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -245,6 +247,7 @@ export default function Help({navigation}) {
         </TouchableOpacity>
       </View>
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
