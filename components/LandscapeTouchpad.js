@@ -133,8 +133,10 @@ const styles = StyleSheet.create({
   },
   settings: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    bottom: 0,
+    right: 12,
     opacity: 0.6,
+    width: 34,
+    height: 34,
   },
 });
