@@ -26,8 +26,9 @@
 <div style="display: flex; flex-wrap: wrap; gap: 8;">
 <img src="https://peyara-remote-mouse.vercel.app/img/home.png" alt="Servers" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/scan-qr.png" alt="Scan QR" width="150">
-<img src="https://peyara-remote-mouse.vercel.app/img/screen-desk.png" alt="Scan QR" width="150">
-<img src="https://peyara-remote-mouse.vercel.app/img/screen-mob.png" alt="Touchpad" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/screen-desk.png" alt="Screen Share" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/screen-mob.png" alt="Screen Share Mobile" width="150">
+<img src="https://peyara-remote-mouse.vercel.app/img/files.png" alt="Transfer Files" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/touchpad-2.png" alt="Touchpad" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/keyboard.png" alt="Keyboard" width="150">
 <img src="https://peyara-remote-mouse.vercel.app/img/touchpad.png" alt="Media & Clipboard" width="150">
