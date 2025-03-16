@@ -26,6 +26,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -37,10 +39,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Peyara Remote Mouse needs access to camera in order to scan barcodes</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Peyara Remote Mouse needs access to camera in order to video feed from shared screen</string>
+	<string>Peyara Remote Mouse needs access to microphone in order to video feed from shared screen</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Peyara Remote Mouse needs access to photo library to send files to your Desktop.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Raleway-Bold.ttf</string>
@@ -58,8 +60,6 @@
 	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
