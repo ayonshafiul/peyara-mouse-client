@@ -88,7 +88,7 @@ const steps = [
     component: <DownloadServer />,
   },
   {
-    label: 'Install Server client and start server on your desktop',
+    label: 'Install server client and start server on your desktop.',
     component: <StartServer />,
   },
   {

@@ -574,7 +574,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peyara/Peyara.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 878GZ88V69;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Peyara/Info.plist;
@@ -615,7 +615,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peyara/Peyara.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 878GZ88V69;
 				INFOPLIST_FILE = Peyara/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Peyara;
