@@ -48,6 +48,7 @@ https://peyara-remote-mouse.vercel.app/
 ### Step 3: Install the app on your phone
 
 [![Download Android app from Google Play](https://peyara-remote-mouse.vercel.app/img/google-play.png)](https://play.google.com/store/apps/details?id=io.github.ayonshafiul.peyara)
+[![Download Android app from App Store](https://peyara-remote-mouse.vercel.app/img/appstore.png)](https://apps.apple.com/us/app/peyara-remote-mouse/id6743374036)
 
 ### Step 4: Scan the QRCode and connect!
 
